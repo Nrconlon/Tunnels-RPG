@@ -1971,17 +1971,17 @@ Prefab:
     - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
         type: 2}
       propertyPath: movementSettings.ForwardSpeed
-      value: 16
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
         type: 2}
       propertyPath: movementSettings.BackwardSpeed
-      value: 7.5
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
         type: 2}
       propertyPath: movementSettings.StrafeSpeed
-      value: 7.5
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
         type: 2}
@@ -1991,11 +1991,11 @@ Prefab:
     - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
         type: 2}
       propertyPath: advancedSettings.slowDownRate
-      value: 2000
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5426510, guid: 665e193463736ba448c498a7c36f699d, type: 2}
       propertyPath: m_Drag
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 408730, guid: 665e193463736ba448c498a7c36f699d, type: 2}
       propertyPath: m_LocalScale.x
@@ -2008,6 +2008,48 @@ Prefab:
     - target: {fileID: 408730, guid: 665e193463736ba448c498a7c36f699d, type: 2}
       propertyPath: m_LocalScale.z
       value: 0.7134315
+      objectReference: {fileID: 0}
+    - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
+        type: 2}
+      propertyPath: movementSettings.JumpForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
+        type: 2}
+      propertyPath: mouseLook.MinimumX
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
+        type: 2}
+      propertyPath: mouseLook.smoothTime
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
+        type: 2}
+      propertyPath: advancedSettings.groundCheckDistance
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 114119512406522242, guid: 665e193463736ba448c498a7c36f699d,
+        type: 2}
+      propertyPath: advancedSettings.stickToGroundHelperDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5426510, guid: 665e193463736ba448c498a7c36f699d, type: 2}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5426510, guid: 665e193463736ba448c498a7c36f699d, type: 2}
+      propertyPath: m_Constraints
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114859290256946576, guid: 665e193463736ba448c498a7c36f699d,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5426510, guid: 665e193463736ba448c498a7c36f699d, type: 2}
+      propertyPath: m_UseGravity
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}

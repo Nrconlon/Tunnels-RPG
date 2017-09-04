@@ -170,8 +170,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 					m_RigidBody.AddForce(new Vector3(0f, movementSettings.JumpForce, 0f), ForceMode.Impulse);
 					m_Jumping = true;
 				}
-				// && m_RigidBody.velocity.magnitude < 1f
-				if (!m_Jumping && Mathf.Abs(input.x) < float.Epsilon && Mathf.Abs(input.y) < float.Epsilon)
+				if (!m_Jumping && Mathf.Abs(input.x) < float.Epsilon && Mathf.Abs(input.y) < float.Epsilon && m_RigidBody.velocity.magnitude < 1f)
 				{
 					m_RigidBody.Sleep();
 				}
