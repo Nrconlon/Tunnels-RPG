@@ -166,6 +166,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 				if (m_Jump)
 				{
 					m_RigidBody.drag = 0f;
+					print(m_RigidBody.velocity.x.ToString() + " and " +  m_RigidBody.velocity.z.ToString());
 					m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x, 0f, m_RigidBody.velocity.z);
 					m_RigidBody.AddForce(new Vector3(0f, movementSettings.JumpForce, 0f), ForceMode.Impulse);
 					m_Jumping = true;
