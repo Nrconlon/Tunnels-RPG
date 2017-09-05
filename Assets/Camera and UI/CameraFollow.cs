@@ -9,7 +9,6 @@ public class CameraFollow : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		player = GameObject.FindGameObjectWithTag("Player");  //Player is the tag we gave to player in unity
-		print(player.ToString());
 	}
 	
 	// LateUpdate is called once per frame, after everything else is calculated (including character position)
