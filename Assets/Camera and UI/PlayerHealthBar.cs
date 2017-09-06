@@ -20,7 +20,12 @@ public class PlayerHealthBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float xValue = -(player.healthAsPercentage / 2f) - 0.5f;
-        healthBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
-    }
+		if (player)
+		{
+			float xValue = -(player.healthAsPercentage / 2f) - 0.5f;
+			healthBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
+
+		}
+
+	}
 }

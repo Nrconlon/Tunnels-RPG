@@ -24,6 +24,7 @@ function Start () {
     x = angles.y;
     y = angles.x;
 	currentDistance = distance;
+	Cursor.lockState = CursorLockMode.Locked;
 	
 	// Make the rigid body not change rotation
    	if (GetComponent.<Rigidbody>())
@@ -32,8 +33,8 @@ function Start () {
 
 function LateUpdate () {
     if (target) {
-        x += Input.GetAxis("Mouse X") * xSpeed * 0.02;
-        y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02;
+        x += Input.GetAxisRaw("Mouse X") * xSpeed * 0.02;
+        y -= Input.GetAxisRaw("Mouse Y") * ySpeed * 0.02;
  		
  		y = ClampAngle(y, yMinLimit, yMaxLimit);
  		       

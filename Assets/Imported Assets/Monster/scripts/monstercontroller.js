@@ -4,13 +4,14 @@
 var maxVelocityChange = 10.0;
 var canJump = true;
 var jumpHeight = 2.0;
-var jumpinterval : float = 1.5;
+var jumpPower = 1.0;
+var jumpCooldown : float = 2;
+var amountOfJumps = 3;
 private var nextjump : float = 1.2;
 
-public var speed : float = 4;
+public var speed : float = 6;
 var runspeed : float = 8;
 private var moveAmount : float;
-var smoothSpeed : float = 2;
 private var sensitivityX : float = 6;
 
 
@@ -72,8 +73,8 @@ function FixedUpdate()
  	 var animator = GetComponent(Animator);
  	 forward = GetComponent.<Camera>().main.transform.forward;
 	 right = new Vector3(forward.z, 0, -forward.x);
-	 var hor = Input.GetAxis("Horizontal");
-	 var ver = Input.GetAxis("Vertical");
+	 var hor = Input.GetAxisRaw("Horizontal");
+	 var ver = Input.GetAxisRaw("Vertical");
 	 var targetDirection : Vector3 = (hor * right) + (ver * forward);
 	 targetDirection = targetDirection.normalized;
 	
@@ -123,24 +124,22 @@ function FixedUpdate()
 		var targetVelocity = targetDirection;
 		
 		
-		if (Input.GetButton("Fire2") && canrun && !isjumping)
+	/*	if (Input.GetButton("Fire2") && canrun && !isjumping)
 		{
 			targetVelocity *= runspeed;
 			velocityanim *= 2;
-			
-			
+
 		}
 		else
 		{
-			targetVelocity *= speed;
-			velocityanim *= 1;
+		 */
+		targetVelocity *= speed;
+		velocityanim *= 2; //Why 2?
+
 			
-			
-			
-		}
-		if (Input.GetButton("Fire1")&& canattack)
+		//}
+		if (Input.GetButton("Fire2") && canattack)
 		{
-			
 			var currentState : AnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(2);
 			if (currentState.length == 0)
 			{
@@ -166,22 +165,35 @@ function FixedUpdate()
 	 	
 		
 		animator.SetFloat("speed",velocityanim,dampTime, 0.2);
-		
-		if (Input.GetButton("Jump") && Time.time > nextjump)
+
+
+		if (Input.GetButton("Jump") && grounded && !isjumping && amountOfJumps > 0 && nextjump  < (Time.time + (jumpCooldown * (amountOfJumps - 1)))  )
 		{
-			nextjump = Time.time + jumpinterval;
 			isjumping = true;
+			if(nextjump > Time.time)
+			{
+			 nextjump = nextjump + jumpCooldown;
+			}
+			 else 
+			 {
+				nextjump = Time.time + jumpCooldown;
+			 }
+			var SquareRootDiagonal = 1.0;
+			if(hor > 0 && ver > 0)
+			{
+				SquareRootDiagonal = Mathf.Sqrt(2);
+			}
 			myaudiosource.clip = jumpclip;
 			myaudiosource.loop = false;
 			myaudiosource.pitch = 1;
 			myaudiosource.Play();
-			GetComponent.<Rigidbody>().velocity = Vector3(velocity.x, CalculateJumpVerticalSpeed(), velocity.z);
+			GetComponent.<Rigidbody>().velocity = Vector3(velocity.x + targetDirection.x * jumpPower, CalculateJumpVerticalSpeed(), velocity.z + targetDirection.z * jumpPower);  //World vector.
 			animator.SetBool("jump",true);
 		}
 		else
      	{
         	 animator.SetBool("jump",false);
-        	 isjumping = false;
+        	 //isjumping = false;
          	
      	}   
 	}
@@ -208,6 +220,10 @@ function testground ()
       
       if(Physics.Raycast(transform.position + Vector3.up, Vector3.down, hit, downcastrange , mask ))
       {
+      		if(grounded == false)//landed
+      		{
+        	 	isjumping = false;
+        	}
            grounded = true;
       }      
       else
