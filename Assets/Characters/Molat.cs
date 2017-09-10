@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Molat : MonoBehaviour {
+public class Molat : MonoBehaviour, IDamageable
+{
 
 
 	[SerializeField] float maxStamina = 100f;
@@ -97,6 +98,8 @@ public class Molat : MonoBehaviour {
 		canAttackCurrent = canAttack;
 		grounded = true;
 	}
+
+
 	void FixedUpdate()
 	{
 		TestGround(); //set grounded to correct state
@@ -190,6 +193,13 @@ public class Molat : MonoBehaviour {
 	void HandleStamina()
 	{
 
+	}
+
+	public float healthAsPercentage {
+		get
+		{
+			return currentHealth / maxHealth;
+		}
 	}
 
 
@@ -311,9 +321,13 @@ public class Molat : MonoBehaviour {
 	{
 		previouslyGrounded = grounded;
 		RaycastHit hit;
+#if UNITY_EDITOR
+		// helper to visualise the ground check ray in the scene view
+		Debug.DrawLine(transform.position + (Vector3.up * 0.1f), transform.position + (Vector3.up * 0.1f) + (Vector3.down * downCastRange));
+#endif
 		//Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f), Vector3.down, out hit,((m_Capsule.height / 2f) - m_Capsule.radius) + downCastRange, Physics.AllLayers, QueryTriggerInteraction.Ignore)
 		//if ()
-		if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, downCastRange, mask))
+		if (Physics.Raycast(transform.position + (Vector3.up * 0.1f), Vector3.down, out hit, downCastRange, mask))
 		{
 			grounded = true;
 			m_RigidBody.drag = drag;
@@ -411,5 +425,10 @@ public class Molat : MonoBehaviour {
 			changingWeapon = false;
 		}
 
+	}
+
+	public void TakeDamage(float damage)
+	{
+		currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
 	}
 }

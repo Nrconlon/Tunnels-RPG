@@ -1,6 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 
 
@@ -8,7 +8,10 @@ using UnityEngine;
 [RequireComponent(typeof(Molat))]
 public class MolatPlayerController : MonoBehaviour {
 
-	Molat m_molat;
+	private Molat m_molat;  // A reference to the molat on the object
+	private Transform m_Cam;// A reference to the main camera in the scenes transform
+	private Vector3 m_CamForward;  // The current forward direction of the camera
+	private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 
 	// Use this for initialization
 	void Start () {

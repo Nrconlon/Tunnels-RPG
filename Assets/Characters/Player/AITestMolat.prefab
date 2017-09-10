@@ -879,10 +879,10 @@ GameObject:
   - component: {fileID: 82666667208480584}
   - component: {fileID: 114241949070949178}
   - component: {fileID: 114792756836360870}
-  - component: {fileID: 114161074171880908}
   - component: {fileID: 195785935118940700}
   - component: {fileID: 114505836654482456}
   - component: {fileID: 114219678782020172}
+  - component: {fileID: 114661047516488380}
   m_Layer: 10
   m_Name: monster1AnimsNormal
   m_TagString: Player
@@ -2364,56 +2364,6 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
---- !u!114 &114161074171880908
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1885851812115600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dd7802a835062e4190ccf36fd8e5bbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxStamina: 100
-  maxHealth: 100
-  canJump: 1
-  canAttack: 1
-  canSprint: 1
-  canClimb: 0
-  speed: 6
-  sprintSpeed: 8
-  stamRechargePS: 20
-  sprintCostPS: 5
-  tailJumpCost: 5
-  tailJumpHeight: 7
-  tailJumpPower: 2500
-  gravity: 9
-  jumpCost: 10
-  jumpHeight: 15
-  jumpPower: 2
-  maxVelocityChange: 10
-  dampTime: 2
-  runAnimationRatio: 0.3
-  mask:
-    serializedVersion: 2
-    m_Bits: 1
-  downCastRange: 1.2
-  myaudiosource: {fileID: 82666667208480584}
-  chest: {fileID: 4740619338578288}
-  shield: {fileID: 4436409199029140}
-  weapon: {fileID: 4284887763888416}
-  lefthandpos: {fileID: 4946796071438982}
-  righthandpos: {fileID: 4036750198199390}
-  chestposshield: {fileID: 4611318008149664}
-  chestposweapon: {fileID: 4490964950393604}
-  jumpclip1: {fileID: 8300000, guid: 400ac5af347c23940b3f6cc853056716, type: 3}
-  jumpclip2: {fileID: 8300000, guid: be86a8e0a52504149a203f30d4b429d4, type: 3}
-  equip1sound: {fileID: 8300000, guid: bc2c423d701e45f46af5acf418547469, type: 3}
-  equip2sound: {fileID: 8300000, guid: 968dac97cad74df4394d62522017fda6, type: 3}
-  holster1sound: {fileID: 8300000, guid: 5286367a706955f42949cfb6db9fcefe, type: 3}
-  holster2sound: {fileID: 8300000, guid: 863bd0075c66f264fa8f3557cb7ed179, type: 3}
-  targetDirection: {x: 0, y: 0, z: 0}
 --- !u!114 &114219678782020172
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2494,6 +2444,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+--- !u!114 &114661047516488380
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1885851812115600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18cef7dec55e8f0459c6e5c79aa3709e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealthPoints: 100
+  attackRadius: 4
 --- !u!114 &114792756836360870
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2711,11 +2674,11 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 6
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1

@@ -8,12 +8,12 @@ public class PlayerHealthBar : MonoBehaviour
 {
 
     RawImage healthBarRawImage;
-    Player player;
+    Molat player;
 
     // Use this for initialization
     void Start()
     {
-        player = FindObjectOfType<Player>();
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Molat>();
         healthBarRawImage = GetComponent<RawImage>();
     }
 
