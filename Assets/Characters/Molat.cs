@@ -72,15 +72,19 @@ public class Molat : MonoBehaviour {
 
 
 	Animator animator;
-	Rigidbody m_rigidbody;
+	Rigidbody m_RigidBody;
+	private CapsuleCollider m_Capsule;
+	private bool previouslyGrounded;
+	private Vector3 groundContactNormal;
 
 	void Start()
 	{
 		animator = GetComponent<Animator>();
-		m_rigidbody = GetComponent<Rigidbody>();
-		m_rigidbody.freezeRotation = true;
-		m_rigidbody.useGravity = false;
-		drag = m_rigidbody.drag;
+		m_RigidBody = GetComponent<Rigidbody>();
+		m_Capsule = GetComponent<CapsuleCollider>();
+		m_RigidBody.freezeRotation = true;
+		m_RigidBody.useGravity = false;
+		drag = m_RigidBody.drag;
 
 		currentStamina = maxStamina;
 		currentHealth = maxHealth;
@@ -95,16 +99,15 @@ public class Molat : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
-		//m_rigidbody.AddForce(new Vector3(0, -gravity * m_rigidbody.mass, 0));  
-
+		TestGround(); //set grounded to correct state
 		if (freeToMove())
 		{
 
 			if (targetDirection != Vector3.zero)
 			{
-				Vector3 velocity = m_rigidbody.velocity;
-				float z = m_rigidbody.velocity.z;
-				float x = m_rigidbody.velocity.x;
+				Vector3 velocity = m_RigidBody.velocity;
+				float z = m_RigidBody.velocity.z;
+				float x = m_RigidBody.velocity.x;
 				Vector3 currentmagnitude = new Vector3(x, 0, z);
 				Vector3 localmagnitude = transform.InverseTransformDirection(currentmagnitude);
 
@@ -119,7 +122,7 @@ public class Molat : MonoBehaviour {
 				velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
 				velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
 				velocityChange.y = 0;
-				m_rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
+				m_RigidBody.AddForce(velocityChange, ForceMode.VelocityChange);
 				animator.SetFloat("speed", velocityanim, dampTime, 0.2f);
 			}
 			else
@@ -133,16 +136,14 @@ public class Molat : MonoBehaviour {
 			animator.SetFloat("speed", 0, dampTime * 2, 0.2f);
 		}
 		//Gravity
-		m_rigidbody.AddForce(0, -gravity, 0);
-		print(m_rigidbody.velocity);
+		m_RigidBody.AddForce(0, -gravity, 0);
 
 
 	}
 
 	private void Update()
 	{
-		TestGround(); //set grounded to correct state
-
+		RotateView();
 		HandleStamina();
 
 		if (!isClimbing)
@@ -165,6 +166,24 @@ public class Molat : MonoBehaviour {
 			//animator.SetFloat("hor", (localmagnitude.x) + (addfloat * 2), dampTime, 0.8f);
 			//animator.SetFloat("ver", (localmagnitude.z), dampTime, 0.8f);
 			//transform.rotation = Quaternion.Lerp(transform.rotation, lookrotation, Time.deltaTime * rotateSpeed);
+		}
+	}
+
+	void RotateView()
+	{
+		//avoids the mouse looking if the game is effectively paused
+		if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
+
+		// get the rotation before it's changed
+		float oldYRotation = transform.eulerAngles.y;
+
+		//mouseLook.LookRotation(transform, cam.transform);
+
+		if (!isClimbing)
+		{
+			// Rotate the rigidbody velocity to match the new direction that the character is looking
+			Quaternion velRotation = Quaternion.AngleAxis(transform.eulerAngles.y - oldYRotation, Vector3.up);
+			m_RigidBody.velocity = velRotation * m_RigidBody.velocity;
 		}
 	}
 
@@ -216,7 +235,7 @@ public class Molat : MonoBehaviour {
 					myaudiosource.loop = false;
 					myaudiosource.pitch = 1;
 					myaudiosource.Play();
-					m_rigidbody.AddForce(new Vector3(direction.x * tailJumpPower, CalculateJumpVerticalSpeed(tailJumpHeight), direction.z * tailJumpPower));
+					m_RigidBody.AddForce(direction.x * tailJumpPower, CalculateJumpVerticalSpeed(tailJumpHeight), direction.z * tailJumpPower);
 
 
 					currentSpeed = sprintSpeed;
@@ -257,7 +276,7 @@ public class Molat : MonoBehaviour {
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
 				print(CalculateJumpVerticalSpeed(jumpHeight));
-				m_rigidbody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
+				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
 				animator.SetBool("jump", true);
 				return true;
 			}
@@ -290,23 +309,27 @@ public class Molat : MonoBehaviour {
 
 	void TestGround()
 	{
-		//yield return new WaitForSeconds(0.5f);
+		previouslyGrounded = grounded;
 		RaycastHit hit;
-		if (Physics.Raycast(transform.position + Vector3.up,Vector3.down,out hit, downCastRange, mask))
+		//Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f), Vector3.down, out hit,((m_Capsule.height / 2f) - m_Capsule.radius) + downCastRange, Physics.AllLayers, QueryTriggerInteraction.Ignore)
+		//if ()
+		if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, downCastRange, mask))
 		{
-			if (grounded == false)//landed
-			{
-				Landed();
-			}
 			grounded = true;
-			m_rigidbody.drag = drag;
-
+			m_RigidBody.drag = drag;
+			groundContactNormal = hit.normal;
 
 		}
 		else
 		{
 			grounded = false;
-			m_rigidbody.drag = 0;
+			m_RigidBody.drag = 0;
+			groundContactNormal = Vector3.up;
+		}
+
+		if(!previouslyGrounded && grounded && isJumping)
+		{
+			isJumping = false;
 		}
 		animator.SetBool("grounded", grounded);
 	}
