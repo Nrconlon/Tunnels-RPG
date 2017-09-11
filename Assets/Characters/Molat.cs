@@ -34,6 +34,10 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] LayerMask mask;
 	[SerializeField] float downCastRange = 1.2f;
 
+	[SerializeField] float damageWithMaceThrow = 9.0f;
+	public GameObject throwingWeapon;
+	[SerializeField] GameObject projectileSocket;
+
 
 	private float currentStamRechargePS;
 	private float currentSpeed;
@@ -431,6 +435,14 @@ public class Molat : MonoBehaviour, IDamageable
 			changingWeapon = false;
 		}
 
+	}
+
+	public void ThrowMace()
+	{
+		GameObject projectileMace = Instantiate(throwingWeapon, projectileSocket.transform.position, Quaternion.identity);
+		FlyingMace maceComponent = projectileMace.GetComponent<FlyingMace>();
+		maceComponent.damageCaused = damageWithMaceThrow;
+		projectileMace.GetComponent<Rigidbody>().velocity = lookAtDirection * maceComponent.projectileSpeed;
 	}
 
 	public void TakeDamage(float damage)

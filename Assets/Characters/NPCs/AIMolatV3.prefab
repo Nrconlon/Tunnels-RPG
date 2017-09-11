@@ -520,6 +520,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1392419999587006
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4174783506286376}
+  - component: {fileID: 33004450734847288}
+  - component: {fileID: 23245002673997234}
+  m_Layer: 9
+  m_Name: mace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1401868975955624
 GameObject:
   m_ObjectHideFlags: 1
@@ -530,23 +547,6 @@ GameObject:
   - component: {fileID: 4253370030636980}
   m_Layer: 2
   m_Name: top
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1483955118970610
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4087714240443598}
-  - component: {fileID: 33166822421479364}
-  - component: {fileID: 23146267199168244}
-  m_Layer: 9
-  m_Name: mace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1113,19 +1113,6 @@ Transform:
   m_Father: {fileID: 4351117736423510}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4087714240443598
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1483955118970610}
-  m_LocalRotation: {x: -0.14490639, y: 0.6548229, z: 0.7242399, w: 0.16026776}
-  m_LocalPosition: {x: 0.083332315, y: -0.19518048, z: -0.2788992}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4888611392811082}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4103958976977582
 Transform:
   m_ObjectHideFlags: 1
@@ -1179,6 +1166,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4888611392811082}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4174783506286376
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1392419999587006}
+  m_LocalRotation: {x: -0.14490639, y: 0.6548229, z: 0.7242399, w: 0.16026776}
+  m_LocalPosition: {x: 0.083332315, y: -0.19518048, z: -0.2788992}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4888611392811082}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4189649684901400
 Transform:
@@ -1864,7 +1864,7 @@ Transform:
   m_Children:
   - {fileID: 4687051072203314}
   - {fileID: 4234289646049054}
-  - {fileID: 4087714240443598}
+  - {fileID: 4174783506286376}
   - {fileID: 4872757450653742}
   - {fileID: 4937353594628518}
   - {fileID: 4224446444071424}
@@ -1927,12 +1927,12 @@ Transform:
   m_Father: {fileID: 4351117736423510}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23146267199168244
+--- !u!23 &23245002673997234
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1483955118970610}
+  m_GameObject: {fileID: 1392419999587006}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -1991,12 +1991,12 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33166822421479364
+--- !u!33 &33004450734847288
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1483955118970610}
+  m_GameObject: {fileID: 1392419999587006}
   m_Mesh: {fileID: 4300002, guid: d8e6116652f17784087610025c66ec2e, type: 3}
 --- !u!33 &33595629366619014
 MeshFilter:
@@ -2428,10 +2428,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   downCastRange: 1.2
+  damageWithMaceThrow: 9
+  throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
+    type: 2}
+  projectileSocket: {fileID: 0}
   myaudiosource: {fileID: 82840315541528428}
   chest: {fileID: 4888611392811082}
   shield: {fileID: 4937353594628518}
-  weapon: {fileID: 4087714240443598}
+  weapon: {fileID: 4174783506286376}
   lefthandpos: {fileID: 4069658479765872}
   righthandpos: {fileID: 4189649684901400}
   chestposshield: {fileID: 4150861838661276}
@@ -2552,7 +2556,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  attackRadius: 6
+  attackRadius: 10.07
+  chaseRadius: 2.36
   m_CurrentState: 0
 --- !u!114 &114931508843609234
 MonoBehaviour:
@@ -2788,7 +2793,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 6
+  m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

@@ -1840,7 +1840,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 135260}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -231.23085, y: -49.990845, z: -8.157074}
+  m_LocalPosition: {x: -232.16162, y: -49.990845, z: -6.9980164}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 468188}
@@ -2905,6 +2905,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   downCastRange: 1.2
+  damageWithMaceThrow: 9
+  throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
+    type: 2}
+  projectileSocket: {fileID: 135136}
   myaudiosource: {fileID: 8268192}
   chest: {fileID: 435200}
   shield: {fileID: 435220}
@@ -2920,3 +2924,4 @@ MonoBehaviour:
   holster1sound: {fileID: 8300000, guid: 5286367a706955f42949cfb6db9fcefe, type: 3}
   holster2sound: {fileID: 8300000, guid: 863bd0075c66f264fa8f3557cb7ed179, type: 3}
   targetDirection: {x: 0, y: 0, z: 0}
+  lookAtDirection: {x: 0, y: 0, z: 0}

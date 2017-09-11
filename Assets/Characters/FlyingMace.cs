@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spikes : MonoBehaviour {
+public class FlyingMace : MonoBehaviour {
 
-	[SerializeField] float damageCaused = 10f;
+	public float projectileSpeed = 10f;
+	public float damageCaused = 10f;
 	private void OnTriggerEnter(Collider collider)
 	{
 		Component damageableComponent = collider.gameObject.GetComponent(typeof(IDamageable));
@@ -12,14 +13,5 @@ public class Spikes : MonoBehaviour {
 		{
 			(damageableComponent as IDamageable).TakeDamage(damageCaused);
 		}
-	}
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 }
