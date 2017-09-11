@@ -67,6 +67,7 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] AudioClip holster2sound;
 
 	[HideInInspector]  public Vector3 targetDirection;
+	[HideInInspector] public Vector3 lookAtDirection;
 
 	private bool grounded;
 
@@ -77,6 +78,8 @@ public class Molat : MonoBehaviour, IDamageable
 	private CapsuleCollider m_Capsule;
 	private bool previouslyGrounded;
 	private Vector3 groundContactNormal;
+	float turnAmount;
+	float torwardAmount;
 
 	void Start()
 	{
@@ -92,6 +95,7 @@ public class Molat : MonoBehaviour, IDamageable
 		currentSpeed = speed;
 		currentStamRechargePS = stamRechargePS;
 		targetDirection = Vector3.zero;
+		lookAtDirection = Vector3.zero;
 		isJumping = false;
 		isSprinting = false;
 		isClimbing = false;
@@ -112,7 +116,7 @@ public class Molat : MonoBehaviour, IDamageable
 				float z = m_RigidBody.velocity.z;
 				float x = m_RigidBody.velocity.x;
 				Vector3 currentmagnitude = new Vector3(x, 0, z);
-				Vector3 localmagnitude = transform.InverseTransformDirection(currentmagnitude);
+				
 
 				float velocityanim = Mathf.Clamp01(currentmagnitude.magnitude);
 				velocityanim *= (currentSpeed * runAnimationRatio);
@@ -144,6 +148,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	}
 
+
 	private void Update()
 	{
 		RotateView();
@@ -151,13 +156,14 @@ public class Molat : MonoBehaviour, IDamageable
 
 		if (!isClimbing)
 		{
-			if (targetDirection != Vector3.zero)
+			if (lookAtDirection != Vector3.zero)
 			{
-				Quaternion lookrotation2 = Quaternion.LookRotation(targetDirection, Vector3.up);
+				Quaternion lookrotation2 = Quaternion.LookRotation(lookAtDirection, Vector3.up);
 				lookrotation2.x = 0;
 				lookrotation2.z = 0;
 				transform.rotation = lookrotation2;
 			}
+			//Vector3 localmagnitude = transform.InverseTransformDirection(currentmagnitude);
 			//old code for rotation.
 			//if(weaponEquiped)
 			//Vector3 localTarget = transform.InverseTransformPoint(target.position);
