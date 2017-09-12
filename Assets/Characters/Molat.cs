@@ -20,12 +20,12 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float sprintCostPS = 5f;
 	//[SerializeField] float climbCostPS = 5f;
 	[SerializeField] float tailJumpCost = 5f;
-	[SerializeField] float tailJumpHeight = 1.0f;
-	[SerializeField] float tailJumpPower = 3.0f;
+	[SerializeField] float tailJumpHeight = 3.0f;
+	[SerializeField] float tailJumpPower = 1000.0f;
 
-	[SerializeField] float gravity = 25;
+	[SerializeField] float gravity = 18;
 	[SerializeField] float jumpCost = 10f;
-	[SerializeField] float jumpHeight = 5.0f;
+	[SerializeField] float jumpHeight = 13.0f;
 	[SerializeField] float jumpPower = 2.0f;
 
 	[SerializeField] float maxVelocityChange = 10.0f;
@@ -84,6 +84,7 @@ public class Molat : MonoBehaviour, IDamageable
 	private Vector3 groundContactNormal;
 	float turnAmount;
 	float torwardAmount;
+	private bool isBlocking;
 
 	void Start()
 	{
@@ -103,6 +104,7 @@ public class Molat : MonoBehaviour, IDamageable
 		isJumping = false;
 		isSprinting = false;
 		isClimbing = false;
+		isBlocking = false;
 		canAttackCurrent = canAttack;
 		grounded = true;
 	}
@@ -117,13 +119,9 @@ public class Molat : MonoBehaviour, IDamageable
 			if (targetDirection != Vector3.zero)
 			{
 				Vector3 velocity = m_RigidBody.velocity;
-				float z = m_RigidBody.velocity.z;
-				float x = m_RigidBody.velocity.x;
-				Vector3 currentmagnitude = new Vector3(x, 0, z);
 				
 
-				float velocityanim = Mathf.Clamp01(currentmagnitude.magnitude);
-				velocityanim *= (currentSpeed * runAnimationRatio);
+				
 
 				Vector3 targetVelocity = targetDirection;
 				targetVelocity *= currentSpeed;
@@ -134,17 +132,20 @@ public class Molat : MonoBehaviour, IDamageable
 				velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
 				velocityChange.y = 0;
 				m_RigidBody.AddForce(velocityChange, ForceMode.VelocityChange);
+
+				float z = m_RigidBody.velocity.z;
+				float x = m_RigidBody.velocity.x;
+				Vector3 currentmagnitude = new Vector3(x, 0, z);
+				float velocityanim = Mathf.Clamp01(currentmagnitude.magnitude) * 2; //Take out times 2 when walking is added, as well as edit anim speeds (straife is too fast for walk)+
+
 				animator.SetFloat("speed", velocityanim, dampTime, 0.2f);
+				animator.SetFloat("movementAngle", AngleOfLookDirection(), dampTime, 0.2f);
 			}
 			else
 			{
-				animator.SetFloat("speed", 0, dampTime*2, 0.2f);
+				animator.SetFloat("speed", 0, dampTime * 2, 0.2f);
+				animator.SetFloat("movementAngle", 0);
 			}
-
-		}
-		else
-		{
-			animator.SetFloat("speed", 0, dampTime * 2, 0.2f);
 		}
 		//Gravity
 		m_RigidBody.AddForce(0, -gravity, 0);
@@ -155,7 +156,6 @@ public class Molat : MonoBehaviour, IDamageable
 
 	private void Update()
 	{
-		RotateView();
 		HandleStamina();
 
 		if (!isClimbing)
@@ -166,7 +166,10 @@ public class Molat : MonoBehaviour, IDamageable
 				lookrotation2.x = 0;
 				lookrotation2.z = 0;
 				transform.rotation = lookrotation2;
-			}
+			}				
+				//if angle <30 && > -30 animation speed = 1
+				//abs angle < 45    45 = 2   0 = 1    speed = absAngle/45 + 1
+			
 			//Vector3 localmagnitude = transform.InverseTransformDirection(currentmagnitude);
 			//old code for rotation.
 			//if(weaponEquiped)
@@ -182,22 +185,11 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-	void RotateView()
+	float AngleOfLookDirection()
 	{
-		//avoids the mouse looking if the game is effectively paused
-		if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
-
-		// get the rotation before it's changed
-		float oldYRotation = transform.eulerAngles.y;
-
-		//mouseLook.LookRotation(transform, cam.transform);
-
-		if (!isClimbing)
-		{
-			// Rotate the rigidbody velocity to match the new direction that the character is looking
-			Quaternion velRotation = Quaternion.AngleAxis(transform.eulerAngles.y - oldYRotation, Vector3.up);
-			m_RigidBody.velocity = velRotation * m_RigidBody.velocity;
-		}
+		Vector2 A = new Vector2(targetDirection.x, targetDirection.z);
+		Vector2 B = new Vector2(lookAtDirection.x, lookAtDirection.z);
+		return Vector2.SignedAngle(A,B);
 	}
 
 	void HandleStamina()
@@ -213,24 +205,24 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 
 
-	public bool Attack()
+	public bool Attack(bool toogle)
 	{
-		if(canAttack && canAttackCurrent && !isClimbing)
+		if(toogle)
 		{
-			if(weaponEquiped)
+			if (canAttack && canAttackCurrent && !isClimbing)
 			{
-				AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(2);
-				if (currentState.length == 0)
+				canAttackCurrent = false;
+				AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+				currentState = animator.GetCurrentAnimatorStateInfo(2);
+				if (currentState.length == 1)
 				{
-					int attackrandom = Random.Range(0, 4);
-					animator.SetFloat("random", attackrandom);
+					animator.SetFloat("attackType", 0);
 					animator.SetBool("attack", true);
 					return true;
-
 				}
 			}
-			
 		}
+		canAttackCurrent = true;
 		animator.SetBool("attack", false);
 		return false;
 	}
@@ -295,7 +287,6 @@ public class Molat : MonoBehaviour, IDamageable
 				myaudiosource.loop = false;
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
-				print(CalculateJumpVerticalSpeed(jumpHeight));
 				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
 				animator.SetBool("jump", true);
 				return true;
@@ -323,7 +314,6 @@ public class Molat : MonoBehaviour, IDamageable
 
 	void Landed()
 	{
-		print("landed");
 		isJumping = false;
 	}
 
@@ -409,32 +399,51 @@ public class Molat : MonoBehaviour, IDamageable
 		myaudiosource.pitch = 0.9f + 0.2f * Random.value;
 		myaudiosource.Play();
 	}
-	public IEnumerator ToggleEquipWeapon()
+	public void ToggleEquipWeapon()
 	{
-		if(!changingWeapon)
+		if (!changingWeapon)
 		{
+			StartCoroutine(CoToggleEquipWeapon());
+		}
+	}
+	private IEnumerator CoToggleEquipWeapon()
+	{
+
 			changingWeapon = true;
 			canAttack = false;
 
 			if (!weaponEquiped)
 			{
 				animator.SetBool("grabweapon", true);
-				yield return new WaitForSeconds(2);
+				yield return new WaitForSeconds(1);
 				weaponEquiped = true;
 			}
 			else
 			{
 
 				animator.SetBool("grabweapon", false);
-				yield return new WaitForSeconds(2);
+				yield return new WaitForSeconds(0.7f);
 				weaponEquiped = false;
 			}
 
-			//after 2 seconds
+			//after 1 seconds
 			canAttack = true;
 			changingWeapon = false;
-		}
 
+
+	}
+
+	public void Block(bool click, bool release)
+	{
+		if(click && !isBlocking)
+		{
+			isBlocking = true;
+			//animate
+		}
+		else if (release && isBlocking)
+		{
+			isBlocking = false;
+		}
 	}
 
 	public void ThrowMace()

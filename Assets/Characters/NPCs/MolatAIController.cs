@@ -40,7 +40,7 @@ public class MolatAIController : MonoBehaviour {
 
 			if(distanceToTarget <=attackRadius && !isAttacking)
 			{
-				isAttacking = false;
+				isAttacking = true;
 
 				molat.ThrowMace();
 			}

@@ -2431,7 +2431,7 @@ MonoBehaviour:
   damageWithMaceThrow: 9
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
     type: 2}
-  projectileSocket: {fileID: 0}
+  projectileSocket: {fileID: 1392419999587006}
   myaudiosource: {fileID: 82840315541528428}
   chest: {fileID: 4888611392811082}
   shield: {fileID: 4937353594628518}
@@ -2556,8 +2556,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  attackRadius: 10.07
-  chaseRadius: 2.36
+  attackRadius: 3
+  chaseRadius: 10
   m_CurrentState: 0
 --- !u!114 &114931508843609234
 MonoBehaviour:
