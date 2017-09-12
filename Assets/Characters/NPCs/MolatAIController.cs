@@ -15,14 +15,14 @@ public class MolatAIController : MonoBehaviour {
 	[Header("Animation Settings")]
 	[SerializeField] private CurrentState m_CurrentState;
 
-	Molat molat;
+	Molat m_Molat;
 	bool isAttacking = false;
 
 
 	// Use this for initialization
 	void Start () {
 		agent = GetComponent<NavMeshAgent>();
-		molat = GetComponent<Molat>();
+		m_Molat = GetComponent<Molat>();
 		target = GameObject.FindGameObjectWithTag("Player").transform;
 		agent.updateRotation = false;
 		agent.updatePosition = true;
@@ -38,31 +38,41 @@ public class MolatAIController : MonoBehaviour {
 			
 			float distanceToTarget = Vector3.Distance(target.position, transform.position);
 
-			if(distanceToTarget <=attackRadius && !isAttacking)
+			if(distanceToTarget <=attackRadius)
 			{
 				isAttacking = true;
 
-				molat.ThrowMace();
+			}
+			else
+			{
+				isAttacking = false;
 			}
 
 			if (distanceToTarget <= chaseRadius)
 			{
 				agent.SetDestination(target.position);
-				molat.targetDirection = agent.desiredVelocity.normalized;
-				molat.lookAtDirection = agent.desiredVelocity.normalized;
+				m_Molat.targetDirection = agent.desiredVelocity.normalized;
+				m_Molat.lookAtDirection = (target.position - transform.position).normalized;
 			}
 			else
 			{
 				agent.SetDestination(transform.position);
-				molat.targetDirection = Vector3.zero;
-				molat.lookAtDirection = Vector3.zero;
+				m_Molat.targetDirection = Vector3.zero;
+				m_Molat.lookAtDirection = Vector3.zero;
 			}
 		}
 		else
 		{
-			molat.targetDirection = Vector3.zero;
-			molat.lookAtDirection = Vector3.zero;
+			m_Molat.targetDirection = Vector3.zero;
+			m_Molat.lookAtDirection = Vector3.zero;
 		}
+
+		if(!m_Molat.isWeaponEquiped)
+		{
+			m_Molat.ToggleEquipWeapon();
+		}
+
+		m_Molat.Attack(isAttacking);
 
 
 

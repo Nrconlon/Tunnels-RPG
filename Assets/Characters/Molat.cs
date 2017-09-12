@@ -112,6 +112,8 @@ public class Molat : MonoBehaviour, IDamageable
 
 	void FixedUpdate()
 	{
+		lookAtDirection.Normalize();
+		targetDirection.Normalize();
 		TestGround(); //set grounded to correct state
 		if (freeToMove())
 		{
@@ -157,6 +159,7 @@ public class Molat : MonoBehaviour, IDamageable
 	private void Update()
 	{
 		HandleStamina();
+		lookAtDirection.Normalize();
 
 		if (!isClimbing)
 		{
@@ -289,6 +292,7 @@ public class Molat : MonoBehaviour, IDamageable
 				myaudiosource.Play();
 				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
 				animator.SetBool("jump", true);
+				StartCoroutine(checkIfLanded());
 				return true;
 			}
 		}
@@ -297,10 +301,20 @@ public class Molat : MonoBehaviour, IDamageable
 
 	}
 
-	/// <summary>
-	/// if(grounded && !isClimbing && !isJumping)
-	/// </summary>
-	bool freeToMove()
+	private IEnumerator checkIfLanded()
+	{
+		yield return new WaitForSeconds(1f);
+		if(grounded && isJumping)
+		{
+			Landed();
+		}
+	}
+
+
+		/// <summary>
+		/// if(grounded && !isClimbing && !isJumping)
+		/// </summary>
+		bool freeToMove()
 	{
 		if(grounded && !isClimbing && !isJumping)
 		{
@@ -341,9 +355,9 @@ public class Molat : MonoBehaviour, IDamageable
 			groundContactNormal = Vector3.up;
 		}
 
-		if(!previouslyGrounded && grounded && isJumping)
+		if(!previouslyGrounded && grounded)
 		{
-			isJumping = false;
+			Landed();
 		}
 		animator.SetBool("grounded", grounded);
 	}
@@ -356,14 +370,14 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	void grabshield()
 	{
-		shield.parent = lefthandpos;
-		shield.position = lefthandpos.position;
-		shield.rotation = lefthandpos.rotation;
-		weaponEquiped = true;
-		myaudiosource.clip = equip2sound;
-		myaudiosource.loop = false;
-		myaudiosource.pitch = 0.9f + 0.2f * Random.value;
-		myaudiosource.Play();
+		//shield.parent = lefthandpos;
+		//shield.position = lefthandpos.position;
+		//shield.rotation = lefthandpos.rotation;
+		//weaponEquiped = true;
+		//myaudiosource.clip = equip2sound;
+		//myaudiosource.loop = false;
+		//myaudiosource.pitch = 0.9f + 0.2f * Random.value;
+		//myaudiosource.Play();
 	}
 	void grabweapon()
 	{
@@ -379,13 +393,13 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	void holstershield()
 	{
-		shield.parent = chestposshield;
-		shield.position = chestposshield.position;
-		shield.rotation = chestposshield.rotation;
-		myaudiosource.clip = holster1sound;
-		myaudiosource.loop = false;
-		myaudiosource.pitch = 0.9f + 0.2f * Random.value;
-		myaudiosource.Play();
+		//shield.parent = chestposshield;
+		//shield.position = chestposshield.position;
+		//shield.rotation = chestposshield.rotation;
+		//myaudiosource.clip = holster1sound;
+		//myaudiosource.loop = false;
+		//myaudiosource.pitch = 0.9f + 0.2f * Random.value;
+		//myaudiosource.Play();
 
 	}
 	void holsterweapon()
@@ -399,6 +413,8 @@ public class Molat : MonoBehaviour, IDamageable
 		myaudiosource.pitch = 0.9f + 0.2f * Random.value;
 		myaudiosource.Play();
 	}
+
+	public bool isWeaponEquiped { get { return weaponEquiped; } }
 	public void ToggleEquipWeapon()
 	{
 		if (!changingWeapon)
@@ -429,8 +445,6 @@ public class Molat : MonoBehaviour, IDamageable
 			//after 1 seconds
 			canAttack = true;
 			changingWeapon = false;
-
-
 	}
 
 	public void Block(bool click, bool release)
