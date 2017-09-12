@@ -57,6 +57,8 @@ public class Molat : MonoBehaviour, IDamageable
 	private float currentStamina;
 	private bool canAttackCurrent;
 	private float drag;
+	private bool lastTailJumpToggle = false;
+	private bool lastJumpToggle = false;
 
 	private bool weaponEquiped = false;
 	private bool changingWeapon = false;
@@ -135,18 +137,14 @@ public class Molat : MonoBehaviour, IDamageable
 				if (Mathf.Abs(AngleOfLookDirection()) > fullSpeedMaxDegrees)
 				{
 					currentSpeed = straifSpeed;
-					currentCanSprint = false;
-					isSprinting = false;
 				}
 				else if (isSprinting)
 				{
 					currentSpeed = sprintSpeed;
-					currentCanSprint = true;
 				}
 				else
 				{
 					currentSpeed = speed;
-					currentCanSprint = true;
 				}
 
 				Vector3 targetVelocity = targetDirection;
@@ -256,11 +254,12 @@ public class Molat : MonoBehaviour, IDamageable
 	//Called per frame from controller
 	public bool TailSprint(bool toggle, Vector3 direction)
 	{
+		
 		if (toggle && canSprint && freeToMove())
 		{
 			//When out of stamina, update() forces us to stop sprinting.
 			//if we are not sprinting, we need enough for a jump to start again
-			if (!isSprinting && currentStamina > tailJumpCost)
+			if (!isSprinting && currentStamina > tailJumpCost && lastTailJumpToggle == false)
 			{
 				//We only come in here once.  This is an action.
 				isSprinting = true;
@@ -270,6 +269,7 @@ public class Molat : MonoBehaviour, IDamageable
 				myaudiosource.loop = false;
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
+				print("ThisGotCalled");
 				m_RigidBody.AddForce(direction.x * tailJumpPower, CalculateJumpVerticalSpeed(tailJumpHeight), direction.z * tailJumpPower);
 			}
 			else if (isSprinting && currentStamina > sprintCostPS && AngleOfLookDirection() < fullSpeedMaxDegrees)
@@ -285,6 +285,7 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			isSprinting = false;
 		}
+		lastTailJumpToggle = toggle;
 		return isSprinting;
 	}
 
@@ -293,7 +294,7 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(toggle)
 		{
-			if (canJump && (grounded || isClimbing) && !isJumping && currentStamina > jumpCost)
+			if (canJump && (grounded || isClimbing) && !isJumping && currentStamina > jumpCost && !lastJumpToggle)
 			{
 				//We only come in here once.  This is an action.
 				isJumping = true;
@@ -305,9 +306,11 @@ public class Molat : MonoBehaviour, IDamageable
 				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
 				animator.SetBool("jump", true);
 				StartCoroutine(checkIfLanded());
+				lastJumpToggle = toggle;
 				return true;
 			}
 		}
+		lastJumpToggle = toggle;
 		animator.SetBool("jump", false);
 		return false;
 
