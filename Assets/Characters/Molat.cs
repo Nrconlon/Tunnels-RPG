@@ -8,9 +8,9 @@ public class Molat : MonoBehaviour, IDamageable
 
 	[Header("Stats")]
 	[SerializeField] float maxHealth = 100f;
-	[SerializeField] float damage = 50f;
 	[SerializeField] float maxStamina = 100f;
 	[SerializeField] float stamRechargePS = 20f;
+	[SerializeField] float Power = 0.2f;
 
 	[Header("Movement")]
 	[SerializeField] float speed = 6f;
@@ -19,6 +19,13 @@ public class Molat : MonoBehaviour, IDamageable
 	[Range(0f, 180f)] [SerializeField] float fullSpeedMaxDegrees = 80f;
 	[SerializeField] float maxVelocityChange = 10.0f;
 	[SerializeField] float climbSpeed = 8f;
+
+	[Header("damage and bleed")]
+	[SerializeField] float clawDamage = 10f;
+	[SerializeField] float bleedBluntPercent = 0f;
+	[SerializeField] float bleedSpikedPercent = 0.2f;
+	[SerializeField] float bleedSharpPercent = 0.5f;
+	[SerializeField] float attackLength = 1.2f;
 
 	[Header("Abilities")]
 	[SerializeField] bool canJump = true;
@@ -45,6 +52,7 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float damageWithMaceThrow = 9.0f;
 	public GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
+	[SerializeField] Weapon myWeapon;
 
 
 	private float currentStamRechargePS;
@@ -59,6 +67,7 @@ public class Molat : MonoBehaviour, IDamageable
 	private float drag;
 	private bool lastTailJumpToggle = false;
 	private bool lastJumpToggle = false;
+	private float bleed = 0f;
 
 	private bool weaponEquiped = false;
 	private bool changingWeapon = false;
@@ -96,6 +105,8 @@ public class Molat : MonoBehaviour, IDamageable
 	float turnAmount;
 	float torwardAmount;
 	private bool isBlocking;
+	private float swingTimer = 0f;
+	GameObject mostRecentAttacker;
 
 	void Start()
 	{
@@ -119,6 +130,9 @@ public class Molat : MonoBehaviour, IDamageable
 		currentCanSprint = true;
 		canAttackCurrent = canAttack;
 		grounded = true;
+
+		myWeapon.instigator = gameObject;
+		mostRecentAttacker = gameObject;
 	}
 
 
@@ -231,7 +245,8 @@ public class Molat : MonoBehaviour, IDamageable
 
 	public bool Attack(bool toogle)
 	{
-		if(toogle)
+
+		if (toogle)
 		{
 			if (canAttack && canAttackCurrent && !isClimbing)
 			{
@@ -240,6 +255,9 @@ public class Molat : MonoBehaviour, IDamageable
 				currentState = animator.GetCurrentAnimatorStateInfo(2);
 				if (currentState.length == 1)
 				{
+					myWeapon.currentDamage = myWeapon.baseDamage * Power;
+					myWeapon.currentForce = myWeapon.force * Power;
+					myWeapon.isActivated = true;
 					animator.SetFloat("attackType", 0);
 					animator.SetBool("attack", true);
 					return true;
@@ -269,7 +287,6 @@ public class Molat : MonoBehaviour, IDamageable
 				myaudiosource.loop = false;
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
-				print("ThisGotCalled");
 				m_RigidBody.AddForce(direction.x * tailJumpPower, CalculateJumpVerticalSpeed(tailJumpHeight), direction.z * tailJumpPower);
 			}
 			else if (isSprinting && currentStamina > sprintCostPS && AngleOfLookDirection() < fullSpeedMaxDegrees)
@@ -462,6 +479,7 @@ public class Molat : MonoBehaviour, IDamageable
 			changingWeapon = false;
 	}
 
+	//TODO add block animation(which should be push)
 	public void Block(bool click, bool release)
 	{
 		if(click && !isBlocking)
@@ -475,16 +493,38 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
+	//TODO change to throw weapon, and make it toss whatever weapon type im holding
 	public void ThrowMace()
 	{
 		GameObject projectileMace = Instantiate(throwingWeapon, projectileSocket.transform.position, Quaternion.identity);
 		FlyingMace maceComponent = projectileMace.GetComponent<FlyingMace>();
-		maceComponent.damageCaused = damageWithMaceThrow;
+		maceComponent.currentDamage = damageWithMaceThrow;
 		projectileMace.GetComponent<Rigidbody>().velocity = lookAtDirection * maceComponent.projectileSpeed;
 	}
 
-	public void TakeDamage(float damage)
+	public void TakeDamage(float damage, float force, EDamageType damageType, GameObject instigator)
 	{
 		currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
+		switch(damageType)
+		{
+			case EDamageType.blunt:
+				bleed = damage * bleedBluntPercent;
+				break;
+			case EDamageType.spiked:
+				bleed = damage * bleedSpikedPercent;
+				break;
+			case EDamageType.sharp:
+				bleed = damage * bleedSharpPercent;
+				break;
+		}
+	}
+
+	public void ActivateWeapon()
+	{
+		myWeapon.Activate();
+	}
+	public void DeactivateWeapon()
+	{
+		myWeapon.Deactivate();
 	}
 }

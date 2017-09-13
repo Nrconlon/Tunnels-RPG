@@ -2324,10 +2324,18 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.41637057
-        functionName: rayfire
+      - time: 0.36132774
+        functionName: ActivateWeapon
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: bc99bba037f3052419d7e5b43c516041,
+        objectReferenceParameter: {fileID: 11500000, guid: 8dd7802a835062e4190ccf36fd8e5bbd,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.41992155
+        functionName: DeactivateWeapon
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 8dd7802a835062e4190ccf36fd8e5bbd,
           type: 3}
         floatParameter: 0
         intParameter: 0
