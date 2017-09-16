@@ -8,9 +8,9 @@ public class Molat : MonoBehaviour, IDamageable
 
 	[Header("Stats")]
 	[SerializeField] float maxHealth = 100f;
-	[SerializeField] float maxStamina = 100f;
-	[SerializeField] float stamRechargePS = 20f;
-	[SerializeField] float Power = 0.2f;
+	[SerializeField] float power = 0.2f;
+	[SerializeField] int level = 1;
+
 
 	[Header("Movement")]
 	[SerializeField] float speed = 6f;
@@ -20,12 +20,25 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float maxVelocityChange = 10.0f;
 	[SerializeField] float climbSpeed = 8f;
 
-	[Header("damage and bleed")]
-	[SerializeField] float clawDamage = 10f;
+	[Header("Stamina")]
+	[SerializeField] float maxStamina = 50f;
+	[SerializeField] float stamRechargePS = 10f;
+	[SerializeField] float attackCost = -20f;
+	[SerializeField] float tailJumpCost = -10f;
+	[SerializeField] float sprintCostPS = -5f;
+	[SerializeField] float climbCostPS = -5f;
+	[SerializeField] float jumpCost = -10f;
+
+	[Header("Damage and Bleed")]
+	[SerializeField] float clawDamage = 20f;
 	[SerializeField] float bleedBluntPercent = 0f;
 	[SerializeField] float bleedSpikedPercent = 0.2f;
 	[SerializeField] float bleedSharpPercent = 0.5f;
 	[SerializeField] float attackLength = 1.2f;
+	[SerializeField] float healingRatioPS = 1.2f;
+	[SerializeField] float percentDamgeCauseKnockback = 0.4f;
+	[SerializeField] float forceThreshold = 30;
+
 
 	[Header("Abilities")]
 	[SerializeField] bool canJump = true;
@@ -34,12 +47,11 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] bool canClimb = false;
 
 	[Header("Jumping")]
-	[SerializeField] float sprintCostPS = 5f;
-	[SerializeField] float climbCostPS = 5f;
-	[SerializeField] float tailJumpCost = 5f;
+	
 	[SerializeField] float tailJumpHeight = 3.0f;
 	[SerializeField] float tailJumpPower = 1000.0f;
-	[SerializeField] float jumpCost = 10f;
+	[SerializeField] float tailJumpDuration = 0.4f;
+
 	[SerializeField] float jumpHeight = 13.0f;
 	[SerializeField] float jumpPower = 2.0f;
 	[SerializeField] LayerMask mask;
@@ -48,29 +60,35 @@ public class Molat : MonoBehaviour, IDamageable
 	[Header("Other")]
 	[SerializeField] float gravity = 18;
 	[SerializeField] float animDampTime = 2;
-	[SerializeField] float runAnimationRatio = 0.3f;
 	[SerializeField] float damageWithMaceThrow = 9.0f;
 	public GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
-	[SerializeField] Weapon myWeapon;
+	[SerializeField] GameObject weaponObject;
 
 
-	private float currentStamRechargePS;
+	private Weapon myWeapon;
 	private float currentSpeed;
-	private bool currentCanSprint;
 	private bool isJumping;
 	private bool isSprinting;
 	private bool isClimbing;
+	private bool isSliding;
 	private float currentHealth;
 	private float currentStamina;
-	private bool canAttackCurrent;
 	private float drag;
 	private bool lastTailJumpToggle = false;
 	private bool lastJumpToggle = false;
+	private float slideTimer;
+	private Vector3 slideDirection;
+	private float slideSpeed;
+	private float slideDuration;
+
 	private float bleed = 0f;
+	private bool bleeding = false;
+	private bool healing = false;
 
 	private bool weaponEquiped = false;
 	private bool changingWeapon = false;
+	private bool isDead = false;
 	//[SerializeField] Transform target;
 
 
@@ -95,9 +113,11 @@ public class Molat : MonoBehaviour, IDamageable
 
 	private bool grounded;
 
+	public delegate void ActionExpressedDelegate(Action action, GameObject instigator);
+	public ActionExpressedDelegate actionExpressed;
 
 
-	Animator animator;
+	Animator m_Animator;
 	Rigidbody m_RigidBody;
 	private CapsuleCollider m_Capsule;
 	private bool previouslyGrounded;
@@ -108,11 +128,15 @@ public class Molat : MonoBehaviour, IDamageable
 	private float swingTimer = 0f;
 	GameObject mostRecentAttacker;
 
+
 	void Start()
 	{
-		animator = GetComponent<Animator>();
+		m_Animator = GetComponent<Animator>();
 		m_RigidBody = GetComponent<Rigidbody>();
 		m_Capsule = GetComponent<CapsuleCollider>();
+		GameObject weaponClone = Instantiate(weaponObject, weapon.transform.position, weapon.transform.rotation);
+		weaponClone.transform.parent = weapon;
+		myWeapon = weaponClone.GetComponent<Weapon>();
 		m_RigidBody.freezeRotation = true;
 		m_RigidBody.useGravity = false;
 		drag = m_RigidBody.drag;
@@ -120,19 +144,18 @@ public class Molat : MonoBehaviour, IDamageable
 		currentStamina = maxStamina;
 		currentHealth = maxHealth;
 		currentSpeed = speed;
-		currentStamRechargePS = stamRechargePS;
 		targetDirection = Vector3.zero;
 		lookAtDirection = Vector3.zero;
 		isJumping = false;
 		isSprinting = false;
 		isClimbing = false;
 		isBlocking = false;
-		currentCanSprint = true;
-		canAttackCurrent = canAttack;
 		grounded = true;
 
 		myWeapon.instigator = gameObject;
 		mostRecentAttacker = gameObject;
+
+
 	}
 
 
@@ -175,13 +198,13 @@ public class Molat : MonoBehaviour, IDamageable
 				Vector3 currentmagnitude = new Vector3(x, 0, z);
 				float velocityanim = Mathf.Clamp01(currentmagnitude.magnitude) * 2; //Take out times 2 when walking is added, as well as edit anim speeds (straife is too fast for walk)+
 
-				animator.SetFloat("speed", velocityanim, animDampTime, 0.2f);
-				animator.SetFloat("movementAngle", AngleOfLookDirection(), animDampTime, 0.2f);
+				m_Animator.SetFloat("speed", velocityanim, animDampTime, 0.2f);
+				m_Animator.SetFloat("movementAngle", AngleOfLookDirection(), animDampTime, 0.2f);
 			}
 			else
 			{
-				animator.SetFloat("speed", 0, animDampTime * 2, 0.2f);
-				animator.SetFloat("movementAngle", 0);
+				m_Animator.SetFloat("speed", 0, animDampTime * 2, 0.2f);
+				m_Animator.SetFloat("movementAngle", 0);
 			}
 		}
 		//Gravity
@@ -191,35 +214,39 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 
 
+
 	private void Update()
 	{
-		HandleStamina();
-		lookAtDirection.Normalize();
-
-		if (!isClimbing)
+		if (!isDead)
 		{
-			if (lookAtDirection != Vector3.zero)
+			HandleDeath();
+			HandleStamina();
+			lookAtDirection.Normalize();
+
+			if (isSliding)
 			{
-				Quaternion lookrotation2 = Quaternion.LookRotation(lookAtDirection, Vector3.up);
-				lookrotation2.x = 0;
-				lookrotation2.z = 0;
-				transform.rotation = lookrotation2;
-			}				
-				//if angle <30 && > -30 animation speed = 1
-				//abs angle < 45    45 = 2   0 = 1    speed = absAngle/45 + 1
-			
-			//Vector3 localmagnitude = transform.InverseTransformDirection(currentmagnitude);
-			//old code for rotation.
-			//if(weaponEquiped)
-			//Vector3 localTarget = transform.InverseTransformPoint(target.position);
-			//float addfloat = (Mathf.Atan2(localTarget.x, localTarget.z));
-			//Vector3 relativePos = target.transform.position - transform.position;
-			//Quaternion lookrotation = Quaternion.LookRotation(relativePos, Vector3.up);
-			//lookrotation.x = 0;
-			//lookrotation.z = 0;
-			//animator.SetFloat("hor", (localmagnitude.x) + (addfloat * 2), dampTime, 0.8f);
-			//animator.SetFloat("ver", (localmagnitude.z), dampTime, 0.8f);
-			//transform.rotation = Quaternion.Lerp(transform.rotation, lookrotation, Time.deltaTime * rotateSpeed);
+				if (slideTimer > 0)
+				{
+					m_RigidBody.velocity = Vector3.Lerp(Vector3.zero, slideSpeed * slideDirection, slideTimer);
+					slideTimer -= Time.deltaTime / slideDuration;
+				}
+				else
+				{
+					isSliding = false;
+				}
+
+			}
+
+			if (!isClimbing)
+			{
+				if (lookAtDirection != Vector3.zero)
+				{
+					Quaternion lookrotation2 = Quaternion.LookRotation(lookAtDirection, Vector3.up);
+					lookrotation2.x = 0;
+					lookrotation2.z = 0;
+					transform.rotation = lookrotation2;
+				}
+			}
 		}
 	}
 
@@ -230,9 +257,78 @@ public class Molat : MonoBehaviour, IDamageable
 		return Vector2.SignedAngle(A,B);
 	}
 
+
 	void HandleStamina()
 	{
+		if(currentStamina != maxStamina)
+		{
+			staminaOnTick(stamRechargePS);
+		}
+		if (isSprinting)
+		{
+			if(!staminaOnTick(sprintCostPS))
+			{
+				isSprinting = false;
+			}
+		}
+		if (isClimbing)
+		{
+			if (!staminaOnTick(climbCostPS))
+			{
+				isClimbing = false;
+			}
+		}
+	}
+	bool staminaOnTick(float staminaUseOrGain)
+	{
+		float stamUseOrGain = staminaUseOrGain * Time.deltaTime;
+		if ((currentStamina + stamUseOrGain) < 0)
+		{
+			//out of stamina, play sound?
+			return false;
+		}
+		if ((currentStamina + stamUseOrGain) > maxStamina)
+		{
+			//staminaCost full
+			currentStamina = maxStamina;
+			return false;
+		}
+		currentStamina = Mathf.Clamp(currentStamina + stamUseOrGain, 0f, maxStamina);
+		return true;
+	}
+	bool useAbility(float staminaCost)
+	{
+		if ((currentStamina + staminaCost) < 0 || isDead)
+		{
+			//out of stamina, play sound?
+			return false;
+		}
+		else
+		{
+			currentStamina = Mathf.Clamp(currentStamina + staminaCost, 0f, maxStamina);
+			print(currentStamina);
+			return true;
+		}
+	}
 
+	void HandleDeath()
+	{
+		if(currentHealth <=0)
+		{
+			isDead = true;
+			ExpressAction(Action.Die);
+			m_Animator.SetBool("isDead", true);
+		}
+	}
+
+	public bool IsDead { get { return isDead; } }
+
+	public float staminaAsPercentage
+	{
+		get
+		{
+			return currentStamina / maxStamina;
+		}
 	}
 
 	public float healthAsPercentage {
@@ -248,24 +344,21 @@ public class Molat : MonoBehaviour, IDamageable
 
 		if (toogle)
 		{
-			if (canAttack && canAttackCurrent && !isClimbing)
+			if (!isDead && canAttack && !isClimbing && weaponEquiped)
 			{
-				canAttackCurrent = false;
-				AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
-				currentState = animator.GetCurrentAnimatorStateInfo(2);
-				if (currentState.length == 1)
+				AnimatorStateInfo currentState = m_Animator.GetCurrentAnimatorStateInfo(2);
+				if (currentState.length == 1 && useAbility(attackCost))
 				{
-					myWeapon.currentDamage = myWeapon.baseDamage * Power;
-					myWeapon.currentForce = myWeapon.force * Power;
+					ExpressAction(Action.Attack);
+					myWeapon.currentDamage = myWeapon.baseDamage * power;
+					myWeapon.currentForce = myWeapon.force * power;
 					myWeapon.isActivated = true;
-					animator.SetFloat("attackType", 0);
-					animator.SetBool("attack", true);
+					m_Animator.SetFloat("attackType", 0);
+					StartCoroutine(CoTickAnimation("attack"));
 					return true;
 				}
 			}
 		}
-		canAttackCurrent = true;
-		animator.SetBool("attack", false);
 		return false;
 	}
 
@@ -277,17 +370,20 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			//When out of stamina, update() forces us to stop sprinting.
 			//if we are not sprinting, we need enough for a jump to start again
-			if (!isSprinting && currentStamina > tailJumpCost && lastTailJumpToggle == false)
+			if (!isSprinting && lastTailJumpToggle == false && useAbility(tailJumpCost))
 			{
 				//We only come in here once.  This is an action.
 				isSprinting = true;
+				ExpressAction(Action.tailJump);
 
+				StartCoroutine(CoTickAnimation("tailJump"));
 				//tailJump
 				myaudiosource.clip = jumpclip2;
 				myaudiosource.loop = false;
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
-				m_RigidBody.AddForce(direction.x * tailJumpPower, CalculateJumpVerticalSpeed(tailJumpHeight), direction.z * tailJumpPower);
+				direction.y = 0f;
+				StartSliding(direction, tailJumpPower, tailJumpDuration);
 			}
 			else if (isSprinting && currentStamina > sprintCostPS && AngleOfLookDirection() < fullSpeedMaxDegrees)
 			{
@@ -306,13 +402,21 @@ public class Molat : MonoBehaviour, IDamageable
 		return isSprinting;
 	}
 
+	private IEnumerator CoTickAnimation(string animName)
+	{
+		m_Animator.SetBool(animName, true);
+		yield return new WaitForSeconds(0.1f);
+		m_Animator.SetBool(animName, false);
+	}
+
 	//called per frame from controller when pressed
 	public bool Jump(bool toggle, Vector3 direction)
 	{
 		if(toggle)
 		{
-			if (canJump && (grounded || isClimbing) && !isJumping && currentStamina > jumpCost && !lastJumpToggle)
+			if (!isDead && canJump && (grounded || isClimbing) && !isJumping && !lastJumpToggle && useAbility(jumpCost))
 			{
+				ExpressAction(Action.Jump);
 				//We only come in here once.  This is an action.
 				isJumping = true;
 
@@ -321,14 +425,13 @@ public class Molat : MonoBehaviour, IDamageable
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
 				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
-				animator.SetBool("jump", true);
+				StartCoroutine(CoTickAnimation("jump"));
 				StartCoroutine(checkIfLanded());
 				lastJumpToggle = toggle;
 				return true;
 			}
 		}
 		lastJumpToggle = toggle;
-		animator.SetBool("jump", false);
 		return false;
 
 	}
@@ -348,7 +451,7 @@ public class Molat : MonoBehaviour, IDamageable
 		/// </summary>
 		bool freeToMove()
 	{
-		if(grounded && !isClimbing && !isJumping)
+		if(!isDead && grounded && !isClimbing && !isJumping)
 		{
 			return true;
 		}
@@ -361,6 +464,7 @@ public class Molat : MonoBehaviour, IDamageable
 	void Landed()
 	{
 		isJumping = false;
+
 	}
 
 	void TestGround()
@@ -391,7 +495,7 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			Landed();
 		}
-		animator.SetBool("grounded", grounded);
+		m_Animator.SetBool("grounded", grounded);
 	}
 
 	float CalculateJumpVerticalSpeed(float height)
@@ -449,7 +553,7 @@ public class Molat : MonoBehaviour, IDamageable
 	public bool isWeaponEquiped { get { return weaponEquiped; } }
 	public void ToggleEquipWeapon()
 	{
-		if (!changingWeapon)
+		if (!isDead && !changingWeapon)
 		{
 			StartCoroutine(CoToggleEquipWeapon());
 		}
@@ -462,14 +566,15 @@ public class Molat : MonoBehaviour, IDamageable
 
 			if (!weaponEquiped)
 			{
-				animator.SetBool("grabweapon", true);
+				ExpressAction(Action.EquipWeapon);
+				m_Animator.SetBool("grabweapon", true);
 				yield return new WaitForSeconds(1);
 				weaponEquiped = true;
 			}
 			else
 			{
-
-				animator.SetBool("grabweapon", false);
+				ExpressAction(Action.UnequipWeapon);
+				m_Animator.SetBool("grabweapon", false);
 				yield return new WaitForSeconds(0.7f);
 				weaponEquiped = false;
 			}
@@ -478,6 +583,17 @@ public class Molat : MonoBehaviour, IDamageable
 			canAttack = true;
 			changingWeapon = false;
 	}
+
+
+	private void StartSliding(Vector3 Direction, float speed, float duration)
+	{
+		slideDirection = Direction;
+		slideSpeed = speed;
+		slideDuration = duration;
+		slideTimer = 1f;
+		isSliding = true;
+	}
+
 
 	//TODO add block animation(which should be push)
 	public void Block(bool click, bool release)
@@ -496,14 +612,29 @@ public class Molat : MonoBehaviour, IDamageable
 	//TODO change to throw weapon, and make it toss whatever weapon type im holding
 	public void ThrowMace()
 	{
-		GameObject projectileMace = Instantiate(throwingWeapon, projectileSocket.transform.position, Quaternion.identity);
-		FlyingMace maceComponent = projectileMace.GetComponent<FlyingMace>();
-		maceComponent.currentDamage = damageWithMaceThrow;
-		projectileMace.GetComponent<Rigidbody>().velocity = lookAtDirection * maceComponent.projectileSpeed;
+		if(!isDead && !isClimbing)
+		{
+			GameObject projectileMace = Instantiate(throwingWeapon, projectileSocket.transform.position, Quaternion.identity);
+			FlyingMace maceComponent = projectileMace.GetComponent<FlyingMace>();
+			maceComponent.currentDamage = damageWithMaceThrow;
+			projectileMace.GetComponent<Rigidbody>().velocity = lookAtDirection * maceComponent.projectileSpeed;
+		}
+
 	}
 
-	public void TakeDamage(float damage, float force, EDamageType damageType, GameObject instigator)
+
+	public void TakeDamage(float damage, float force, Vector3 direction, EDamageType damageType, GameObject instigator)
 	{
+		if(currentHealth * percentDamgeCauseKnockback < damage)
+		{
+			//heel over
+
+		}
+		if(force > forceThreshold)
+		{
+			//direction.y = 0f;
+			StartSliding(direction, force, 0.2f);
+		}
 		currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
 		switch(damageType)
 		{
@@ -526,5 +657,18 @@ public class Molat : MonoBehaviour, IDamageable
 	public void DeactivateWeapon()
 	{
 		myWeapon.Deactivate();
+
 	}
+
+	private void ExpressAction(Action action)
+	{
+		if(actionExpressed != null)
+		{
+			actionExpressed(action, gameObject);
+		}
+	}
+
+
 }
+
+public enum Action {Attack,Die,Jump,tailJump,Parry,ThrowWeapon,EquipWeapon,UnequipWeapon};

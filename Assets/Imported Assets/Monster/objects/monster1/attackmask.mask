@@ -37,25 +37,25 @@ AvatarMask:
   - m_Path: hips
     m_Weight: 1
   - m_Path: hips/L_leg
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/L_leg/L_knee
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/L_leg/L_knee/L_ankle
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/L_leg/L_knee/L_ankle/L_foot
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/L_leg/L_knee/L_ankle/L_foot/L_toes
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/R_leg
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/R_leg/R_knee
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/R_leg/R_knee/R_ankle
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/R_leg/R_knee/R_ankle/R_foot
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/R_leg/R_knee/R_ankle/R_foot/R_toes
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: hips/spine
     m_Weight: 1
   - m_Path: hips/spine/chest
@@ -145,13 +145,13 @@ AvatarMask:
   - m_Path: hips/spine/chest/shield
     m_Weight: 1
   - m_Path: L_FOOT
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: L_FOOT/L_ankle_Goal
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: L_leg_Pole
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: lookat
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: meshes
     m_Weight: 1
   - m_Path: meshes/armor
@@ -159,8 +159,8 @@ AvatarMask:
   - m_Path: meshes/body
     m_Weight: 1
   - m_Path: R_FOOT
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: R_FOOT/R_ankle_Goal
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: R_leg_Pole
-    m_Weight: 1
+    m_Weight: 0

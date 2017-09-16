@@ -6,24 +6,27 @@ public class Weapon : MonoBehaviour {
 
 	public float baseDamage = 10f;
 	public float force = 250;
-	public float currentForce = 0;
-	public float currentDamage = 0;
-	public GameObject instigator;
-	public bool isActivated;
-	public EDamageType damageType;
+	[HideInInspector] public float currentForce = 0;
+	[HideInInspector] public float currentDamage = 0;
+	[HideInInspector] public GameObject instigator;
+	[HideInInspector] public bool isActivated;
+	[HideInInspector] public EDamageType damageType;
 	private List<GameObject> targetsHit = new List<GameObject>();
 	private bool wasActivated;
 
 	protected void OnTriggerEnter(Collider collider)
 	{
-		GameObject hitObject = collider.gameObject;
-		if (hitObject != instigator && isActivated && !targetsHit.Contains(hitObject))
+		if(instigator)
 		{
-			Component damageableComponent = hitObject.GetComponent(typeof(IDamageable));
-			if (damageableComponent)
+			GameObject hitObject = collider.gameObject;
+			if (hitObject != instigator && isActivated && !targetsHit.Contains(hitObject))
 			{
-				targetsHit.Add(hitObject);
-				(damageableComponent as IDamageable).TakeDamage(currentDamage, currentForce, damageType, instigator);
+				Component damageableComponent = hitObject.GetComponent(typeof(IDamageable));
+				if (damageableComponent)
+				{
+					targetsHit.Add(hitObject);
+					(damageableComponent as IDamageable).TakeDamage(currentDamage, currentForce, instigator.transform.forward, damageType, instigator);
+				}
 			}
 		}
 	}
