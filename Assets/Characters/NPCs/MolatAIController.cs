@@ -8,26 +8,35 @@ using UnityEngine.AI;
 public class MolatAIController : MonoBehaviour {
 	[Header("NavMesh Settings / Target")]
 	 NavMeshAgent agent;
-	public Transform target;
 	[SerializeField] float attackRadius = 3f;
-	[SerializeField] float chaseRadius = 10f;
+	[SerializeField] float visionRadius = 10f;
+	[SerializeField] float maxVisionAngle = 90f;
+	[SerializeField] Transform lookFrom;
 
-	[Header("Animation Settings")]
-	[SerializeField] private CurrentState m_CurrentState;
+	public StateEnum preferedState = StateEnum.Idle;
+	public Action currentAction;
 
 	Molat m_Molat;
-	List<Molat> mList_EnemyMolats = new List<Molat>();
+	[HideInInspector] public Molat currentTarget;
+	[HideInInspector] public List<Molat> mList_EnemyMolats = new List<Molat>();
+	[HideInInspector] public List<Spider> mList_EnemySpiders = new List<Spider>();
+	Dictionary<GameObject, bool> _objectsInRangeDictionary = new Dictionary<GameObject, bool>();
+	private bool SpiderInSight = false;
 	bool isAttacking = false;
+	bool isSprinting = false;
+	bool isJumping = false;
+	private AIState _AIState;
+
 
 
 	// Use this for initialization
 	void Start () {
 		agent = GetComponent<NavMeshAgent>();
 		m_Molat = GetComponent<Molat>();
-		target = GameObject.FindGameObjectWithTag("Player").transform;
 		agent.updateRotation = false;
 		agent.updatePosition = true;
-		addTarget(target.gameObject);
+		_AIState = CreatePreferedState();
+		_AIState.Initialize(this);
 		//TODO on raycasting vision, add targets;
 	}
 	
@@ -37,98 +46,291 @@ public class MolatAIController : MonoBehaviour {
 		if(m_Molat.IsDead)
 		{
 			agent.enabled = false;
-			SetTarget(transform);
+			SetTarget(null);
 		}
 		else
 		{
+			HandleRayCastVision();
+			//if (target != null && target.position != Vector3.zero)
+			//{
+			//	// && agent.remainingDistance > agent.stoppingDistance
 
-			if (target != null && target.position != Vector3.zero)
-			{
-				// && agent.remainingDistance > agent.stoppingDistance
+			//	float distanceToTarget = Vector3.Distance(target.position, transform.position);
 
-				float distanceToTarget = Vector3.Distance(target.position, transform.position);
+			//	if (distanceToTarget <= attackRadius)
+			//	{
+			//		isAttacking = true;
 
-				if (distanceToTarget <= attackRadius)
-				{
-					isAttacking = true;
+			//	}
+			//	else
+			//	{
+			//		isAttacking = false;
+			//	}
 
-				}
-				else
-				{
-					isAttacking = false;
-				}
+			//	if (distanceToTarget <= visionRadius)
+			//	{
+			//		agent.SetDestination(target.position);
+			//		m_Molat.targetDirection = agent.desiredVelocity.normalized;
+			//		m_Molat.lookAtDirection = (target.position - transform.position).normalized;
+			//		m_Molat.TailSprint(isSprinting, m_Molat.lookAtDirection);
+			//	}
+			//	else
+			//	{
+			//		agent.SetDestination(transform.position);
+			//		m_Molat.targetDirection = Vector3.zero;
+			//		m_Molat.lookAtDirection = Vector3.zero;
+			//	}
+			//}
+			//else
+			//{
+			//	m_Molat.targetDirection = Vector3.zero;
+			//	m_Molat.lookAtDirection = Vector3.zero;
+			//}
 
-				if (distanceToTarget <= chaseRadius)
-				{
-					agent.SetDestination(target.position);
-					m_Molat.targetDirection = agent.desiredVelocity.normalized;
-					m_Molat.lookAtDirection = (target.position - transform.position).normalized;
-				}
-				else
-				{
-					agent.SetDestination(transform.position);
-					m_Molat.targetDirection = Vector3.zero;
-					m_Molat.lookAtDirection = Vector3.zero;
-				}
-			}
-			else
-			{
-				m_Molat.targetDirection = Vector3.zero;
-				m_Molat.lookAtDirection = Vector3.zero;
-			}
+			//if (!m_Molat.isWeaponEquiped)
+			//{
+			//	m_Molat.ToggleEquipWeapon();
+			//}
 
-			if (!m_Molat.isWeaponEquiped)
-			{
-				m_Molat.ToggleEquipWeapon();
-			}
-
-			m_Molat.Attack(isAttacking);
+			//m_Molat.Attack(isAttacking);
+			//m_Molat.Jump(isJumping, Vector3.zero);
 		}
 	}
 
-	void addTarget(GameObject incomingTarget)
-	{
-		Molat targetMolat = incomingTarget.GetComponent<Molat>();
-		if(targetMolat)
-		{
-			mList_EnemyMolats.Add(targetMolat);
-			targetMolat.actionExpressed += expressAction;
-		}
-		//TODO check if spider, add to spider list
-		
-	}
-	void removeTarget(GameObject incomingTarget)
-	{
-		Molat targetMolat = incomingTarget.GetComponent<Molat>();
-		if(mList_EnemyMolats != null)
-		{
-			mList_EnemyMolats.Remove(targetMolat);
-		}
-		targetMolat.actionExpressed -= expressAction;
-	}
 
 	void expressAction(Action action, GameObject instigator)
 	{
 		if (action == Action.Attack)
 		{
-			m_Molat.Jump(true, -m_Molat.lookAtDirection);
+			m_Molat.TailSprint(true, -m_Molat.lookAtDirection);
+		}
+		else if (action == Action.Die)
+		{
+			currentTarget = null;
+			isJumping = true;
+			isAttacking = false;
 		}
 	}
 
-	public void SetTarget(Transform target)
+	public void SetTarget(Molat newTarget)
 	{
-		this.target = target;
+		this.currentTarget = newTarget;
+	}
+
+	public AIState AIState
+	{
+		get { return _AIState; }
+		set { _AIState = value; }
+	}
+
+	//Called from collision Capsule
+	public void GameObjectInRange(GameObject newObject)
+	{
+		if(!_objectsInRangeDictionary.ContainsKey(newObject))
+		{
+			_objectsInRangeDictionary.Add(newObject, false);
+		}
+
+	}
+	public void GameObjectOutOfRange(GameObject newObject)
+	{
+		_objectsInRangeDictionary.Remove(newObject);
+		
+	}
+
+	private void HandleRayCastVision()
+	{
+		float shortestDistance = float.PositiveInfinity;
+		GameObject closestObject;
+		RaycastHit Hit;
+
+		List<GameObject> setToTrueList = new List<GameObject>();
+		List<GameObject> setToFalseList = new List<GameObject>();
+		
+		foreach (KeyValuePair<GameObject, bool> entry in _objectsInRangeDictionary)
+		{
+			if (entry.Key == null)
+				continue;
+			Vector3 direction = ((entry.Key.transform.position + Vector3.up) - lookFrom.position);
+			float visionAngle = Vector3.Angle(transform.forward, direction);
+			Physics.Raycast(lookFrom.position, direction, out Hit,1000f);
+			if (Hit.transform.root.gameObject == entry.Key)
+			{
+				//raycast hit object
+				if (entry.Value == true)
+				{
+					//if we have already seen it, just record the distance
+					if (shortestDistance > Hit.distance)
+					{
+						shortestDistance = Hit.distance;
+						closestObject = entry.Key;
+					}
+				}
+				else if(visionAngle < maxVisionAngle)
+				{
+					//First time seeing target, make sure angle is acceptable
+					print("newCreature In sight");
+					NewCreatureInSight(entry.Key);
+					setToTrueList.Add(entry.Key);
+				}
+			
+
+
+			}
+			else
+			{
+				//Didnt see target
+				if (entry.Value == true)
+				{
+					print("lost sightt");
+					NewCreatureOutOfSight(entry.Key);
+					setToFalseList.Add(entry.Key);
+				}
+			}
+		}
+		foreach (GameObject entry in setToFalseList)
+		{
+			_objectsInRangeDictionary[entry] = false;
+		}
+		foreach (GameObject entry in setToTrueList)
+		{
+			_objectsInRangeDictionary[entry] = true;
+		}
+
+
+	}
+
+	private void NewCreatureInSight(GameObject newCreature)
+	{
+		Molat molat = newCreature.GetComponentInChildren<Molat>();
+		if (molat)
+		{
+			addMolat(molat);
+		}
+		else
+		{
+			Spider spider = newCreature.GetComponentInChildren<Spider>();
+			if (spider) addSpider(spider);
+		}
+	}
+
+	private void NewCreatureOutOfSight(GameObject newCreature)
+	{
+		Molat molat = newCreature.GetComponentInChildren<Molat>();
+		if (molat)
+		{
+			removeMolat(molat);
+		}
+		else
+		{
+			Spider spider = newCreature.GetComponentInChildren<Spider>();
+			if (spider) removeSpider(spider);
+		}
+	}
+
+	void addMolat(Molat newMolat)
+	{
+		mList_EnemyMolats.Add(newMolat);
+		newMolat.actionExpressed += expressAction;
+		NewMolatInSight(newMolat);
+	}
+	void removeMolat(Molat newMolat)
+	{
+		NewMolatOutOfSight(newMolat);
+		if (newMolat == currentTarget)
+		{
+			LostSightOfTarget(newMolat);
+		}
+		if (mList_EnemyMolats != null)
+		{
+			mList_EnemyMolats.Remove(newMolat);
+		}
+		newMolat.actionExpressed -= expressAction;
+	}
+
+	void addSpider(Spider newSpider)
+	{
+		mList_EnemySpiders.Add(newSpider);
+		///if (SpiderInSight)
+	}
+	void removeSpider(Spider newSpider)
+	{
+		if (mList_EnemySpiders != null)
+		{
+			mList_EnemySpiders.Remove(newSpider);
+			SpiderInSight = (mList_EnemySpiders.Count != 0);
+		}
+		else
+		{
+			SpiderInSight = false;
+		}
+	}
+
+	private void NewMolatInSight(Molat newTarget)
+	{
+		_AIState.NewMolatInSight(newTarget);
+	}
+	private void NewMolatOutOfSight(Molat newTarget)
+	{
+		_AIState.NewMolatOutOfSight(newTarget);
+	}
+	private void NewSpiderInSight(Spider spider)
+	{
+		_AIState.NewSpiderInSight(spider);
+	}
+	private void NewSpiderOutOfSight(Spider spider)
+	{
+		_AIState.NewSpiderOutOfSight(spider);
+	}
+	private void LostSightOfTarget(Molat target)
+	{
+		_AIState.LostSightOfTarget(target);
+	}
+	//Called from Molat on damage
+	private void GotHit(GameObject instigator)
+	{
+		_AIState.GotHit(instigator);
+	}
+
+	public void SetState(AIState newState, AIState previousState)
+	{
+		Destroy(AIState);
+		AIState = newState;
+		AIState.Initialize(previousState);
+	}
+
+	public AIState CreatePreferedState()
+	{
+		switch(preferedState)
+		{
+			case(StateEnum.Idle):
+				return gameObject.AddComponent<AIStateIdle>();
+			case (StateEnum.Chasing):
+				return gameObject.AddComponent<AIStateChasing>();
+			case (StateEnum.Dead):
+				return gameObject.AddComponent<AIStateDead>();
+				break;
+			case (StateEnum.Fighting):
+				return gameObject.AddComponent<AIStateFighting>();
+				break;
+			case (StateEnum.Fleeing):
+				return gameObject.AddComponent<AIStateFleeing>();
+				break;
+			case (StateEnum.Hiding):
+				return gameObject.AddComponent<AIStateHiding>();
+				break;
+			case (StateEnum.Patrolling):
+				return gameObject.AddComponent<AIStatePatrolling>();
+				break;
+		}
+		return gameObject.AddComponent<AIStateIdle>();
+
 	}
 
 
-	enum CurrentState
-	{
-		Idle,
-		Walking,
-		Running
-	}
 
-	
+
+
 
 	private void OnDrawGizmos()
 	{
@@ -138,9 +340,20 @@ public class MolatAIController : MonoBehaviour {
 
 		//Draw chase speher
 		Gizmos.color = new Color(0f, 0f, 255f, .5f);
-		Gizmos.DrawWireSphere(transform.position, chaseRadius);
+		Gizmos.DrawWireSphere(transform.position, visionRadius);
 	}
 
 
 
+}
+
+public enum StateEnum
+{
+	Idle,
+	Fighting,
+	Fleeing,
+	Hiding,
+	Chasing,
+	Dead,
+	Patrolling
 }

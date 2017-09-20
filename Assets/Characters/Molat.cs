@@ -306,7 +306,6 @@ public class Molat : MonoBehaviour, IDamageable
 		else
 		{
 			currentStamina = Mathf.Clamp(currentStamina + staminaCost, 0f, maxStamina);
-			print(currentStamina);
 			return true;
 		}
 	}

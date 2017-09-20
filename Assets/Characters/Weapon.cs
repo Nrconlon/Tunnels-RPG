@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour {
+public abstract class Weapon : MonoBehaviour {
 
 	public float baseDamage = 10f;
 	public float force = 250;
@@ -12,7 +12,6 @@ public class Weapon : MonoBehaviour {
 	[HideInInspector] public bool isActivated;
 	[HideInInspector] public EDamageType damageType;
 	private List<GameObject> targetsHit = new List<GameObject>();
-	private bool wasActivated;
 
 	protected void OnTriggerEnter(Collider collider)
 	{
