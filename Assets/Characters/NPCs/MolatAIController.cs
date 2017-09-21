@@ -21,7 +21,8 @@ public class MolatAIController : MonoBehaviour {
 	[HideInInspector] public List<Molat> mList_EnemyMolats = new List<Molat>();
 	[HideInInspector] public List<Spider> mList_EnemySpiders = new List<Spider>();
 	Dictionary<GameObject, bool> _objectsInRangeDictionary = new Dictionary<GameObject, bool>();
-	private bool SpiderInSight = false;
+	private Vector3 destination;
+	private Vector3 lookAtDirection;
 	bool isAttacking = false;
 	bool isSprinting = false;
 	bool isJumping = false;
@@ -43,7 +44,7 @@ public class MolatAIController : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		if(m_Molat.IsDead)
+		if (m_Molat.IsDead)
 		{
 			agent.enabled = false;
 			SetTarget(null);
@@ -51,38 +52,33 @@ public class MolatAIController : MonoBehaviour {
 		else
 		{
 			HandleRayCastVision();
-			//if (target != null && target.position != Vector3.zero)
+			ChooseWalkingDirection();
+			ChooseLookAtDirection();
+			ChooseAction();
+			// && agent.remainingDistance > agent.stoppingDistance
+
+			//float distanceToTarget = Vector3.Distance(target.position, transform.position);
+
+			//if (distanceToTarget <= attackRadius)
 			//{
-			//	// && agent.remainingDistance > agent.stoppingDistance
+			//	isAttacking = true;
 
-			//	float distanceToTarget = Vector3.Distance(target.position, transform.position);
-
-			//	if (distanceToTarget <= attackRadius)
-			//	{
-			//		isAttacking = true;
-
-			//	}
-			//	else
-			//	{
-			//		isAttacking = false;
-			//	}
-
-			//	if (distanceToTarget <= visionRadius)
-			//	{
-			//		agent.SetDestination(target.position);
-			//		m_Molat.targetDirection = agent.desiredVelocity.normalized;
-			//		m_Molat.lookAtDirection = (target.position - transform.position).normalized;
-			//		m_Molat.TailSprint(isSprinting, m_Molat.lookAtDirection);
-			//	}
-			//	else
-			//	{
-			//		agent.SetDestination(transform.position);
-			//		m_Molat.targetDirection = Vector3.zero;
-			//		m_Molat.lookAtDirection = Vector3.zero;
-			//	}
 			//}
 			//else
 			//{
+			//	isAttacking = false;
+			//}
+
+			//if (distanceToTarget <= visionRadius)
+			//{
+			//	agent.SetDestination(target.position);
+			//	m_Molat.targetDirection = agent.desiredVelocity.normalized;
+			//	m_Molat.lookAtDirection = (target.position - transform.position).normalized;
+			//	m_Molat.TailSprint(isSprinting, m_Molat.lookAtDirection);
+			//}
+			//else
+			//{
+			//	agent.SetDestination(transform.position);
 			//	m_Molat.targetDirection = Vector3.zero;
 			//	m_Molat.lookAtDirection = Vector3.zero;
 			//}
@@ -106,6 +102,7 @@ public class MolatAIController : MonoBehaviour {
 		}
 		else if (action == Action.Die)
 		{
+			//TODO watched enemy has died.
 			currentTarget = null;
 			isJumping = true;
 			isAttacking = false;
@@ -236,34 +233,26 @@ public class MolatAIController : MonoBehaviour {
 	}
 	void removeMolat(Molat newMolat)
 	{
-		NewMolatOutOfSight(newMolat);
-		if (newMolat == currentTarget)
-		{
-			LostSightOfTarget(newMolat);
-		}
 		if (mList_EnemyMolats != null)
 		{
 			mList_EnemyMolats.Remove(newMolat);
 		}
+		NewMolatOutOfSight(newMolat);
 		newMolat.actionExpressed -= expressAction;
 	}
 
 	void addSpider(Spider newSpider)
 	{
 		mList_EnemySpiders.Add(newSpider);
-		///if (SpiderInSight)
+		NewSpiderInSight(newSpider);
 	}
 	void removeSpider(Spider newSpider)
 	{
 		if (mList_EnemySpiders != null)
 		{
 			mList_EnemySpiders.Remove(newSpider);
-			SpiderInSight = (mList_EnemySpiders.Count != 0);
 		}
-		else
-		{
-			SpiderInSight = false;
-		}
+		NewSpiderOutOfSight(newSpider);
 	}
 
 	private void NewMolatInSight(Molat newTarget)
@@ -282,7 +271,7 @@ public class MolatAIController : MonoBehaviour {
 	{
 		_AIState.NewSpiderOutOfSight(spider);
 	}
-	private void LostSightOfTarget(Molat target)
+	private void TargetInRange(Molat target)
 	{
 		_AIState.LostSightOfTarget(target);
 	}
@@ -290,6 +279,22 @@ public class MolatAIController : MonoBehaviour {
 	private void GotHit(GameObject instigator)
 	{
 		_AIState.GotHit(instigator);
+	}
+	private void Died(GameObject instigator)
+	{
+		//_AIState.Died(instigator);
+	}
+	private void ChooseWalkingDirection()
+	{
+		//_AIState.ChooseWalkingDirection();
+	}
+	private void ChooseLookAtDirection()
+	{
+		//_AIState.ChooseLookAtDirection();
+	}
+	private void ChooseAction()
+	{
+		//_AIState.ChooseAction();
 	}
 
 	public void SetState(AIState newState, AIState previousState)
@@ -309,19 +314,14 @@ public class MolatAIController : MonoBehaviour {
 				return gameObject.AddComponent<AIStateChasing>();
 			case (StateEnum.Dead):
 				return gameObject.AddComponent<AIStateDead>();
-				break;
 			case (StateEnum.Fighting):
 				return gameObject.AddComponent<AIStateFighting>();
-				break;
 			case (StateEnum.Fleeing):
 				return gameObject.AddComponent<AIStateFleeing>();
-				break;
 			case (StateEnum.Hiding):
 				return gameObject.AddComponent<AIStateHiding>();
-				break;
 			case (StateEnum.Patrolling):
 				return gameObject.AddComponent<AIStatePatrolling>();
-				break;
 		}
 		return gameObject.AddComponent<AIStateIdle>();
 
@@ -356,4 +356,12 @@ public enum StateEnum
 	Chasing,
 	Dead,
 	Patrolling
+}
+
+public enum Team
+{
+	Bad,
+	Good,
+	NeutralBad,
+	NeutralGood
 }
