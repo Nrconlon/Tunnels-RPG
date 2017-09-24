@@ -650,6 +650,7 @@ public class Molat : MonoBehaviour, IDamageable
 					bleed = damage * bleedSharpPercent;
 					break;
 			}
+			HandleDeath();
 		}
 	}
 

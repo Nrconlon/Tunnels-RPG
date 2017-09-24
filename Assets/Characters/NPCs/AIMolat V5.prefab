@@ -2469,7 +2469,9 @@ MonoBehaviour:
   maxVisionAngle: 90
   lookFrom: {fileID: 4949215201540200}
   newDestDistance: 3
-  preferedState: 1
+  fleeDuration: 5
+  waypoints: []
+  preferedState: 2
   currentStateEnum: 0
   currentAction: 0
   myTeam: 0
@@ -2482,6 +2484,8 @@ MonoBehaviour:
   lookAtDirection: {x: 0, y: 0, z: 0}
   attackRadius: 3
   prefDistFromTarget: 1
+  maxEnemiesBeforeFlee: 5
+  healthThreshholdPercent: 0.2
 --- !u!114 &114624686089221668
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2554,6 +2558,7 @@ MonoBehaviour:
   holster2sound: {fileID: 8300000, guid: 863bd0075c66f264fa8f3557cb7ed179, type: 3}
   targetDirection: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
+  mostRecentAttacker: {fileID: 0}
 --- !u!114 &114698331581679358
 MonoBehaviour:
   m_ObjectHideFlags: 1

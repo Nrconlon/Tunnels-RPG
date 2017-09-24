@@ -13,6 +13,8 @@ public class MolatAIController : MonoBehaviour {
 	[SerializeField] float maxVisionAngle = 90f;
 	[SerializeField] Transform lookFrom;
 	[SerializeField] float newDestDistance =2f;
+	public float fleeDuration = 5f;
+	public List<Transform> waypoints = new List<Transform>();
 
 	public StateEnum preferedState = StateEnum.Fighting;
 	[HideInInspector] public StateEnum currentStateEnum;
@@ -217,7 +219,6 @@ public class MolatAIController : MonoBehaviour {
 					if (entry.Value == false && visionAngle < maxVisionAngle)
 					{
 						//First time seeing target, make sure angle is acceptable
-						print("Gained sightt using i = " + i);
 						NewCreatureInSight(entry.Key);
 						setToTrueList.Add(entry.Key);
 					}
@@ -398,13 +399,10 @@ public class MolatAIController : MonoBehaviour {
 			case(StateEnum.Idle):
 				return gameObject.AddComponent<AIStateIdle>();
 			case (StateEnum.Dead):
-				print("Dead");
 				return gameObject.AddComponent<AIStateDead>();
 			case (StateEnum.Fighting):
-				print("fighting");
 				return gameObject.AddComponent<AIStateFighting>();
 			case (StateEnum.Fleeing):
-				print("Fleeing");
 				return gameObject.AddComponent<AIStateFleeing>();
 			case (StateEnum.Patrolling):
 				return gameObject.AddComponent<AIStatePatrolling>();

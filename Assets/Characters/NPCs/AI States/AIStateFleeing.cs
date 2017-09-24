@@ -6,12 +6,18 @@ using UnityEngine.AI;
 public class AIStateFleeing : AIState
 {
 	private float fleeDistance = 1.0f;
+	private float fleeLockTimer = 0f;
+	int waypointCount = 0;
 
 	public override void ChooseAction()
 	{
-		if (!IShouldFleeCheck())
+		if (fleeLockTimer <Time.time)
 		{
-			ChangeState(DecideNextState());
+			fleeLockTimer = Time.time + m_molatAIController.fleeDuration;
+			if (!IShouldFleeCheck())
+			{
+				ChangeState(DecideNextState());
+			}
 		}
 		if (m_Molat.isWeaponEquiped)
 		{
@@ -21,21 +27,36 @@ public class AIStateFleeing : AIState
 	}
 
 	public override Vector3 ChooseWalkingDestination()
-	{ 
-		//Trying to flee and find a spot/waypoint to hide
-		GameObject target = m_molatAIController.currentTarget;
-		Vector3 directionAwayFromTarget = (transform.position - target.transform.position);
-		Vector3 sourcePosition = directionAwayFromTarget + transform.position;
-		NavMeshHit navHit;
-		if (NavMesh.SamplePosition(sourcePosition,out navHit, fleeDistance,NavMesh.AllAreas))
+	{
+		Vector3 newDestination;
+		if(m_molatAIController.waypoints.Count > waypointCount)
 		{
-			return navHit.position;
+			newDestination = m_molatAIController.waypoints[waypointCount].position;
+			if(Vector3.Distance(transform.position, m_molatAIController.waypoints[waypointCount].position) < 2f)
+			{
+				waypointCount++;
+			}
 		}
 		else
 		{
-			return transform.position;
+			//Dynamic fleeing
+			GameObject target = m_molatAIController.currentTarget;
+			Vector3 directionAwayFromTarget = (transform.position - target.transform.position);
+			Vector3 sourcePosition = directionAwayFromTarget + transform.position;
+			NavMeshHit navHit;
+			if (NavMesh.SamplePosition(sourcePosition, out navHit, fleeDistance, NavMesh.AllAreas))
+			{
+				newDestination = navHit.position;
+			}
+			else
+			{
+				newDestination = Vector3.zero; // transform.position;
+			}
 		}
-		
+
+		return newDestination;
+
+
 	}
 
 	public override void GotHit(GameObject instigator)
