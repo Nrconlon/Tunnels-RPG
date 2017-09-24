@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public class Molat : MonoBehaviour, IDamageable
 {
@@ -116,6 +115,8 @@ public class Molat : MonoBehaviour, IDamageable
 	public delegate void ActionExpressedDelegate(Action action, GameObject instigator);
 	public ActionExpressedDelegate actionExpressed;
 
+	[HideInInspector] public GameObject mostRecentAttacker;
+
 
 	Animator m_Animator;
 	Rigidbody m_RigidBody;
@@ -126,7 +127,6 @@ public class Molat : MonoBehaviour, IDamageable
 	float torwardAmount;
 	private bool isBlocking;
 	private float swingTimer = 0f;
-	GameObject mostRecentAttacker;
 
 
 	void Start()
@@ -167,9 +167,8 @@ public class Molat : MonoBehaviour, IDamageable
 		if (freeToMove())
 		{
 
-			if (targetDirection != Vector3.zero)
+			//if (targetDirection != Vector3.zero)
 			{
-
 
 				if (Mathf.Abs(AngleOfLookDirection()) > fullSpeedMaxDegrees)
 				{
@@ -201,7 +200,7 @@ public class Molat : MonoBehaviour, IDamageable
 				m_Animator.SetFloat("speed", velocityanim, animDampTime, 0.2f);
 				m_Animator.SetFloat("movementAngle", AngleOfLookDirection(), animDampTime, 0.2f);
 			}
-			else
+			if(targetDirection == Vector3.zero)
 			{
 				m_Animator.SetFloat("speed", 0, animDampTime * 2, 0.2f);
 				m_Animator.SetFloat("movementAngle", 0);
@@ -426,7 +425,7 @@ public class Molat : MonoBehaviour, IDamageable
 				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
 				StartCoroutine(CoTickAnimation("jump"));
 				StartCoroutine(checkIfLanded());
-				lastJumpToggle = toggle;
+				lastJumpToggle = true;
 				return true;
 			}
 		}
@@ -463,6 +462,7 @@ public class Molat : MonoBehaviour, IDamageable
 	void Landed()
 	{
 		isJumping = false;
+		lastJumpToggle = false;
 
 	}
 
@@ -624,28 +624,32 @@ public class Molat : MonoBehaviour, IDamageable
 
 	public void TakeDamage(float damage, float force, Vector3 direction, EDamageType damageType, GameObject instigator)
 	{
-		if(currentHealth * percentDamgeCauseKnockback < damage)
+		if(!IsDead)
 		{
-			//heel over
+			mostRecentAttacker = instigator;
+			if (currentHealth * percentDamgeCauseKnockback < damage)
+			{
+				//heel over
 
-		}
-		if(force > forceThreshold)
-		{
-			//direction.y = 0f;
-			StartSliding(direction, force, 0.2f);
-		}
-		currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
-		switch(damageType)
-		{
-			case EDamageType.blunt:
-				bleed = damage * bleedBluntPercent;
-				break;
-			case EDamageType.spiked:
-				bleed = damage * bleedSpikedPercent;
-				break;
-			case EDamageType.sharp:
-				bleed = damage * bleedSharpPercent;
-				break;
+			}
+			if (force > forceThreshold)
+			{
+				//direction.y = 0f;
+				StartSliding(direction, force, 0.2f);
+			}
+			currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
+			switch (damageType)
+			{
+				case EDamageType.blunt:
+					bleed = damage * bleedBluntPercent;
+					break;
+				case EDamageType.spiked:
+					bleed = damage * bleedSpikedPercent;
+					break;
+				case EDamageType.sharp:
+					bleed = damage * bleedSharpPercent;
+					break;
+			}
 		}
 	}
 

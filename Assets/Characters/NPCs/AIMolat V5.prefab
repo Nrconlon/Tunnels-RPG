@@ -636,7 +636,6 @@ GameObject:
   - component: {fileID: 54614152244700514}
   - component: {fileID: 82334254221719530}
   - component: {fileID: 114941279829323672}
-  - component: {fileID: 114496484011863634}
   - component: {fileID: 114624686089221668}
   - component: {fileID: 114453090419830228}
   - component: {fileID: 195742071199791820}
@@ -1152,8 +1151,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1663751865173622}
-  m_LocalRotation: {x: -0, y: 0.61871874, z: -0, w: 0.78561264}
-  m_LocalPosition: {x: -229.04, y: -49.990845, z: -19.74}
+  m_LocalRotation: {x: -0, y: -0.030141518, z: -0, w: -0.9995457}
+  m_LocalPosition: {x: -228.1614, y: -49.87, z: -19.920471}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4832759126059608}
@@ -1162,7 +1161,7 @@ Transform:
   - {fileID: 4804713911369854}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 363.454, z: 0}
 --- !u!4 &4158545968875266
 Transform:
   m_ObjectHideFlags: 1
@@ -1938,7 +1937,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1059042710303636}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.008, y: 0.221, z: -0.302}
+  m_LocalPosition: {x: 0.022, y: 0.056, z: -0.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4405414609062728}
@@ -2466,36 +2465,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfce7da1a89005348ba1e9948deaff0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  attackRadius: 3
-  visionRadius: 15
+  visionRadius: 10
+  maxVisionAngle: 90
   lookFrom: {fileID: 4949215201540200}
-  currentState: 0
+  newDestDistance: 3
+  preferedState: 1
+  currentStateEnum: 0
   currentAction: 0
-  _AIPerferedState: {fileID: 0}
---- !u!114 &114496484011863634
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1663751865173622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc99bba037f3052419d7e5b43c516041, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  impactPrefab: {fileID: 400000, guid: 1527ff41453632b44a4b04882b7378f3, type: 2}
-  mask:
-    serializedVersion: 2
-    m_Bits: 0
-  damage: 25
-  force: 250
-  range: 3
-  shortrange: 0.85
-  shortradius: 1
-  shortdamage: 10
-  radius: 1.5
-  raystartpos: {fileID: 4337081466311966}
+  myTeam: 0
+  m_Molat: {fileID: 0}
+  currentTarget: {fileID: 0}
+  closestTarget: {fileID: 0}
+  mList_EnemyMolats: []
+  mList_EnemySpiders: []
+  destination: {x: 0, y: 0, z: 0}
+  lookAtDirection: {x: 0, y: 0, z: 0}
+  attackRadius: 3
+  prefDistFromTarget: 1
 --- !u!114 &114624686089221668
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2855,15 +2841,15 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2
+  m_Speed: 1
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 2
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
+  m_AutoBraking: 0
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 1.5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
