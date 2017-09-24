@@ -17,6 +17,7 @@ public class MolatPlayerController : MonoBehaviour {
 	void Start () {
 		m_molat = GetComponent<Molat>();
 		myCamera = GetComponentInChildren<CameraPlayer>();
+		Cursor.lockState = CursorLockMode.Locked;
 	}
 
 
@@ -41,6 +42,10 @@ public class MolatPlayerController : MonoBehaviour {
 		{
 			m_molat.ToggleEquipWeapon();
 		}
+		if (Input.GetKeyDown("escape"))
+			Cursor.lockState = CursorLockMode.None;
+		if (Input.GetMouseButtonDown(0))
+			Cursor.lockState = CursorLockMode.Locked;
 
 
 	}

@@ -37,7 +37,6 @@ public class CameraPlayer : MonoBehaviour {
 		x = angles.y;
 		y = angles.x;
 		currentDistance = distance;
-		Cursor.lockState = CursorLockMode.Locked;
 		_MolatPlayerController = GetComponentInParent<MolatPlayerController>();
 
 		// Make the rigid body not change rotation
