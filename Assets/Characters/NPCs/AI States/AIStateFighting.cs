@@ -11,10 +11,10 @@ public class AIStateFighting : AIState
 
 	public override Vector3 ChooseWalkingDestination()
 	{
-		if(m_molatAIController.currentTarget)
+		if(m_molatAIController.CurrentTarget)
 		{
-			Vector3 correctDistanceFromTarget = (transform.position - m_molatAIController.currentTarget.transform.position).normalized * m_molatAIController.prefDistFromTarget;
-			return m_molatAIController.currentTarget.transform.position + correctDistanceFromTarget;
+			Vector3 correctDistanceFromTarget = (transform.position - m_molatAIController.CurrentTarget.transform.position).normalized * m_molatAIController.PrefDistFromTarget;
+			return m_molatAIController.CurrentTarget.transform.position + correctDistanceFromTarget;
 		}
 		else
 		{
@@ -24,9 +24,9 @@ public class AIStateFighting : AIState
 
 	public override Vector3 ChooseLookAtDirection()
 	{
-		if (m_molatAIController.currentTarget)
+		if (m_molatAIController.CurrentTarget)
 		{
-			return m_molatAIController.currentTarget.transform.position - transform.position;
+			return m_molatAIController.CurrentTarget.transform.position - transform.position;
 		}
 		else
 		{
@@ -41,9 +41,9 @@ public class AIStateFighting : AIState
 		{
 			m_Molat.ToggleEquipWeapon();
 		}
-		if(m_molatAIController.currentTarget !=  null)
+		if(m_molatAIController.CurrentTarget !=  null)
 		{
-			if(Vector3.Distance(m_molatAIController.currentTarget.transform.position,transform.position) < m_molatAIController.attackRadius)
+			if(Vector3.Distance(m_molatAIController.CurrentTarget.transform.position,transform.position) < m_molatAIController.AttackRadius)
 			{
 				targetInRange = true;
 				if(targetInRangePrevious == false)
@@ -62,26 +62,4 @@ public class AIStateFighting : AIState
 		//Fight more defensively?  Back up to heal?  Block more?
 		base.GotHit(instigator);
 	}
-
-	public override void LostSightOfTarget(GameObject target)
-	{
-		//Switch Targets
-		if(m_molatAIController.closestTarget != null)
-		{
-			m_molatAIController.SetTarget(m_molatAIController.closestTarget);
-		}
-		else
-		{
-			m_molatAIController.SetTarget(null);
-			ChangeState(DecideNextState());
-		}
-	}
-
-	public override void NewClosestObject(GameObject newObject)
-	{
-		//Decide if I should switch targets
-		m_molatAIController.SetTarget(newObject);
-	}
-
-
 }

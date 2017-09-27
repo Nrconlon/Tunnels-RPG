@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,32 +14,41 @@ public class MolatAIController : MonoBehaviour {
 	[SerializeField] float maxVisionAngle = 90f;
 	[SerializeField] Transform lookFrom;
 	[SerializeField] float newDestDistance =2f;
-	public float fleeDuration = 5f;
-	public List<Transform> waypoints = new List<Transform>();
+	[SerializeField] float fleeDuration = 5f;
 
-	public StateEnum preferedState = StateEnum.Fighting;
+	[SerializeField] List<Transform> waypoints = new List<Transform>();
+
+	[SerializeField] StateEnum preferedState = StateEnum.Fighting;
+	[SerializeField] Team myTeam;
+
 	[HideInInspector] public StateEnum currentStateEnum;
 	[HideInInspector] public Action currentAction;
-	public Team myTeam;
 	[HideInInspector] public Molat m_Molat;
-	[HideInInspector] public GameObject currentTarget = null;
-	[HideInInspector] public GameObject closestTarget = null;
+	[HideInInspector] private GameObject currentTarget = null;
 	[HideInInspector] public List<Molat> mList_EnemyMolats = new List<Molat>();
 	[HideInInspector] public List<Spider> mList_EnemySpiders = new List<Spider>();
-	Dictionary<GameObject, bool> _objectsInRangeDictionary = new Dictionary<GameObject, bool>();
+
+	Dictionary<GameObject, EnemyPriority> _RenderedObjectsDictionary = new Dictionary<GameObject, EnemyPriority>();
 	[HideInInspector] public Vector3 destination;
 	[HideInInspector] public  Vector3 lookAtDirection;
 	bool isAttacking = false;
 	bool isSprinting = false;
 	bool isJumping = false;
+	bool isDead = false;
 	private AIState _AIState;
 
 	[Header("Combat")]
-	public float attackRadius = 3f;
-	public float prefDistFromTarget = 1f;
-	public int maxEnemiesBeforeFlee = 5;
-	public float healthThreshholdPercent = 0.2f;
+	[SerializeField] float attackRadius = 2.5f;
+	[SerializeField] float prefDistFromTarget = 1f;
+	[SerializeField] int maxEnemiesBeforeFlee = 5;
+	[SerializeField] float healthThreshholdPercent = 0.2f;
 
+
+	private void OnDestroy()
+	{
+		m_Molat.actionExpressedDel -= AMolatExpressedAction;
+		m_Molat.iGotHitDel -= AMolatGotHit;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -50,21 +60,20 @@ public class MolatAIController : MonoBehaviour {
 		currentStateEnum = StateEnum.Idle;
 		destination = transform.position;
 		_AIState.Initialize(this);
+
+		//delegate
+		m_Molat.actionExpressedDel += AMolatExpressedAction;
+		m_Molat.iGotHitDel += AMolatGotHit;
 		//TODO on raycasting vision, add targets;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		if (m_Molat.IsDead)
-		{
-			Died(m_Molat.mostRecentAttacker);
-			agent.enabled = false;
-			SetTarget(null);
-		}
-		else
+		if (!isDead)
 		{
 			HandleRayCastVision(); //gather info around me
+			HandleFindTarget();
 			if(currentStateEnum != StateEnum.Fleeing && IShouldFleeCheck())
 			{
 				IShouldFlee();
@@ -91,61 +100,53 @@ public class MolatAIController : MonoBehaviour {
 				m_Molat.lookAtDirection = lookAtDirection;
 			}
 			ChooseAction();
-			//wGm_Molat.TailSprint(isSprinting, m_Molat.lookAtDirection);
-
-			//float distanceToTarget = Vector3.Distance(target.position, transform.position);
-
-			//if (distanceToTarget <= attackRadius)
-			//{
-			//	isAttacking = true;
-
-			//}
-			//else
-			//{
-			//	isAttacking = false;
-			//}
-
-			//if (distanceToTarget <= visionRadius)
-			//{
-
-			//}
-			//else
-			//{
-			//	agent.SetDestination(transform.position);
-			//	m_Molat.targetDirection = Vector3.zero;
-			//	m_Molat.lookAtDirection = Vector3.zero;
-			//}
-
-			//if (!m_Molat.isWeaponEquiped)
-			//{
-			//	m_Molat.ToggleEquipWeapon();
-			//}
-
-			//m_Molat.Attack(isAttacking);
-			//m_Molat.Jump(isJumping, Vector3.zero);
 		}
 	}
 
+	//Getters
+	public float FleeDuration { get { return fleeDuration; } }
+	public List<Transform> Waypoints { get { return waypoints; } }
+	public StateEnum PreferedState { get { return preferedState; } }
+	public float AttackRadius { get { return attackRadius; } }
+	public float PrefDistFromTarget { get { return prefDistFromTarget; } }
+	public int MaxEnemiesBeforeFlee { get { return maxEnemiesBeforeFlee; } }
+	public float HealthThreshholdPercent { get { return healthThreshholdPercent; } }
+	public GameObject CurrentTarget { get { return currentTarget; } }
 
-	void expressAction(Action action, GameObject instigator)
+	//Delegate sign ups
+	//for enemies and self (and maybe allies)
+	void AMolatExpressedAction(Action action, GameObject instigator)
 	{
-		if(instigator = currentTarget)
+		//if its me
+		if(instigator == gameObject)
 		{
-			if (action == Action.Attack)
+			if (action == Action.Die)
 			{
-				//dodge some times?
-				//m_Molat.TailSprint(true, -m_Molat.lookAtDirection);
-			}
-			else if (action == Action.Die)
-			{
-				currentTarget = closestTarget;
+				Died(m_Molat.mostRecentAttacker);
 			}
 		}
+		if (action == Action.Die)
+		{
+			StopRenderingGameObject(instigator);
+		}
 	}
+	//for allies and self
+	void AMolatGotHit(float damage, float percentOfHealth, GameObject attacker, GameObject victim)
+	{
+		//if its me
+		if(victim == gameObject && _RenderedObjectsDictionary.ContainsKey(attacker))
+		{
+			EnemyPriority currentPriority = _RenderedObjectsDictionary[attacker];
+			currentPriority.TheyHitMe(percentOfHealth);
+			currentPriority.ISawYou();
+			GotHit(attacker);
+		}
+	}
+
 
 	public void SetTarget(GameObject newTarget)
 	{
-		this.currentTarget = newTarget;
+		currentTarget = newTarget;
 	}
 
 	public AIState AIState
@@ -154,7 +155,7 @@ public class MolatAIController : MonoBehaviour {
 		set { _AIState = value; }
 	}
 
-	private bool ObjectIsDead(GameObject newObject)
+	private bool IsObjectDead(GameObject newObject)
 	{
 		Molat thisMolat = newObject.GetComponent<Molat>();
 		if (thisMolat)
@@ -170,94 +171,77 @@ public class MolatAIController : MonoBehaviour {
 	}
 
 	//Called from collision Capsule
-	public void GameObjectInRange(GameObject newObject)
+	public void StartRenderingGameObject(GameObject newObject)
 	{
-		if(!_objectsInRangeDictionary.ContainsKey(newObject) && !ObjectIsDead(newObject))
+		if(!_RenderedObjectsDictionary.ContainsKey(newObject) && !IsObjectDead(newObject))
 		{
-			_objectsInRangeDictionary.Add(newObject, false);
+			EnemyPriority newPriority = new EnemyPriority
+			{
+				MaxDistance = visionRadius,
+				ScareTimer = FleeDuration
+			};
+			if(newObject.GetComponent<Spider>())
+			{
+				newPriority.IsSpider();
+			}
+			_RenderedObjectsDictionary.Add(newObject, newPriority);
 		}
 
 	}
-	public void GameObjectOutOfRange(GameObject newObject)
+	public void StopRenderingGameObject(GameObject newObject)
 	{
-		_objectsInRangeDictionary.Remove(newObject);
-		
+		_RenderedObjectsDictionary.Remove(newObject);
+
 	}
 
 	private void HandleRayCastVision()
 	{
-		float shortestDistance = float.PositiveInfinity;
-		GameObject closestObject = null;
-		RaycastHit Hit;
-
-		List<GameObject> setToTrueList = new List<GameObject>();
-		List<GameObject> setToFalseList = new List<GameObject>();
+		RaycastHit Hit = new RaycastHit();
 		List<GameObject> removeFromList = new List<GameObject>();
-		foreach (KeyValuePair<GameObject, bool> entry in _objectsInRangeDictionary)
+		foreach (KeyValuePair<GameObject, EnemyPriority> entry in _RenderedObjectsDictionary)
 		{
-			if (entry.Key == null || ObjectIsDead(entry.Key))
+			if (entry.Key == null || IsObjectDead(entry.Key))
 			{
 				removeFromList.Add(entry.Key);
 				continue;
 			}
 
+			EnemyPriority currentPriority = entry.Value;
 			Vector3 direction = ((entry.Key.transform.position) - lookFrom.position);
 			float visionAngle = Vector3.Angle(transform.forward, direction);
 			bool gotAHit = false;
-			for(int i = -1; i<2; i++)
+			if (visionAngle < maxVisionAngle)
 			{
-				Physics.Raycast(lookFrom.position, direction + new Vector3(0,i,0), out Hit, 10000f);
-				if (Hit.transform.root.gameObject == entry.Key)
+				for (float i = 0; i < 1.5f; i = i + 0.5f)
 				{
-					gotAHit = true;
-					if (shortestDistance > Hit.distance)
+					Physics.Raycast(lookFrom.position, direction + new Vector3(0, i, 0), out Hit, 10000f);
+					if (Hit.transform.root.gameObject == entry.Key)
 					{
-						shortestDistance = Hit.distance;
-						closestObject = entry.Key;
+						gotAHit = true;
+						if(currentPriority.Vision == 0)
+						{
+							NewCreatureInSight(entry.Key);
+						}
+						currentPriority.setDistance(Hit.distance);
+						currentPriority.ISawYou();
+						break;
 					}
-					//raycast hit object
-					if (entry.Value == false && visionAngle < maxVisionAngle)
-					{
-						//First time seeing target, make sure angle is acceptable
-						NewCreatureInSight(entry.Key);
-						setToTrueList.Add(entry.Key);
-					}
-					break;
 				}
 			}
 			if(gotAHit == false)
 			{
-				//Didnt see target
-				if (entry.Value == true)
+				float lastVision = currentPriority.Vision;
+				currentPriority.IDidNotSeeYou(Time.deltaTime);
+				if(currentPriority.Vision == 0 && lastVision > 0)
 				{
 					NewCreatureOutOfSight(entry.Key);
-					setToFalseList.Add(entry.Key);
 				}
 			}
 		}
-		//After sight dictionary cleanup
-		foreach (GameObject entry in setToFalseList)
-		{
-			_objectsInRangeDictionary[entry] = false;
-		}
-		foreach (GameObject entry in setToTrueList)
-		{
-			_objectsInRangeDictionary[entry] = true;
-		}
 		foreach (GameObject entry in removeFromList)
 		{
-			_objectsInRangeDictionary.Remove(entry);
+			StopRenderingGameObject(entry);
 		}
-		closestTarget = closestObject;
-		if (closestObject)
-		{
-			NewClosestObject(closestObject);
-		}
-
-
-
-
-
 	}
 
 	private void NewCreatureInSight(GameObject newCreature)
@@ -276,10 +260,6 @@ public class MolatAIController : MonoBehaviour {
 
 	private void NewCreatureOutOfSight(GameObject newCreature)
 	{
-		if(newCreature = currentTarget)
-		{
-			LostSightOfTarget(newCreature);
-		}
 		Molat molat = newCreature.GetComponentInChildren<Molat>();
 		if (molat)
 		{
@@ -295,8 +275,7 @@ public class MolatAIController : MonoBehaviour {
 	void addMolat(Molat newMolat)
 	{
 		mList_EnemyMolats.Add(newMolat);
-		newMolat.actionExpressed += expressAction;
-		NewMolatInSight(newMolat);
+		newMolat.actionExpressedDel += AMolatExpressedAction;
 	}
 	void removeMolat(Molat newMolat)
 	{
@@ -304,14 +283,12 @@ public class MolatAIController : MonoBehaviour {
 		{
 			mList_EnemyMolats.Remove(newMolat);
 		}
-		NewMolatOutOfSight(newMolat);
-		newMolat.actionExpressed -= expressAction;
+		newMolat.actionExpressedDel -= AMolatExpressedAction;
 	}
 
 	void addSpider(Spider newSpider)
 	{
 		mList_EnemySpiders.Add(newSpider);
-		NewSpiderInSight(newSpider);
 	}
 	void removeSpider(Spider newSpider)
 	{
@@ -319,7 +296,46 @@ public class MolatAIController : MonoBehaviour {
 		{
 			mList_EnemySpiders.Remove(newSpider);
 		}
-		NewSpiderOutOfSight(newSpider);
+	}
+
+
+	private void HandleFindTarget()
+	{
+		float hightestPriority = 0;
+		GameObject highestPriorityTarget = null;
+		foreach (KeyValuePair<GameObject, EnemyPriority> entry in _RenderedObjectsDictionary)
+		{
+			float currentPriority = entry.Value.getTotalPriority();
+			if(currentPriority > hightestPriority)
+			{
+				hightestPriority = currentPriority;
+				highestPriorityTarget = entry.Key;
+			}
+		}
+		//if we didint find anything, and we werent already null
+		if (hightestPriority == 0)
+		{
+			if (CurrentTarget != null)
+			{
+				SetTarget(null);
+				NoTargetAvailable();
+			}
+		}
+		else
+		{
+			GameObject oldTarget = CurrentTarget;
+			SetTarget(highestPriorityTarget);
+			//set target before notifying the states jsut in case
+			if (oldTarget == null)
+			{
+				FirstTargetAquired(CurrentTarget);
+			}
+			else
+			{
+				NewTargetAquired(CurrentTarget);
+			}
+			
+		}
 	}
 
 	//AIState Notications
@@ -339,28 +355,19 @@ public class MolatAIController : MonoBehaviour {
 	}
 
 	//Change in vision
-	private void NewMolatInSight(Molat newTarget)
+	private void NoTargetAvailable()
 	{
-		_AIState.NewMolatInSight(newTarget);
+		_AIState.NoTargetAvailable();
 	}
-	private void NewMolatOutOfSight(Molat newTarget)
+	private void NewTargetAquired(GameObject newTarget)
 	{
-		_AIState.NewMolatOutOfSight(newTarget);
+		_AIState.NewTargetAquired(newTarget);
 	}
-	private void NewSpiderInSight(Spider spider)
+	private void FirstTargetAquired(GameObject newTarget)
 	{
-		_AIState.NewSpiderInSight(spider);
+		_AIState.FirstTargetAquired(newTarget);
 	}
-	private void NewSpiderOutOfSight(Spider spider)
-	{
-		_AIState.NewSpiderOutOfSight(spider);
-	}
-
-	private void LostSightOfTarget(GameObject target)
-	{
-		_AIState.LostSightOfTarget(target);
-	}
-
+	
 	//Other Events
 	public void GotHit(GameObject instigator)
 	{
@@ -368,11 +375,10 @@ public class MolatAIController : MonoBehaviour {
 	}
 	public void Died(GameObject instigator)
 	{
+		isDead = true;
+		agent.enabled = false;
+		SetTarget(null);
 		_AIState.Died(instigator);
-	}
-	private void NewClosestObject(GameObject newObject)
-	{
-		_AIState.NewClosestObject(newObject);
 	}
 	private bool IShouldFleeCheck()
 	{
@@ -408,12 +414,7 @@ public class MolatAIController : MonoBehaviour {
 				return gameObject.AddComponent<AIStatePatrolling>();
 		}
 		return gameObject.AddComponent<AIStateIdle>();
-
 	}
-
-
-
-
 
 
 	private void OnDrawGizmos()

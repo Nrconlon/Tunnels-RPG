@@ -16,12 +16,12 @@ public class AIVisionCollider : MonoBehaviour {
 
 	void OnTriggerEnter(Collider collider)
 	{
-		m_MolatAIController.GameObjectInRange(collider.transform.root.gameObject);
+		m_MolatAIController.StartRenderingGameObject(collider.transform.root.gameObject);
 	}
 
 	void OnTriggerExit(Collider collider)
 	{
-		m_MolatAIController.GameObjectOutOfRange(collider.transform.root.gameObject);
+		m_MolatAIController.StopRenderingGameObject(collider.transform.root.gameObject);
 	}
 }
 

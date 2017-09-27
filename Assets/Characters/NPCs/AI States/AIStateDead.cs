@@ -22,6 +22,10 @@ public class AIStateDead : AIState
 	{
 	}
 
+	public override void FirstTargetAquired(GameObject newObject)
+	{
+	}
+
 	public override void GotHit(GameObject instigator)
 	{
 	}
@@ -30,27 +34,11 @@ public class AIStateDead : AIState
 	{
 	}
 
-	public override void LostSightOfTarget(GameObject target)
+	public override void NewTargetAquired(GameObject newObject)
 	{
 	}
 
-	public override void NewClosestObject(GameObject newObject)
-	{
-	}
-
-	public override void NewMolatInSight(Molat newTarget)
-	{
-	}
-
-	public override void NewMolatOutOfSight(Molat newTarget)
-	{
-	}
-
-	public override void NewSpiderInSight(Spider spider)
-	{
-	}
-
-	public override void NewSpiderOutOfSight(Spider spider)
+	public override void NoTargetAvailable()
 	{
 	}
 }

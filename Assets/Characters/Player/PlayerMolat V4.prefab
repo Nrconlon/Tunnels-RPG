@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 114666672549204782}
   - component: {fileID: 114262421683770780}
   - component: {fileID: 114893731729514676}
+  - component: {fileID: 208104707609313724}
   m_Layer: 10
   m_Name: PlayerMolat V4
   m_TagString: Player
@@ -1762,7 +1763,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1178897808295450}
   m_LocalRotation: {x: -0, y: 0.9999774, z: -0, w: -0.0067249546}
-  m_LocalPosition: {x: -212.30432, y: -49.990845, z: -23.385284}
+  m_LocalPosition: {x: -231.94, y: -49.990845, z: -4.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4076770732274498}
@@ -2430,7 +2431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d90a21d3526bd58429a1e219d7a1db66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myCamera: {fileID: 0}
 --- !u!114 &114365041747395724
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2460,7 +2460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 4825616838375226}
   targetOffset: {x: -0.2, y: 1, z: 0}
-  distance: 4
+  distance: 0
   lineOfSightMask:
     serializedVersion: 2
     m_Bits: 0
@@ -2468,8 +2468,9 @@ MonoBehaviour:
   closerSnapLag: 0.2
   xSpeed: 200
   ySpeed: 80
-  yMinLimit: -20
+  yMinLimit: -70
   yMaxLimit: 80
+  direction: {x: 0, y: 0, z: 0}
 --- !u!114 &114666672549204782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2532,7 +2533,7 @@ MonoBehaviour:
   maxStamina: 50
   stamRechargePS: 10
   attackCost: -20
-  tailJumpCost: -5
+  tailJumpCost: -10
   sprintCostPS: -5
   climbCostPS: -5
   jumpCost: -10
@@ -2581,6 +2582,7 @@ MonoBehaviour:
   holster2sound: {fileID: 8300000, guid: 863bd0075c66f264fa8f3557cb7ed179, type: 3}
   targetDirection: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
+  mostRecentAttacker: {fileID: 0}
 --- !u!124 &124248512132167096
 Behaviour:
   m_ObjectHideFlags: 1
@@ -2780,3 +2782,18 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.0075265765, y: 0.11906543, z: -0.21591552}
     m_Extent: {x: 0.45000523, y: 0.32617584, z: 0.6641211}
   m_DirtyAABB: 0
+--- !u!208 &208104707609313724
+NavMeshObstacle:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1178897808295450}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 3.5, y: 1, z: 3.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

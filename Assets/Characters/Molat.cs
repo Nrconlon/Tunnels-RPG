@@ -60,7 +60,7 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float gravity = 18;
 	[SerializeField] float animDampTime = 2;
 	[SerializeField] float damageWithMaceThrow = 9.0f;
-	public GameObject throwingWeapon;
+	[SerializeField]private GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
 	[SerializeField] GameObject weaponObject;
 
@@ -113,7 +113,9 @@ public class Molat : MonoBehaviour, IDamageable
 	private bool grounded;
 
 	public delegate void ActionExpressedDelegate(Action action, GameObject instigator);
-	public ActionExpressedDelegate actionExpressed;
+	public ActionExpressedDelegate actionExpressedDel;
+	public delegate void IGotHitDelegate(float damage, float percentOfHealth, GameObject attacker, GameObject victim);
+	public IGotHitDelegate iGotHitDel;
 
 	[HideInInspector] public GameObject mostRecentAttacker;
 
@@ -550,6 +552,9 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 
 	public bool isWeaponEquiped { get { return weaponEquiped; } }
+
+	public GameObject ThrowingWeapon { get { return throwingWeapon; } }
+
 	public void ToggleEquipWeapon()
 	{
 		if (!isDead && !changingWeapon)
@@ -559,7 +564,6 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	private IEnumerator CoToggleEquipWeapon()
 	{
-
 			changingWeapon = true;
 			canAttack = false;
 
@@ -613,7 +617,7 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(!isDead && !isClimbing)
 		{
-			GameObject projectileMace = Instantiate(throwingWeapon, projectileSocket.transform.position, Quaternion.identity);
+			GameObject projectileMace = Instantiate(ThrowingWeapon, projectileSocket.transform.position, Quaternion.identity);
 			FlyingMace maceComponent = projectileMace.GetComponent<FlyingMace>();
 			maceComponent.currentDamage = damageWithMaceThrow;
 			projectileMace.GetComponent<Rigidbody>().velocity = lookAtDirection * maceComponent.projectileSpeed;
@@ -626,6 +630,10 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(!IsDead)
 		{
+			if (iGotHitDel != null)
+			{
+				iGotHitDel(damage, maxHealth / damage, instigator, gameObject);
+			}
 			mostRecentAttacker = instigator;
 			if (currentHealth * percentDamgeCauseKnockback < damage)
 			{
@@ -666,9 +674,9 @@ public class Molat : MonoBehaviour, IDamageable
 
 	private void ExpressAction(Action action)
 	{
-		if(actionExpressed != null)
+		if(actionExpressedDel != null)
 		{
-			actionExpressed(action, gameObject);
+			actionExpressedDel(action, gameObject);
 		}
 	}
 

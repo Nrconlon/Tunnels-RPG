@@ -1937,7 +1937,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1059042710303636}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.022, y: 0.056, z: -0.6}
+  m_LocalPosition: {x: 0.096, y: -0.181, z: -0.537}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4405414609062728}
@@ -2471,7 +2471,7 @@ MonoBehaviour:
   newDestDistance: 3
   fleeDuration: 5
   waypoints: []
-  preferedState: 2
+  preferedState: 1
   currentStateEnum: 0
   currentAction: 0
   myTeam: 0
@@ -2497,7 +2497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dd7802a835062e4190ccf36fd8e5bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 110
   power: 1
   level: 1
   speed: 6
@@ -2662,7 +2662,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 15
+  m_Radius: 25
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!135 &135993861522437726
 SphereCollider:
@@ -2846,7 +2846,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 1
+  m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
