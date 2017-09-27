@@ -113,9 +113,9 @@ public class Molat : MonoBehaviour, IDamageable
 	private bool grounded;
 
 	public delegate void ActionExpressedDelegate(Action action, GameObject instigator);
-	public ActionExpressedDelegate actionExpressedDel;
+	public event ActionExpressedDelegate ActionExpressedDel;
 	public delegate void IGotHitDelegate(float damage, float percentOfHealth, GameObject attacker, GameObject victim);
-	public IGotHitDelegate iGotHitDel;
+	public event IGotHitDelegate IGotHitDel;
 
 	[HideInInspector] public GameObject mostRecentAttacker;
 
@@ -630,9 +630,9 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(!IsDead)
 		{
-			if (iGotHitDel != null)
+			if (IGotHitDel != null)
 			{
-				iGotHitDel(damage, maxHealth / damage, instigator, gameObject);
+				IGotHitDel(damage, maxHealth / damage, instigator, gameObject);
 			}
 			mostRecentAttacker = instigator;
 			if (currentHealth * percentDamgeCauseKnockback < damage)
@@ -674,9 +674,9 @@ public class Molat : MonoBehaviour, IDamageable
 
 	private void ExpressAction(Action action)
 	{
-		if(actionExpressedDel != null)
+		if(ActionExpressedDel != null)
 		{
-			actionExpressedDel(action, gameObject);
+			ActionExpressedDel(action, gameObject);
 		}
 	}
 

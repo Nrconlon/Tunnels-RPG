@@ -40,14 +40,14 @@ public class MolatAIController : MonoBehaviour {
 	[Header("Combat")]
 	[SerializeField] float attackRadius = 2.5f;
 	[SerializeField] float prefDistFromTarget = 1f;
-	[SerializeField] int maxEnemiesBeforeFlee = 5;
+	[SerializeField] int maxEnemiesBeforeFlee = 300;
 	[SerializeField] float healthThreshholdPercent = 0.2f;
 
 
 	private void OnDestroy()
 	{
-		m_Molat.actionExpressedDel -= AMolatExpressedAction;
-		m_Molat.iGotHitDel -= AMolatGotHit;
+		m_Molat.ActionExpressedDel -= AMolatExpressedAction;
+		m_Molat.IGotHitDel -= AMolatGotHit;
 	}
 
 	// Use this for initialization
@@ -62,8 +62,8 @@ public class MolatAIController : MonoBehaviour {
 		_AIState.Initialize(this);
 
 		//delegate
-		m_Molat.actionExpressedDel += AMolatExpressedAction;
-		m_Molat.iGotHitDel += AMolatGotHit;
+		m_Molat.ActionExpressedDel += AMolatExpressedAction;
+		m_Molat.IGotHitDel += AMolatGotHit;
 		//TODO on raycasting vision, add targets;
 	}
 	
@@ -275,7 +275,7 @@ public class MolatAIController : MonoBehaviour {
 	void addMolat(Molat newMolat)
 	{
 		mList_EnemyMolats.Add(newMolat);
-		newMolat.actionExpressedDel += AMolatExpressedAction;
+		newMolat.ActionExpressedDel += AMolatExpressedAction;
 	}
 	void removeMolat(Molat newMolat)
 	{
@@ -283,7 +283,7 @@ public class MolatAIController : MonoBehaviour {
 		{
 			mList_EnemyMolats.Remove(newMolat);
 		}
-		newMolat.actionExpressedDel -= AMolatExpressedAction;
+		newMolat.ActionExpressedDel -= AMolatExpressedAction;
 	}
 
 	void addSpider(Spider newSpider)

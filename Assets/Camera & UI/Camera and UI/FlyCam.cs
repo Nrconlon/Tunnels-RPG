@@ -9,6 +9,9 @@ public class FlyCam : MonoBehaviour {
 	[SerializeField] float maxVelocityChange = 10.0f;
 	[SerializeField] float mouseSensitivity = 300f;
 	[SerializeField] float mouseScrollHeight = 15;
+	[SerializeField] float minCameraHeight = 1;
+	[SerializeField] float maxCameraHeight = 16;
+
 	private float x = 0.0f;
 	private float y = 0.0f;
 	float currentSpeed;
@@ -75,7 +78,7 @@ public class FlyCam : MonoBehaviour {
 		{
 			changeY = -changeY * mouseScrollHeight;
 			Vector3 lastTransform = transform.position;
-			transform.position = new Vector3(lastTransform.x, lastTransform.y + changeY, lastTransform.z);
+			transform.position = new Vector3(lastTransform.x, Mathf.Clamp(lastTransform.y + changeY, minCameraHeight, maxCameraHeight), lastTransform.z);
 		}
 	}
 }
