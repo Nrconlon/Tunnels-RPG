@@ -3,57 +3,94 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Collections.Generic;
 
-public class CameraRaycaster : MonoBehaviour
+public class MouseAndRaycast : MonoBehaviour
 {
 	// INSPECTOR PROPERTIES RENDERED BY CUSTOM EDITOR SCRIPT
 	[SerializeField] int[] layerPriorities;
 
-    float maxRaycastDepth = 100f; // Hard coded value
+	[SerializeField] Texture2D spawnCursor = null;
+	[SerializeField] Texture2D unknownCursor = null;
+	[SerializeField] Texture2D selectCursor = null;
+
+	[SerializeField] const int spawnNumber = 0;
+	[SerializeField] const int uINumber = 5;
+
+	[SerializeField] Vector2 cursorHotspot = Vector2.zero;
+
+	float maxRaycastDepth = 100f; // Hard coded value
 	int topPriorityLayerLastFrame = -1; // So get ? from start with Default layer terrain
 
-	// Setup delegates for broadcasting layer changes to other classes
-    public delegate void OnCursorLayerChange(int newLayer); // declare new delegate type
-    public event OnCursorLayerChange NotifyLayerChangeObservers; // instantiate an observer set
-
-	public delegate void OnClickPriorityLayer(RaycastHit raycastHit, int layerHit); // declare new delegate type
-	public event OnClickPriorityLayer NotifyMouseClickObservers; // instantiate an observer set
+	private UserArenaController userArenaController;
+	private Camera camera;
 
 
-    void Update()
+	private void Start()
+	{
+		userArenaController = GetComponent<UserArenaController>();
+		camera = GetComponent<Camera>();
+	}
+
+	void Update()
 	{
 		// Check if pointer is over an interactable UI element
 		if (EventSystem.current.IsPointerOverGameObject ())
 		{
-			NotifyObserersIfLayerChanged (5);
+			CheckIfLayerChange (5);
+			return;
 		}
 
 		// Raycast to max depth, every frame as things can move under mouse
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 		RaycastHit[] raycastHits = Physics.RaycastAll (ray, maxRaycastDepth);
 
         RaycastHit? priorityHit = FindTopPriorityHit(raycastHits);
         if (!priorityHit.HasValue) // if hit no priority object
 		{
-			NotifyObserersIfLayerChanged (0); // broadcast default layer
+			CheckIfLayerChange (0); // broadcast default layer
+			
 			return;
 		}
 
 		// Notify delegates of layer change
 		var layerHit = priorityHit.Value.collider.gameObject.layer;
-		NotifyObserersIfLayerChanged(layerHit);
+		CheckIfLayerChange(layerHit);
 		// Notify delegates of highest priority game object under mouse when clicked
 		if (Input.GetMouseButtonDown(0))
 		{
-			NotifyMouseClickObservers(priorityHit.Value, layerHit);
+			userArenaController.SpawnAICharacter(priorityHit.Value.point);
 		}
 	}
 
-	void NotifyObserersIfLayerChanged(int newLayer)
+	void CheckIfLayerChange(int newLayer)
 	{
 		if (newLayer != topPriorityLayerLastFrame)
 		{
 			topPriorityLayerLastFrame = newLayer;
-			NotifyLayerChangeObservers (newLayer);
+			
+			switch (newLayer)
+			{
+				case uINumber:
+					if (!selectCursor)
+					{
+						cursorHotspot = Vector2.zero;
+					}
+					Cursor.SetCursor(selectCursor, cursorHotspot, CursorMode.Auto);
+					break;
+				case spawnNumber:
+					if (!spawnCursor)
+					{
+						cursorHotspot = Vector2.zero;
+					}
+					Cursor.SetCursor(spawnCursor, cursorHotspot, CursorMode.Auto);
+					break;
+				default:
+					if (!unknownCursor)
+					{
+						cursorHotspot = Vector2.zero;
+					}
+					Cursor.SetCursor(unknownCursor, cursorHotspot, CursorMode.Auto);
+					break;
+			}
 		}
 	}
 
