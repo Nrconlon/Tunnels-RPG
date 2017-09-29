@@ -295,7 +295,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4829214166315662, guid: 2fa155d430593bb4dbca7ebc04ad822f, type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2fa155d430593bb4dbca7ebc04ad822f, type: 2}
@@ -389,7 +389,7 @@ RectTransform:
   - {fileID: 1744955933}
   - {fileID: 1026321823}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -704,7 +704,18 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.InputField+OnChangeEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
@@ -2559,7 +2570,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1095582960
 GameObject:
@@ -3049,7 +3060,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4274412922491154, guid: 6b4f14315a3b7e747b0289781d449ff8, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1422705840623190, guid: 6b4f14315a3b7e747b0289781d449ff8, type: 2}
       propertyPath: m_Layer
@@ -3269,9 +3280,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d9b569494efe60479892209bd1bc75a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AIPrefab: {fileID: 1663751865173622, guid: 6297e2499e16eb442966f5aa6617fcd1, type: 2}
+  _AIPrefab: {fileID: 0}
+  _PlayerPrefab: {fileID: 0}
   optionsMenuButton: {fileID: 1026321822}
   returnToControlButton: {fileID: 585976471}
+  health: 100
 --- !u!114 &1295236269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4011,48 +4024,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1954313822}
---- !u!1001 &1964794442
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 14.255188
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0.82
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 1.0685577
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0.030141518
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: -0.9995457
-      objectReference: {fileID: 0}
-    - target: {fileID: 4282389534378740, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: db0ba156217ba154ab96f1a6933a89c9, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &1971556066
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Molat : MonoBehaviour, IDamageable
@@ -17,33 +16,20 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float sprintSpeed = 8f;
 	[Range(0f, 180f)] [SerializeField] float fullSpeedMaxDegrees = 80f;
 	[SerializeField] float maxVelocityChange = 10.0f;
-	[SerializeField] float climbSpeed = 8f;
 
 	[Header("Stamina")]
 	[SerializeField] float maxStamina = 50f;
 	[SerializeField] float stamRechargePS = 10f;
-	[SerializeField] float attackCost = -20f;
 	[SerializeField] float tailJumpCost = -10f;
 	[SerializeField] float sprintCostPS = -5f;
-	[SerializeField] float climbCostPS = -5f;
 	[SerializeField] float jumpCost = -10f;
-
-	[Header("Damage and Bleed")]
-	[SerializeField] float clawDamage = 20f;
-	[SerializeField] float bleedBluntPercent = 0f;
-	[SerializeField] float bleedSpikedPercent = 0.2f;
-	[SerializeField] float bleedSharpPercent = 0.5f;
-	[SerializeField] float attackLength = 1.2f;
-	[SerializeField] float healingRatioPS = 1.2f;
-	[SerializeField] float percentDamgeCauseKnockback = 0.4f;
-	[SerializeField] float forceThreshold = 30;
 
 
 	[Header("Abilities")]
 	[SerializeField] bool canJump = true;
 	[SerializeField] bool canAttack = true;
 	[SerializeField] bool canSprint = true;
-	[SerializeField] bool canClimb = false;
+	[SerializeField] bool canBlock = true;
 
 	[Header("Jumping")]
 	
@@ -58,18 +44,17 @@ public class Molat : MonoBehaviour, IDamageable
 
 	[Header("Other")]
 	[SerializeField] float gravity = 18;
+	[SerializeField] float forceThreshold = 30;
 	[SerializeField] float animDampTime = 2;
 	[SerializeField] float damageWithMaceThrow = 9.0f;
-	[SerializeField]private GameObject throwingWeapon;
+	[SerializeField] private GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
 	[SerializeField] GameObject weaponObject;
+	[SerializeField] GameObject claw;
 
-
-	private Weapon myWeapon;
 	private float currentSpeed;
 	private bool isJumping;
 	private bool isSprinting;
-	private bool isClimbing;
 	private bool isSliding;
 	private float currentHealth;
 	private float currentStamina;
@@ -81,13 +66,13 @@ public class Molat : MonoBehaviour, IDamageable
 	private float slideSpeed;
 	private float slideDuration;
 
-	private float bleed = 0f;
-	private bool bleeding = false;
 	private bool healing = false;
+	private bool isDead = false;
 
 	private bool weaponEquiped = false;
 	private bool changingWeapon = false;
-	private bool isDead = false;
+	private Weapon myWeapon;
+	private Weapon myClaw;
 	//[SerializeField] Transform target;
 
 
@@ -116,6 +101,8 @@ public class Molat : MonoBehaviour, IDamageable
 	public event ActionExpressedDelegate ActionExpressedDel;
 	public delegate void IGotHitDelegate(float damage, float percentOfHealth, GameObject attacker, GameObject victim);
 	public event IGotHitDelegate IGotHitDel;
+	public delegate void DestroyedDelegate(GameObject destroyedObject);
+	public event DestroyedDelegate DestroyedDel;
 
 	[HideInInspector] public GameObject mostRecentAttacker;
 
@@ -129,16 +116,25 @@ public class Molat : MonoBehaviour, IDamageable
 	float torwardAmount;
 	private bool isBlocking;
 	private float swingTimer = 0f;
+	private bool weaponActive = false;
+	private GameObject clawClone;
+	private GameObject weaponClone;
 
+
+	void OnDestroy()
+	{
+		if(DestroyedDel != null)
+		{
+			DestroyedDel(gameObject);
+		}
+	}
 
 	void Start()
 	{
 		m_Animator = GetComponent<Animator>();
 		m_RigidBody = GetComponent<Rigidbody>();
 		m_Capsule = GetComponent<CapsuleCollider>();
-		GameObject weaponClone = Instantiate(weaponObject, weapon.transform.position, weapon.transform.rotation);
-		weaponClone.transform.parent = weapon;
-		myWeapon = weaponClone.GetComponent<Weapon>();
+		
 		m_RigidBody.freezeRotation = true;
 		m_RigidBody.useGravity = false;
 		drag = m_RigidBody.drag;
@@ -150,16 +146,19 @@ public class Molat : MonoBehaviour, IDamageable
 		lookAtDirection = Vector3.zero;
 		isJumping = false;
 		isSprinting = false;
-		isClimbing = false;
 		isBlocking = false;
 		grounded = true;
 
-		myWeapon.instigator = gameObject;
+		SetUpClaw();
+		
+
+		if (weaponObject)
+		{
+			SpawnWeapon(weaponObject);
+		}
+
 		mostRecentAttacker = gameObject;
-
-
 	}
-
 
 	void FixedUpdate()
 	{
@@ -237,16 +236,12 @@ public class Molat : MonoBehaviour, IDamageable
 				}
 
 			}
-
-			if (!isClimbing)
+			if (lookAtDirection != Vector3.zero)
 			{
-				if (lookAtDirection != Vector3.zero)
-				{
-					Quaternion lookrotation2 = Quaternion.LookRotation(lookAtDirection, Vector3.up);
-					lookrotation2.x = 0;
-					lookrotation2.z = 0;
-					transform.rotation = lookrotation2;
-				}
+				Quaternion lookrotation2 = Quaternion.LookRotation(lookAtDirection, Vector3.up);
+				lookrotation2.x = 0;
+				lookrotation2.z = 0;
+				transform.rotation = lookrotation2;
 			}
 		}
 	}
@@ -263,24 +258,17 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(currentStamina != maxStamina)
 		{
-			staminaOnTick(stamRechargePS);
+			StaminaOnTick(stamRechargePS);
 		}
 		if (isSprinting)
 		{
-			if(!staminaOnTick(sprintCostPS))
+			if(!StaminaOnTick(sprintCostPS))
 			{
 				isSprinting = false;
 			}
 		}
-		if (isClimbing)
-		{
-			if (!staminaOnTick(climbCostPS))
-			{
-				isClimbing = false;
-			}
-		}
 	}
-	bool staminaOnTick(float staminaUseOrGain)
+	bool StaminaOnTick(float staminaUseOrGain)
 	{
 		float stamUseOrGain = staminaUseOrGain * Time.deltaTime;
 		if ((currentStamina + stamUseOrGain) < 0)
@@ -297,7 +285,7 @@ public class Molat : MonoBehaviour, IDamageable
 		currentStamina = Mathf.Clamp(currentStamina + stamUseOrGain, 0f, maxStamina);
 		return true;
 	}
-	bool useAbility(float staminaCost)
+	bool UseAbility(float staminaCost)
 	{
 		if ((currentStamina + staminaCost) < 0 || isDead)
 		{
@@ -323,7 +311,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	public bool IsDead { get { return isDead; } }
 
-	public float staminaAsPercentage
+	public float StaminaAsPercentage
 	{
 		get
 		{
@@ -331,35 +319,88 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-	public float healthAsPercentage {
+	public float HealthAsPercentage {
 		get
 		{
 			return currentHealth / maxHealth;
 		}
 	}
 
-
-	public bool Attack(bool toogle)
+	private void SetUpClaw()
 	{
-
-		if (toogle)
+		if (clawClone)
 		{
-			if (!isDead && canAttack && !isClimbing && weaponEquiped)
+			Destroy(clawClone);
+		}
+		clawClone = Instantiate(claw, righthandpos.position, righthandpos.rotation, righthandpos);
+		myClaw = clawClone.GetComponent<Weapon>();
+		myClaw.instigator = gameObject;
+	}
+
+	private void SpawnWeapon(GameObject weaponToSpawn)
+	{
+		//Remove oldWeapon
+		if (myWeapon)
+		{
+			myWeapon.WeaponBreakDel -= WeaponBroke;
+		}
+		if(weaponClone)
+		{
+			Destroy(weaponClone);
+		}
+
+
+		weaponClone = Instantiate(weaponToSpawn, weapon.position, weapon.rotation, weapon);
+		myWeapon = weaponClone.GetComponent<Weapon>();
+		myWeapon.WeaponBreakDel += WeaponBroke;
+		myWeapon.instigator = gameObject;
+	}
+
+	private void WeaponBroke(GameObject brokenWeapon)
+	{
+		if(myWeapon)
+		{
+			if (brokenWeapon == myWeapon.gameObject)
 			{
-				AnimatorStateInfo currentState = m_Animator.GetCurrentAnimatorStateInfo(2);
-				if (currentState.length == 1 && useAbility(attackCost))
+				myWeapon.WeaponBreakDel -= WeaponBroke;
+				if(weaponClone)
 				{
-					ExpressAction(Action.Attack);
-					myWeapon.currentDamage = myWeapon.baseDamage * power;
-					myWeapon.currentForce = myWeapon.force * power;
-					myWeapon.isActivated = true;
-					m_Animator.SetFloat("attackType", 0);
-					StartCoroutine(CoTickAnimation("attack"));
-					return true;
+					Destroy(weaponClone);
 				}
 			}
 		}
-		return false;
+
+	}
+
+	private void PickUpWeapon(GameObject weaponOnGround)
+	{
+		//set weapon location and parents and such.  turn off its rigit body
+		//SpawnWeapon(weaponOnGround);
+		//Destroy(weaponOnGround);
+	}
+
+	public void Attack()
+	{
+		if (!isDead && canAttack && !changingWeapon)
+		{
+			Weapon currentWeapon = myClaw;
+			bool usingClaw = true;
+			if(!UseClaw())
+			{
+				currentWeapon = myWeapon;
+				usingClaw = false;
+			}
+			if (!weaponActive && UseAbility(currentWeapon.staminaCost))
+			{
+				weaponActive = true;
+				ExpressAction(Action.Attack);
+				currentWeapon.currentDamage = currentWeapon.baseDamage * power;
+				currentWeapon.currentForce = currentWeapon.force * power;
+				m_Animator.SetBool("usingClaw", usingClaw);
+				m_Animator.SetFloat("attackType", 0);
+				m_Animator.SetTrigger("attack");
+			}
+		}
 	}
 
 	//Called per frame from controller
@@ -370,13 +411,13 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			//When out of stamina, update() forces us to stop sprinting.
 			//if we are not sprinting, we need enough for a jump to start again
-			if (!isSprinting && lastTailJumpToggle == false && useAbility(tailJumpCost))
+			if (!isSprinting && lastTailJumpToggle == false && UseAbility(tailJumpCost))
 			{
 				//We only come in here once.  This is an action.
 				isSprinting = true;
 				ExpressAction(Action.tailJump);
 
-				StartCoroutine(CoTickAnimation("tailJump"));
+				m_Animator.SetTrigger("tailJump");
 				//tailJump
 				myaudiosource.clip = jumpclip2;
 				myaudiosource.loop = false;
@@ -402,19 +443,30 @@ public class Molat : MonoBehaviour, IDamageable
 		return isSprinting;
 	}
 
-	private IEnumerator CoTickAnimation(string animName)
+	//TODO add block animation(which should be push)
+	public void Block(bool toggle)
 	{
-		m_Animator.SetBool(animName, true);
-		yield return new WaitForSeconds(0.1f);
-		m_Animator.SetBool(animName, false);
+		if (canBlock && toggle && !isBlocking && IsWeaponEquiped)
+		{
+			isBlocking = true;
+			m_Animator.SetBool("isBlocking", isBlocking);
+		}
+		else if(!toggle)
+		{
+			isBlocking = false;
+			m_Animator.SetBool("isBlocking", isBlocking);
+
+		}
 	}
+
+
 
 	//called per frame from controller when pressed
 	public bool Jump(bool toggle, Vector3 direction)
 	{
 		if(toggle)
 		{
-			if (!isDead && canJump && (grounded || isClimbing) && !isJumping && !lastJumpToggle && useAbility(jumpCost))
+			if (!isDead && canJump && (grounded) && !isJumping && !lastJumpToggle && UseAbility(jumpCost))
 			{
 				ExpressAction(Action.Jump);
 				//We only come in here once.  This is an action.
@@ -425,8 +477,8 @@ public class Molat : MonoBehaviour, IDamageable
 				myaudiosource.pitch = 1;
 				myaudiosource.Play();
 				m_RigidBody.AddForce(new Vector3(direction.x * jumpPower, CalculateJumpVerticalSpeed(jumpHeight), direction.z * jumpPower));
-				StartCoroutine(CoTickAnimation("jump"));
-				StartCoroutine(checkIfLanded());
+				m_Animator.SetTrigger("jump");
+				StartCoroutine(CheckIfLanded());
 				lastJumpToggle = true;
 				return true;
 			}
@@ -436,7 +488,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	}
 
-	private IEnumerator checkIfLanded()
+	private IEnumerator CheckIfLanded()
 	{
 		yield return new WaitForSeconds(1f);
 		if(grounded && isJumping)
@@ -445,13 +497,9 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-
-		/// <summary>
-		/// if(grounded && !isClimbing && !isJumping)
-		/// </summary>
-		bool freeToMove()
+	bool freeToMove()
 	{
-		if(!isDead && grounded && !isClimbing && !isJumping)
+		if(!isDead && grounded && !isJumping)
 		{
 			return true;
 		}
@@ -507,51 +555,61 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	void grabshield()
 	{
-		//shield.parent = lefthandpos;
-		//shield.position = lefthandpos.position;
-		//shield.rotation = lefthandpos.rotation;
-		//weaponEquiped = true;
-		//myaudiosource.clip = equip2sound;
-		//myaudiosource.loop = false;
-		//myaudiosource.pitch = 0.9f + 0.2f * Random.value;
-		//myaudiosource.Play();
+		if (shield)
+		{
+			shield.parent = lefthandpos;
+			shield.position = lefthandpos.position;
+			shield.rotation = lefthandpos.rotation;
+			weaponEquiped = true;
+			myaudiosource.clip = equip2sound;
+			myaudiosource.loop = false;
+			myaudiosource.pitch = 0.9f + 0.2f * UnityEngine.Random.value;
+			myaudiosource.Play();
+		}
 	}
 	void grabweapon()
 	{
-		weapon.parent = righthandpos;
-		weapon.position = righthandpos.position;
-		weapon.rotation = righthandpos.rotation;
-		myaudiosource.clip = equip1sound;
-		myaudiosource.loop = false;
-		myaudiosource.pitch = 0.9f + 0.2f * Random.value;
-		myaudiosource.Play();
-
-
+		if (weapon)
+		{
+			weapon.parent = righthandpos;
+			weapon.position = righthandpos.position;
+			weapon.rotation = righthandpos.rotation;
+			myaudiosource.clip = equip1sound;
+			myaudiosource.loop = false;
+			myaudiosource.pitch = 0.9f + 0.2f * UnityEngine.Random.value;
+			myaudiosource.Play();
+		}
 	}
 	void holstershield()
 	{
-		//shield.parent = chestposshield;
-		//shield.position = chestposshield.position;
-		//shield.rotation = chestposshield.rotation;
-		//myaudiosource.clip = holster1sound;
-		//myaudiosource.loop = false;
-		//myaudiosource.pitch = 0.9f + 0.2f * Random.value;
-		//myaudiosource.Play();
+		if(shield)
+		{
+			shield.parent = chestposshield;
+			shield.position = chestposshield.position;
+			shield.rotation = chestposshield.rotation;
+			myaudiosource.clip = holster1sound;
+			myaudiosource.loop = false;
+			myaudiosource.pitch = 0.9f + 0.2f * UnityEngine.Random.value;
+			myaudiosource.Play();
+		}
 
 	}
 	void holsterweapon()
 	{
-		weaponEquiped = false;
-		weapon.parent = chestposweapon;
-		weapon.position = chestposweapon.position;
-		weapon.rotation = chestposweapon.rotation;
-		myaudiosource.clip = holster2sound;
-		myaudiosource.loop = false;
-		myaudiosource.pitch = 0.9f + 0.2f * Random.value;
-		myaudiosource.Play();
+		if (weapon)
+		{
+			weaponEquiped = false;
+			weapon.parent = chestposweapon;
+			weapon.position = chestposweapon.position;
+			weapon.rotation = chestposweapon.rotation;
+			myaudiosource.clip = holster2sound;
+			myaudiosource.loop = false;
+			myaudiosource.pitch = 0.9f + 0.2f * UnityEngine.Random.value;
+			myaudiosource.Play();
+		}
 	}
 
-	public bool isWeaponEquiped { get { return weaponEquiped; } }
+	public bool IsWeaponEquiped { get { return weaponEquiped; } }
 
 	public GameObject ThrowingWeapon { get { return throwingWeapon; } }
 
@@ -565,7 +623,6 @@ public class Molat : MonoBehaviour, IDamageable
 	private IEnumerator CoToggleEquipWeapon()
 	{
 			changingWeapon = true;
-			canAttack = false;
 
 			if (!weaponEquiped)
 			{
@@ -583,7 +640,6 @@ public class Molat : MonoBehaviour, IDamageable
 			}
 
 			//after 1 seconds
-			canAttack = true;
 			changingWeapon = false;
 	}
 
@@ -598,24 +654,10 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 
 
-	//TODO add block animation(which should be push)
-	public void Block(bool click, bool release)
-	{
-		if(click && !isBlocking)
-		{
-			isBlocking = true;
-			//animate
-		}
-		else if (release && isBlocking)
-		{
-			isBlocking = false;
-		}
-	}
-
 	//TODO change to throw weapon, and make it toss whatever weapon type im holding
 	public void ThrowMace()
 	{
-		if(!isDead && !isClimbing)
+		if(!isDead)
 		{
 			GameObject projectileMace = Instantiate(ThrowingWeapon, projectileSocket.transform.position, Quaternion.identity);
 			FlyingMace maceComponent = projectileMace.GetComponent<FlyingMace>();
@@ -626,50 +668,54 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 
 
-	public void TakeDamage(float damage, float force, Vector3 direction, EDamageType damageType, GameObject instigator)
+	public void TakeDamage(float damage, float force, Vector3 direction, GameObject instigator)
 	{
 		if(!IsDead)
 		{
+			m_Animator.SetTrigger("gotHit");
 			if (IGotHitDel != null)
 			{
 				IGotHitDel(damage, maxHealth / damage, instigator, gameObject);
 			}
 			mostRecentAttacker = instigator;
-			if (currentHealth * percentDamgeCauseKnockback < damage)
-			{
-				//heel over
-
-			}
 			if (force > forceThreshold)
 			{
-				//direction.y = 0f;
 				StartSliding(direction, force, 0.2f);
 			}
 			currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
-			switch (damageType)
-			{
-				case EDamageType.blunt:
-					bleed = damage * bleedBluntPercent;
-					break;
-				case EDamageType.spiked:
-					bleed = damage * bleedSpikedPercent;
-					break;
-				case EDamageType.sharp:
-					bleed = damage * bleedSharpPercent;
-					break;
-			}
 			HandleDeath();
 		}
 	}
 
 	public void ActivateWeapon()
 	{
-		myWeapon.Activate();
+		if(UseClaw())
+		{
+			myClaw.Activate();
+		}
+		else
+		{
+			myWeapon.Activate();
+		}
 	}
 	public void DeactivateWeapon()
 	{
-		myWeapon.Deactivate();
+		weaponActive = false;
+		if (UseClaw())
+		{
+			myClaw.Deactivate();
+		}
+		else
+		{
+			myWeapon.Deactivate();
+		}
+	}
 
+	private bool UseClaw()
+	{
+		if (myWeapon == null || !IsWeaponEquiped)
+			return true;
+		return false;
 	}
 
 	private void ExpressAction(Action action)

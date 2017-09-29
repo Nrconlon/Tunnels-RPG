@@ -56,6 +56,7 @@ public class MolatAIController : MonoBehaviour {
 		m_Molat = GetComponent<Molat>();
 		agent.updateRotation = false;
 		agent.updatePosition = true;
+		agent.stoppingDistance = PrefDistFromTarget;
 		_AIState = CreateState(StateEnum.Idle);
 		currentStateEnum = StateEnum.Idle;
 		destination = transform.position;
@@ -173,6 +174,7 @@ public class MolatAIController : MonoBehaviour {
 	//Called from collision Capsule
 	public void StartRenderingGameObject(GameObject newObject)
 	{
+		//TODO check if item, add it items list
 		if(!_RenderedObjectsDictionary.ContainsKey(newObject) && !IsObjectDead(newObject))
 		{
 			EnemyPriority newPriority = new EnemyPriority

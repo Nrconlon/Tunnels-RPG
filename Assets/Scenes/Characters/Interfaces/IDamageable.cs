@@ -4,7 +4,5 @@ using UnityEngine;
 
 public interface IDamageable
 {
-	void TakeDamage(float damage, float force, Vector3 direction, EDamageType type, GameObject instigator);
+	void TakeDamage(float damage, float force, Vector3 direction, GameObject instigator);
 }
-
-public enum EDamageType { blunt, spiked, sharp };

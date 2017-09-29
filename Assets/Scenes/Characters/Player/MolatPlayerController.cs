@@ -35,8 +35,18 @@ public class MolatPlayerController : MonoBehaviour {
 
 		m_molat.TailSprint(Input.GetButton("Fire3"), targetDirection);
 		m_molat.Jump(Input.GetButton("Jump"), targetDirection);
-		m_molat.Attack(Input.GetMouseButtonDown(0));
-		m_molat.Block(Input.GetMouseButtonDown(1), Input.GetMouseButtonUp(1));
+		if(Input.GetMouseButtonDown(0))
+		{
+			m_molat.Attack();
+		}
+		if(Input.GetMouseButtonDown(1))
+		{
+			m_molat.Block(true);
+		}
+		else if(Input.GetMouseButtonUp(1))
+		{
+			m_molat.Block(false);
+		}
 
 		if (Input.GetKey("f"))
 		{

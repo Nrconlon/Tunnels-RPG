@@ -1763,7 +1763,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1178897808295450}
   m_LocalRotation: {x: -0, y: 0.9999774, z: -0, w: -0.0067249546}
-  m_LocalPosition: {x: -231.94, y: -49.990845, z: -4.22}
+  m_LocalPosition: {x: 10.636139, y: 0, z: -2.2546997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4076770732274498}
@@ -2532,15 +2532,10 @@ MonoBehaviour:
   climbSpeed: 8
   maxStamina: 50
   stamRechargePS: 10
-  attackCost: -20
   tailJumpCost: -10
   sprintCostPS: -5
-  climbCostPS: -5
   jumpCost: -10
   clawDamage: 20
-  bleedBluntPercent: 0
-  bleedSpikedPercent: 0.2
-  bleedSharpPercent: 0.5
   attackLength: 1.2
   healingRatioPS: 1.2
   percentDamgeCauseKnockback: 0.4
@@ -2548,7 +2543,7 @@ MonoBehaviour:
   canJump: 1
   canAttack: 1
   canSprint: 1
-  canClimb: 0
+  canBlock: 1
   tailJumpHeight: 2
   tailJumpPower: 40
   tailJumpDuration: 0.2
@@ -2566,6 +2561,7 @@ MonoBehaviour:
   projectileSocket: {fileID: 1709799075669932}
   weaponObject: {fileID: 1464216861386448, guid: e17ebe850bfe30e4981f6e65e91506a3,
     type: 2}
+  claw: {fileID: 1740099511092644, guid: 2fa3ff423474cfb428f5ab415e399747, type: 2}
   myaudiosource: {fileID: 82059001750273422}
   chest: {fileID: 4874891477736168}
   shield: {fileID: 4267369674306658}

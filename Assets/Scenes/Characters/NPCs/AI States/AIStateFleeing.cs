@@ -19,7 +19,7 @@ public class AIStateFleeing : AIState
 				ChangeState(DecideNextState());
 			}
 		}
-		if (m_Molat.isWeaponEquiped)
+		if (m_Molat.IsWeaponEquiped)
 		{
 			m_Molat.ToggleEquipWeapon();
 		}

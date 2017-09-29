@@ -22,7 +22,7 @@ public class PlayerStaminaBar : MonoBehaviour
 	{
 		if (player)
 		{
-			float xValue = -(player.staminaAsPercentage / 2f) - 0.5f;
+			float xValue = -(player.StaminaAsPercentage / 2f) - 0.5f;
 			staminaBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
 
 		}

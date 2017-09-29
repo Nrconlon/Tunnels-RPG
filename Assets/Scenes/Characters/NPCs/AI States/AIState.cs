@@ -86,7 +86,7 @@ public abstract class AIState : MonoBehaviour {
 		{
 			return true;
 		}
-		else if (m_Molat.healthAsPercentage < m_molatAIController.HealthThreshholdPercent)
+		else if (m_Molat.HealthAsPercentage < m_molatAIController.HealthThreshholdPercent)
 		{
 			return true;
 		}

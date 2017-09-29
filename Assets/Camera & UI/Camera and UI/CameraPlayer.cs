@@ -24,7 +24,6 @@ public class CameraPlayer : MonoBehaviour {
 
 	private Transform WhereCamShouldBe;
 
-	private MolatPlayerController _MolatPlayerController;
 
 	private float currentDistance = 10.0f;
 	private float x = 0.0f;
@@ -37,7 +36,6 @@ public class CameraPlayer : MonoBehaviour {
 		x = angles.y;
 		y = angles.x;
 		currentDistance = distance;
-		_MolatPlayerController = GetComponentInParent<MolatPlayerController>();
 
 		// Make the rigid body not change rotation
 		if (GetComponentInParent<Rigidbody>())

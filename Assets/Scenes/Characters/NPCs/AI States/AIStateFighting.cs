@@ -37,7 +37,7 @@ public class AIStateFighting : AIState
 
 	public override void ChooseAction()
 	{
-		if (!m_Molat.isWeaponEquiped)
+		if (!m_Molat.IsWeaponEquiped)
 		{
 			m_Molat.ToggleEquipWeapon();
 		}
@@ -50,7 +50,7 @@ public class AIStateFighting : AIState
 				{
 					m_Molat.Jump(true, m_Molat.lookAtDirection);
 				}
-				m_Molat.Attack(true);
+				m_Molat.Attack();
 				targetInRangePrevious = targetInRange;
 			}
 		}
