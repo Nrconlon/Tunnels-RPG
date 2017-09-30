@@ -39,7 +39,9 @@ public class MolatAIController : MonoBehaviour {
 
 	[Header("Combat")]
 	[SerializeField] float attackRadius = 2.5f;
-	[SerializeField] float prefDistFromTarget = 1f;
+	[SerializeField] float prefTrgDistWep = 0.8f;
+	[SerializeField] float prefTrgDistUnrm = 0.4f;
+	[SerializeField] float prefTrgDistCurr = 0;
 	[SerializeField] int maxEnemiesBeforeFlee = 300;
 	[SerializeField] float healthThreshholdPercent = 0.2f;
 
@@ -56,7 +58,6 @@ public class MolatAIController : MonoBehaviour {
 		m_Molat = GetComponent<Molat>();
 		agent.updateRotation = false;
 		agent.updatePosition = true;
-		agent.stoppingDistance = PrefDistFromTarget;
 		_AIState = CreateState(StateEnum.Idle);
 		currentStateEnum = StateEnum.Idle;
 		destination = transform.position;
@@ -75,6 +76,7 @@ public class MolatAIController : MonoBehaviour {
 		{
 			HandleRayCastVision(); //gather info around me
 			HandleFindTarget();
+			HandlePreferedDistance();
 			if(currentStateEnum != StateEnum.Fleeing && IShouldFleeCheck())
 			{
 				IShouldFlee();
@@ -104,12 +106,26 @@ public class MolatAIController : MonoBehaviour {
 		}
 	}
 
+	private void HandlePreferedDistance()
+	{
+		if(m_Molat.IsWeaponEquiped && m_Molat.MyWeapon)
+		{
+			prefTrgDistCurr = prefTrgDistWep;
+			agent.stoppingDistance = prefTrgDistWep;
+		}
+		else
+		{
+			prefTrgDistCurr = prefTrgDistUnrm;
+			agent.stoppingDistance = prefTrgDistUnrm;
+		}
+	}
+
 	//Getters
 	public float FleeDuration { get { return fleeDuration; } }
 	public List<Transform> Waypoints { get { return waypoints; } }
 	public StateEnum PreferedState { get { return preferedState; } }
 	public float AttackRadius { get { return attackRadius; } }
-	public float PrefDistFromTarget { get { return prefDistFromTarget; } }
+	public float PrefDistFromTarget { get { return prefTrgDistCurr; } }
 	public int MaxEnemiesBeforeFlee { get { return maxEnemiesBeforeFlee; } }
 	public float HealthThreshholdPercent { get { return healthThreshholdPercent; } }
 	public GameObject CurrentTarget { get { return currentTarget; } }

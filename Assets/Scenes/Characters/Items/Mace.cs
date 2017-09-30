@@ -3,8 +3,8 @@
 	public void Reset()
 	{
 		baseDamage = 50f;
-		durability = 100f;
-		durabilityLossPerHit = 10f;
+		durability = 10f;
+		durabilityLossPerHit = 1f;
 		staminaCost = 20f;
 		force = 40;
 	}

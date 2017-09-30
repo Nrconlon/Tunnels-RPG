@@ -636,6 +636,7 @@ GameObject:
   - component: {fileID: 54614152244700514}
   - component: {fileID: 82334254221719530}
   - component: {fileID: 114941279829323672}
+  - component: {fileID: 114279156858358236}
   - component: {fileID: 114624686089221668}
   - component: {fileID: 114453090419830228}
   - component: {fileID: 195742071199791820}
@@ -1152,7 +1153,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1663751865173622}
   m_LocalRotation: {x: -0, y: -0.030141518, z: -0, w: -0.9995457}
-  m_LocalPosition: {x: 5.556946, y: 0.23, z: -3.0844116}
+  m_LocalPosition: {x: 23.859283, y: 0.5, z: -14.379761}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4832759126059608}
@@ -2128,7 +2129,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -2401,6 +2402,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cff48e609d2e90f449b76ce61dcb7bbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114279156858358236
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1663751865173622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb0746b17e2bf248982d4fe2e002270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 82334254221719530}
+  chasing: {fileID: 8300000, guid: c4ca31b5ddf43d14f85ecda45c57e51b, type: 3}
+  powerSwing: {fileID: 8300000, guid: 068fc62a002dc6c469a65aaaba39bc39, type: 3}
+  shieldImpacts:
+  - {fileID: 8300000, guid: d3e654b590e53884183d84a4e78b193f, type: 3}
+  - {fileID: 8300000, guid: 38566f62ab083e1498d998196e476bf6, type: 3}
+  shieldBreak: {fileID: 8300000, guid: 679890a895ca8e4469b7d7a4fd3e14da, type: 3}
+  maceBreak: {fileID: 8300000, guid: ef80f7ca56583814c9caa8c1e300e2d0, type: 3}
+  gotHit:
+  - {fileID: 8300000, guid: bbbae199f056a3f42abe48f51d32513b, type: 3}
+  - {fileID: 8300000, guid: 50182aa069adb5048a32c68b5629dee8, type: 3}
+  - {fileID: 8300000, guid: c4d3ef0e2cbee514f836ea0f665a3f3b, type: 3}
+  died:
+  - {fileID: 8300000, guid: 4debf191f6d7c2b42805b83d91d9b3fb, type: 3}
+  - {fileID: 8300000, guid: e36caf66e44b87247b7f86cd5161daea, type: 3}
+  - {fileID: 8300000, guid: ad038189f44798143be88b6123607523, type: 3}
 --- !u!114 &114334746365410168
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2481,7 +2509,9 @@ MonoBehaviour:
   destination: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
   attackRadius: 3
-  prefDistFromTarget: 0.6
+  prefTrgDistWep: 0.8
+  prefTrgDistUnrm: 0.4
+  prefTrgDistCurr: 0
   maxEnemiesBeforeFlee: 100
   healthThreshholdPercent: 0.2
 --- !u!114 &114624686089221668
@@ -2503,17 +2533,11 @@ MonoBehaviour:
   sprintSpeed: 9
   fullSpeedMaxDegrees: 80
   maxVelocityChange: 10
-  climbSpeed: 8
   maxStamina: 50
   stamRechargePS: 10
   tailJumpCost: -5
   sprintCostPS: -5
   jumpCost: -10
-  clawDamage: 20
-  attackLength: 1.2
-  healingRatioPS: 1.2
-  percentDamgeCauseKnockback: 0.4
-  forceThreshold: 30
   canJump: 1
   canAttack: 1
   canSprint: 1
@@ -2528,14 +2552,20 @@ MonoBehaviour:
     m_Bits: 1
   downCastRange: 0.3
   gravity: 18
+  forceThreshold: 30
   animDampTime: 2
+  clawAttackLength: 0.6
+  maceAttackLength: 1
   damageWithMaceThrow: 9
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
     type: 2}
   projectileSocket: {fileID: 1785787784215784}
   weaponObject: {fileID: 1464216861386448, guid: e17ebe850bfe30e4981f6e65e91506a3,
     type: 2}
-  claw: {fileID: 1740099511092644, guid: 2fa3ff423474cfb428f5ab415e399747, type: 2}
+  clawObject: {fileID: 1740099511092644, guid: 2fa3ff423474cfb428f5ab415e399747, type: 2}
+  shieldObject: {fileID: 1505726830462586, guid: e497b6bacee23ee40b98dcb497a2f122,
+    type: 2}
+  armorObject: {fileID: 0}
   myaudiosource: {fileID: 82334254221719530}
   chest: {fileID: 4701737196592722}
   shield: {fileID: 4063267299442968}

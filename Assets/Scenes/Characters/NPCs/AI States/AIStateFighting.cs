@@ -22,6 +22,7 @@ public class AIStateFighting : AIState
 		}
 	}
 
+
 	public override Vector3 ChooseLookAtDirection()
 	{
 		if (m_molatAIController.CurrentTarget)

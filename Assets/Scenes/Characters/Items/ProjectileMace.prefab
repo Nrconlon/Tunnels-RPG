@@ -9,46 +9,47 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1464216861386448}
+  m_RootGameObject: {fileID: 1351853314152328}
   m_IsPrefabParent: 1
---- !u!1 &1464216861386448
+--- !u!1 &1351853314152328
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4052656026488548}
-  - component: {fileID: 33310339906834894}
-  - component: {fileID: 23508087085112934}
-  - component: {fileID: 114984194940295400}
-  - component: {fileID: 135416138456362052}
+  - component: {fileID: 4900813486620198}
+  - component: {fileID: 33217016718986312}
+  - component: {fileID: 23346860319736088}
+  - component: {fileID: 114810547571698326}
+  - component: {fileID: 65297806353975390}
+  - component: {fileID: 54095469611480606}
   m_Layer: 9
-  m_Name: mace
+  m_Name: ProjectileMace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4052656026488548
+--- !u!4 &4900813486620198
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1464216861386448}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1351853314152328}
+  m_LocalRotation: {x: -0.14490639, y: 0.6548229, z: 0.7242399, w: 0.16026776}
+  m_LocalPosition: {x: 0.083332315, y: -0.19518048, z: -0.2788992}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23508087085112934
+--- !u!23 &23346860319736088
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1464216861386448}
+  m_GameObject: {fileID: 1351853314152328}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -75,43 +76,59 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33310339906834894
+--- !u!33 &33217016718986312
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1464216861386448}
+  m_GameObject: {fileID: 1351853314152328}
   m_Mesh: {fileID: 4300002, guid: d8e6116652f17784087610025c66ec2e, type: 3}
---- !u!114 &114984194940295400
-MonoBehaviour:
+--- !u!54 &54095469611480606
+Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1464216861386448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4835384cd986664e8e75ad55f259e43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseDamage: 50
-  staminaCost: 20
-  durability: 100
-  durabilityLossPerHit: 10
-  force: 40
-  currentForce: 40
-  currentDamage: 50
-  currentDurability: 0
-  instigator: {fileID: 0}
-  isActivated: 0
---- !u!135 &135416138456362052
-SphereCollider:
+  m_GameObject: {fileID: 1351853314152328}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!65 &65297806353975390
+BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1464216861386448}
+  m_GameObject: {fileID: 1351853314152328}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.14
-  m_Center: {x: -0.01, y: 0.58, z: -0.01}
+  m_Size: {x: 0.20948079, y: 0.8550878, z: 0.21438065}
+  m_Center: {x: 0.0004278977, y: 0.24345747, z: -0.002940291}
+--- !u!114 &114810547571698326
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1351853314152328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69bc3f4e9ebc9cc40a67379019c9b685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  durability: 0
+  currentDurability: 0
+  isActivated: 0
+  instigator: {fileID: 0}
+  baseDamage: 10
+  staminaCost: 0
+  durabilityLossPerHit: 0
+  force: 250
+  currentForce: 0
+  currentDamage: 0
+  projectileSpeed: 10

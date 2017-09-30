@@ -1457,6 +1457,34 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 432240564}
+--- !u!1 &464038687
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 464038688}
+  m_Layer: 0
+  m_Name: ClonePrefabSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &464038688
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 464038687}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 71.97807, y: -1000, z: 22.847195}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &493783103
 GameObject:
   m_ObjectHideFlags: 0
@@ -3280,10 +3308,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d9b569494efe60479892209bd1bc75a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIPrefab: {fileID: 0}
-  _PlayerPrefab: {fileID: 0}
+  _AIPrefab: {fileID: 1663751865173622, guid: 6297e2499e16eb442966f5aa6617fcd1, type: 2}
+  _PlayerPrefab: {fileID: 1178897808295450, guid: 8809564e9229b28489dd791794795d2d,
+    type: 2}
+  _WeaponPrefab: {fileID: 1464216861386448, guid: e17ebe850bfe30e4981f6e65e91506a3,
+    type: 2}
+  _ClawPrefab: {fileID: 1740099511092644, guid: 2fa3ff423474cfb428f5ab415e399747,
+    type: 2}
   optionsMenuButton: {fileID: 1026321822}
   returnToControlButton: {fileID: 585976471}
+  clonePrefabSpawn: {fileID: 464038688}
   health: 100
 --- !u!114 &1295236269
 MonoBehaviour:

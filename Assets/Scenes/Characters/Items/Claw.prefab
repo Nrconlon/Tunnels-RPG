@@ -35,7 +35,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1740099511092644}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 12.152039, y: 0, z: 10.991516}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -52,16 +52,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e06abbaf44a375247bc1419ddcbaec5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  durability: 100
+  currentDurability: 0
+  isActivated: 0
+  instigator: {fileID: 0}
   baseDamage: 5
   staminaCost: 10
-  durability: 100
   durabilityLossPerHit: 0
   force: 20
   currentForce: 0
   currentDamage: 0
-  currentDurability: 0
-  instigator: {fileID: 0}
-  isActivated: 0
 --- !u!135 &135487356158471540
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -72,5 +72,5 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.14
+  m_Radius: 0.5
   m_Center: {x: -0.01, y: 0.58, z: -0.01}

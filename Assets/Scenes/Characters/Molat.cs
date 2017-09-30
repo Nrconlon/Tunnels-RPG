@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Molat : MonoBehaviour, IDamageable
@@ -46,11 +47,28 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float gravity = 18;
 	[SerializeField] float forceThreshold = 30;
 	[SerializeField] float animDampTime = 2;
+	[SerializeField] float clawAttackLength = 0.6f;
+	[SerializeField] float maceAttackLength = 1f;
+
 	[SerializeField] float damageWithMaceThrow = 9.0f;
 	[SerializeField] private GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
+
 	[SerializeField] GameObject weaponObject;
-	[SerializeField] GameObject claw;
+	private Weapon myWeapon;
+	private GameObject weaponClone;
+
+	[SerializeField] GameObject clawObject;
+	private Claw myClaw;
+	private GameObject clawClone;
+
+	[SerializeField] GameObject shieldObject;
+	private Shield myShield;
+	private GameObject shieldClone;
+
+	[SerializeField] GameObject armorObject;
+	private Armor myArmor;
+	private GameObject armorClone;
 
 	private float currentSpeed;
 	private bool isJumping;
@@ -71,9 +89,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	private bool weaponEquiped = false;
 	private bool changingWeapon = false;
-	private Weapon myWeapon;
-	private Weapon myClaw;
-	//[SerializeField] Transform target;
+	private MolatSounds molatSounds;
 
 
 	[Header("Body")]
@@ -103,6 +119,8 @@ public class Molat : MonoBehaviour, IDamageable
 	public event IGotHitDelegate IGotHitDel;
 	public delegate void DestroyedDelegate(GameObject destroyedObject);
 	public event DestroyedDelegate DestroyedDel;
+	public delegate void LookAtDirectionDelegate(Vector3 lookAtDirection);
+	public event LookAtDirectionDelegate LookAtDirectionDel;
 
 	[HideInInspector] public GameObject mostRecentAttacker;
 
@@ -117,8 +135,11 @@ public class Molat : MonoBehaviour, IDamageable
 	private bool isBlocking;
 	private float swingTimer = 0f;
 	private bool weaponActive = false;
-	private GameObject clawClone;
-	private GameObject weaponClone;
+
+	//Getters
+	public Item MyWeapon { get { return myWeapon; } }
+	public Item MyClaw { get { return myClaw; } }
+	public Item MyShield { get { return myShield; } }
 
 
 	void OnDestroy()
@@ -129,12 +150,15 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
+
 	void Start()
 	{
 		m_Animator = GetComponent<Animator>();
 		m_RigidBody = GetComponent<Rigidbody>();
 		m_Capsule = GetComponent<CapsuleCollider>();
-		
+		molatSounds = GetComponent<MolatSounds>();
+
+
 		m_RigidBody.freezeRotation = true;
 		m_RigidBody.useGravity = false;
 		drag = m_RigidBody.drag;
@@ -149,16 +173,12 @@ public class Molat : MonoBehaviour, IDamageable
 		isBlocking = false;
 		grounded = true;
 
-		SetUpClaw();
+		SpawnAllItems();
 		
-
-		if (weaponObject)
-		{
-			SpawnWeapon(weaponObject);
-		}
 
 		mostRecentAttacker = gameObject;
 	}
+
 
 	void FixedUpdate()
 	{
@@ -222,6 +242,12 @@ public class Molat : MonoBehaviour, IDamageable
 			HandleDeath();
 			HandleStamina();
 			lookAtDirection.Normalize();
+
+			//Anounce look at direction
+			if(LookAtDirectionDel != null)
+			{
+				LookAtDirectionDel(lookAtDirection);
+			}
 
 			if (isSliding)
 			{
@@ -299,14 +325,16 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-	void HandleDeath()
+	bool HandleDeath()
 	{
 		if(currentHealth <=0)
 		{
 			isDead = true;
+			StopAllCoroutines();
 			ExpressAction(Action.Die);
 			m_Animator.SetBool("isDead", true);
 		}
+		return isDead;
 	}
 
 	public bool IsDead { get { return isDead; } }
@@ -326,51 +354,55 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-	private void SetUpClaw()
+	private void SpawnAllItems()
 	{
-		if (clawClone)
-		{
-			Destroy(clawClone);
-		}
-		clawClone = Instantiate(claw, righthandpos.position, righthandpos.rotation, righthandpos);
-		myClaw = clawClone.GetComponent<Weapon>();
-		myClaw.instigator = gameObject;
-	}
-
-	private void SpawnWeapon(GameObject weaponToSpawn)
-	{
-		//Remove oldWeapon
-		if (myWeapon)
-		{
-			myWeapon.WeaponBreakDel -= WeaponBroke;
-		}
-		if(weaponClone)
-		{
-			Destroy(weaponClone);
-		}
-
-
-		weaponClone = Instantiate(weaponToSpawn, weapon.position, weapon.rotation, weapon);
-		myWeapon = weaponClone.GetComponent<Weapon>();
-		myWeapon.WeaponBreakDel += WeaponBroke;
-		myWeapon.instigator = gameObject;
-	}
-
-	private void WeaponBroke(GameObject brokenWeapon)
-	{
-		if(myWeapon)
-		{
-			if (brokenWeapon == myWeapon.gameObject)
-			{
-				myWeapon.WeaponBreakDel -= WeaponBroke;
-				if(weaponClone)
-				{
-					Destroy(weaponClone);
-				}
-			}
-		}
+		SpawnWeapon();
+		SpawnClaw();
+		SpawnShield();
+		SpawnArmor();
 
 	}
+	private void SpawnWeapon()
+	{
+		myWeapon = (Weapon)SpawnItem(weaponObject, ref weaponClone, weapon, myWeapon);
+	}
+	private void SpawnClaw()
+	{
+		if (!clawObject)
+		{
+			Debug.LogError("clawObject must have a claw prefab");
+		}
+		myClaw = (Claw)SpawnItem(clawObject, ref clawClone, righthandpos, myClaw);
+	}
+	private void SpawnShield()
+	{
+		myShield = (Shield)SpawnItem(shieldObject, ref shieldClone, shield, myShield);
+		myShield.SignMeUpForLookAtDirection(this);
+	}
+	private void SpawnArmor()
+	{
+		//myArmor = (Armor)SpawnItem(armorObject, ref armorClone, armor);
+	}
+
+
+	private Item SpawnItem(GameObject origional, ref GameObject clone, Transform transform, Item item)
+	{
+		if(item) item.ItemDestroyDel -= ItemBroke;
+
+		if (clone) Destroy(clone);
+
+		clone = Instantiate(origional, transform.position, transform.rotation, transform);
+		Item newItem = clone.GetComponent<Item>();
+		if (!newItem)
+		{
+			print(origional);
+		}
+		newItem.instigator = gameObject;
+		newItem.ItemDestroyDel += ItemBroke;
+		newItem.molatSounds = molatSounds;
+		return newItem;
+	}
+
 
 	private void PickUpWeapon(GameObject weaponOnGround)
 	{
@@ -378,6 +410,19 @@ public class Molat : MonoBehaviour, IDamageable
 		//SpawnWeapon(weaponOnGround);
 		//Destroy(weaponOnGround);
 	}
+
+	private void ItemBroke(GameObject brokenitem)
+	{
+		Shield currentShield = brokenitem.GetComponent<Shield>();
+		if(currentShield && currentShield == myShield)
+		{
+			myShield.UnSignMeUpForLookAtDirection(this);
+		}
+	}
+
+
+
+
 
 	public void Attack()
 	{
@@ -392,7 +437,9 @@ public class Molat : MonoBehaviour, IDamageable
 			}
 			if (!weaponActive && UseAbility(currentWeapon.staminaCost))
 			{
+				//WaitForAttack
 				weaponActive = true;
+				StartCoroutine(WaitForAttack(usingClaw));
 				ExpressAction(Action.Attack);
 				currentWeapon.currentDamage = currentWeapon.baseDamage * power;
 				currentWeapon.currentForce = currentWeapon.force * power;
@@ -401,6 +448,19 @@ public class Molat : MonoBehaviour, IDamageable
 				m_Animator.SetTrigger("attack");
 			}
 		}
+	}
+
+	private IEnumerator WaitForAttack(bool usingClaw)
+	{
+		if(usingClaw)
+		{
+			yield return new WaitForSeconds(clawAttackLength);
+		}
+		else
+		{
+			yield return new WaitForSeconds(maceAttackLength);
+		}
+		weaponActive = false;
 	}
 
 	//Called per frame from controller
@@ -446,13 +506,15 @@ public class Molat : MonoBehaviour, IDamageable
 	//TODO add block animation(which should be push)
 	public void Block(bool toggle)
 	{
-		if (canBlock && toggle && !isBlocking && IsWeaponEquiped)
+		if (canBlock && toggle && !isBlocking && IsWeaponEquiped && myShield)
 		{
+			myShield.Activate();
 			isBlocking = true;
 			m_Animator.SetBool("isBlocking", isBlocking);
 		}
 		else if(!toggle)
 		{
+			myShield.Deactivate();
 			isBlocking = false;
 			m_Animator.SetBool("isBlocking", isBlocking);
 
@@ -683,7 +745,14 @@ public class Molat : MonoBehaviour, IDamageable
 				StartSliding(direction, force, 0.2f);
 			}
 			currentHealth = Mathf.Clamp(currentHealth - damage, 0f, maxHealth);
-			HandleDeath();
+			if(HandleDeath())
+			{
+				molatSounds.DiedSoundEffect();
+			}
+			else
+			{
+				molatSounds.GotHitSoundEffect();
+			}
 		}
 	}
 
@@ -700,7 +769,6 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	public void DeactivateWeapon()
 	{
-		weaponActive = false;
 		if (UseClaw())
 		{
 			myClaw.Deactivate();
@@ -725,8 +793,6 @@ public class Molat : MonoBehaviour, IDamageable
 			ActionExpressedDel(action, gameObject);
 		}
 	}
-
-
 }
 
 public enum Action {Attack,Die,Jump,tailJump,Parry,ThrowWeapon,EquipWeapon,UnequipWeapon};
