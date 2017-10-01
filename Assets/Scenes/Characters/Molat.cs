@@ -133,6 +133,7 @@ public class Molat : MonoBehaviour, IDamageable
 	float turnAmount;
 	float torwardAmount;
 	private bool isBlocking;
+	bool animatorShouldBlock = false;
 	private float swingTimer = 0f;
 	private bool weaponActive = false;
 
@@ -242,9 +243,10 @@ public class Molat : MonoBehaviour, IDamageable
 			HandleDeath();
 			HandleStamina();
 			lookAtDirection.Normalize();
+			HandleIsBlockingCheck();
 
 			//Anounce look at direction
-			if(LookAtDirectionDel != null)
+			if (LookAtDirectionDel != null)
 			{
 				LookAtDirectionDel(lookAtDirection);
 			}
@@ -333,8 +335,29 @@ public class Molat : MonoBehaviour, IDamageable
 			StopAllCoroutines();
 			ExpressAction(Action.Die);
 			m_Animator.SetBool("isDead", true);
+			DropAllItems();
 		}
 		return isDead;
+	}
+
+	private void DropAllItems()
+	{
+		myWeapon = (Weapon) DropItem(ref weaponClone);
+		myShield = (Shield) DropItem(ref shieldClone);
+		//myArmor = (Armor)_DropItem(ref armorClone);
+	}
+
+	private Item DropItem(ref GameObject clone)
+	{
+		if(clone)
+		{
+			clone.transform.parent = null;
+			Item item = clone.GetComponent<Item>();
+			item.ItemDestroyDel -= ItemBroke;
+			item.ItemDropped();
+			clone = null;
+		}
+		return null;
 	}
 
 	public bool IsDead { get { return isDead; } }
@@ -364,7 +387,10 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	private void SpawnWeapon()
 	{
-		myWeapon = (Weapon)SpawnItem(weaponObject, ref weaponClone, weapon, myWeapon);
+		if (weaponObject)
+		{
+			myWeapon = (Weapon)SpawnItem(weaponObject, ref weaponClone, weapon, myWeapon);
+		}
 	}
 	private void SpawnClaw()
 	{
@@ -376,8 +402,11 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 	private void SpawnShield()
 	{
-		myShield = (Shield)SpawnItem(shieldObject, ref shieldClone, shield, myShield);
-		myShield.SignMeUpForLookAtDirection(this);
+		if(shieldObject)
+		{
+			myShield = (Shield)SpawnItem(shieldObject, ref shieldClone, shield, myShield);
+			myShield.SignMeUpForLookAtDirection(this);
+		}
 	}
 	private void SpawnArmor()
 	{
@@ -385,31 +414,76 @@ public class Molat : MonoBehaviour, IDamageable
 	}
 
 
-	private Item SpawnItem(GameObject origional, ref GameObject clone, Transform transform, Item item)
+	private Item SpawnItem(GameObject origional, ref GameObject clone, Transform socketTransform, Item item)
 	{
+		
 		if(item) item.ItemDestroyDel -= ItemBroke;
 
 		if (clone) Destroy(clone);
 
-		clone = Instantiate(origional, transform.position, transform.rotation, transform);
+		clone = Instantiate(origional, socketTransform.position, socketTransform.rotation, socketTransform);
 		Item newItem = clone.GetComponent<Item>();
 		if (!newItem)
 		{
 			print(origional);
 		}
-		newItem.instigator = gameObject;
-		newItem.ItemDestroyDel += ItemBroke;
-		newItem.molatSounds = molatSounds;
+		else
+		{
+			SetUpItem(newItem);
+		}
 		return newItem;
 	}
 
-
-	private void PickUpWeapon(GameObject weaponOnGround)
+	private void SetUpItem(Item itemToSetUp)
 	{
-		//set weapon location and parents and such.  turn off its rigit body
-		//SpawnWeapon(weaponOnGround);
-		//Destroy(weaponOnGround);
+		itemToSetUp.instigator = gameObject;
+		itemToSetUp.ItemDestroyDel += ItemBroke;
+		itemToSetUp.molatSounds = molatSounds;
 	}
+
+	public void TryToPickUpItem(GameObject itemOnGround)
+	{
+		Item newItem = itemOnGround.GetComponent<Item>();
+		if (newItem)
+		{
+			if (newItem is Weapon)
+			{
+				if (weaponClone)
+				{
+					DropItem(ref weaponClone);
+				}
+				myWeapon = (Weapon)PickUpItem(itemOnGround, ref weaponClone, weapon, newItem);
+				return;
+			}
+			else if (newItem is Shield)
+			{
+				if (shieldClone)
+				{
+					DropItem(ref shieldClone);
+				}
+				myShield = (Shield)PickUpItem(itemOnGround, ref shieldClone, shield, newItem);
+				return;
+			}
+			else if (newItem is Armor)
+			{
+				//nothing yet
+			}
+		}
+
+	}
+
+	private Item PickUpItem(GameObject itemOnGround, ref GameObject myClone, Transform socketTransform, Item newItem)
+	{
+		itemOnGround.transform.SetPositionAndRotation(socketTransform.position, socketTransform.rotation);
+		itemOnGround.transform.SetParent(socketTransform);
+		myClone = itemOnGround;
+		newItem.ItemPickedUp();
+		SetUpItem(newItem);
+		return (newItem);
+	}
+
+
+
 
 	private void ItemBroke(GameObject brokenitem)
 	{
@@ -503,24 +577,50 @@ public class Molat : MonoBehaviour, IDamageable
 		return isSprinting;
 	}
 
+	void HandleIsBlockingCheck()
+	{
+		if(animatorShouldBlock)
+		{
+			if (!m_Animator.GetCurrentAnimatorStateInfo(2).IsTag("blocking"))
+			{
+				Block(false);
+
+				animatorShouldBlock = false;
+				//turn animator off
+
+				//turn shield off
+				DeactivateShield();
+			}
+		}
+	}
+
 	//TODO add block animation(which should be push)
 	public void Block(bool toggle)
 	{
 		if (canBlock && toggle && !isBlocking && IsWeaponEquiped && myShield)
 		{
-			myShield.Activate();
 			isBlocking = true;
 			m_Animator.SetBool("isBlocking", isBlocking);
 		}
 		else if(!toggle)
 		{
-			myShield.Deactivate();
 			isBlocking = false;
 			m_Animator.SetBool("isBlocking", isBlocking);
 
 		}
 	}
 
+	//called every animation cycle by asnimation event
+	public void ActivateShield()
+	{
+		animatorShouldBlock = true;
+		myShield.Activate();
+	}
+	//Called on check animation tick
+	public void DeactivateShield()
+	{
+		myShield.Deactivate();
+	}
 
 
 	//called per frame from controller when pressed

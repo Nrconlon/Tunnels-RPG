@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 23508087085112934}
   - component: {fileID: 114984194940295400}
   - component: {fileID: 135416138456362052}
+  - component: {fileID: 136216210905060772}
   m_Layer: 9
   m_Name: mace
   m_TagString: Untagged
@@ -36,13 +37,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1464216861386448}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.06849627, y: -0.3801294, z: 0.029989282, w: 0.921906}
+  m_LocalPosition: {x: 23.46515, y: 3.9229617, z: -5.4156547}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -5.94, y: -405.138, z: -353.803}
 --- !u!23 &23508087085112934
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -88,15 +89,17 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1464216861386448}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4835384cd986664e8e75ad55f259e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   durability: 5
+  physicsCollider: {fileID: 136216210905060772}
   currentDurability: 0
   isActivated: 0
   instigator: {fileID: 0}
+  molatSounds: {fileID: 0}
   baseDamage: 50
   staminaCost: 20
   durabilityLossPerHit: 1
@@ -115,3 +118,16 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.14
   m_Center: {x: -0.01, y: 0.58, z: -0.01}
+--- !u!136 &136216210905060772
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1464216861386448}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.10719025
+  m_Height: 0.85508764
+  m_Direction: 1
+  m_Center: {x: 0.00042788312, y: 0.24345744, z: -0.0029402561}

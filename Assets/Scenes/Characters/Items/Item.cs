@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Item : MonoBehaviour {
 
 	public float durability;
+	[SerializeField] Collider physicsCollider;
 	[HideInInspector] public float currentDurability;
 	[HideInInspector] public bool isActivated = false;
 	[HideInInspector] public GameObject instigator;
@@ -13,6 +14,19 @@ public abstract class Item : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+	}
+
+	public void ItemDropped()
+	{
+		Rigidbody myRigidBody = gameObject.AddComponent<Rigidbody>();
+		myRigidBody.drag = 0.1f;
+		physicsCollider.enabled = true;
+	}
+
+	public void ItemPickedUp()
+	{
+		Destroy(GetComponent<Rigidbody>());
+		physicsCollider.enabled = false;
 	}
 
 	private void OnDestroy()

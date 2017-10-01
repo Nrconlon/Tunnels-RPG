@@ -38,7 +38,7 @@ public abstract class Weapon : Item
 			if (hitObject != instigator && !targetsHit.Contains(hitObject))
 			{
 				Molat targetMolat = hitObject.transform.root.GetComponent<Molat>();
-				if(!targetMolat.IsDead)
+				if(targetMolat && !targetMolat.IsDead)
 				{
 					Component damageableComponent = hitObject.GetComponent(typeof(IDamageable));
 					Shield shield = hitObject.GetComponentInChildren<Shield>();

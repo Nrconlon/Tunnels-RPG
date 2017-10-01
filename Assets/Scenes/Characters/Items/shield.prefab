@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 4454700568027460}
   - component: {fileID: 33856900998704658}
   - component: {fileID: 23015058928917814}
-  - component: {fileID: 136853120754890832}
   - component: {fileID: 114681013771769502}
+  - component: {fileID: 65373428307489994}
   m_Layer: 9
   m_Name: shield
   m_TagString: Untagged
@@ -37,7 +37,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1505726830462586}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.941, y: 5.82, z: 5.470413}
+  m_LocalPosition: {x: 21.43982, y: 0.22175999, z: -6.4417267}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -82,6 +82,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1505726830462586}
   m_Mesh: {fileID: 4300000, guid: 8736a7062208a054f8e6ff6933d30c18, type: 3}
+--- !u!65 &65373428307489994
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1505726830462586}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.44351998, y: 0.44351998, z: 0.11229732}
+  m_Center: {x: 0, y: 0, z: -0.0018468164}
 --- !u!114 &114681013771769502
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -94,21 +106,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   durability: 100
+  physicsCollider: {fileID: 65373428307489994}
   currentDurability: 0
   isActivated: 0
   instigator: {fileID: 0}
+  molatSounds: {fileID: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
   maxAngleBlock: 91
---- !u!136 &136853120754890832
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1505726830462586}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.24
-  m_Height: 0.54
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: -0.0018468164}

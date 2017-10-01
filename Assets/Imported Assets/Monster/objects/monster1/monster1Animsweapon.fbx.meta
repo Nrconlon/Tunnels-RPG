@@ -2937,7 +2937,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 1
+        functionName: ActivateShield
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 8dd7802a835062e4190ccf36fd8e5bbd,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
