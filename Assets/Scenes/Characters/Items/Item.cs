@@ -33,11 +33,11 @@ public abstract class Item : MonoBehaviour {
 	{
 		if (ItemDestroyDel != null)
 		{
-			ItemDestroyDel(gameObject);
+			ItemDestroyDel(this);
 		}
 	}
 
-	public delegate void OnItemDestroy(GameObject item); // declare new delegate type
+	public delegate void OnItemDestroy(Item item); // declare new delegate type
 	public event OnItemDestroy ItemDestroyDel; // instantiate an observer set
 
 	protected void HandleDurabilityLoss(float durabilityLoss)
@@ -48,6 +48,15 @@ public abstract class Item : MonoBehaviour {
 			PlayBreakSound();
 			Destroy(gameObject);
 		}
+	}
+
+	public virtual void StartUsing(Molat myMolat)
+	{
+
+	}
+	public virtual void StopUsing(Molat myMolat)
+	{
+
 	}
 
 	public virtual void Activate()
@@ -61,6 +70,5 @@ public abstract class Item : MonoBehaviour {
 	}
 
 	protected abstract void PlayBreakSound();
-
 
 }

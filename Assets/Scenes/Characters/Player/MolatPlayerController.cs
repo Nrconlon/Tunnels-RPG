@@ -12,6 +12,7 @@ public class MolatPlayerController : MonoBehaviour {
 	private Vector3 m_CamForward;  // The current forward direction of the camera
 	private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 	private CameraPlayer myCamera;
+	bool etoggle = false;
 
 	// Use this for initialization
 	void Start () {
@@ -52,10 +53,23 @@ public class MolatPlayerController : MonoBehaviour {
 		{
 			m_molat.ToggleEquipWeapon();
 		}
+		if (Input.GetKey("e"))
+		{
+			if (!etoggle)
+			{
+				etoggle = true;
+				m_molat.GrabNearestItem();
+			}
+		}
+		else
+		{
+			etoggle = false;
+		} 
 		if (Input.GetKeyDown("escape"))
 			Cursor.lockState = CursorLockMode.None;
 		if (Input.GetMouseButtonDown(0))
 			Cursor.lockState = CursorLockMode.Locked;
+
 
 
 	}

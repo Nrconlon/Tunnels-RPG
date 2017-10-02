@@ -21,13 +21,13 @@ public class MouseAndRaycast : MonoBehaviour
 	int topPriorityLayerLastFrame = -1; // So get ? from start with Default layer terrain
 
 	private UserArenaController userArenaController;
-	private Camera camera;
+	private Camera myCamera;
 
 
 	private void Start()
 	{
 		userArenaController = GetComponent<UserArenaController>();
-		camera = GetComponent<Camera>();
+		myCamera = GetComponent<Camera>();
 	}
 
 	void Update()
@@ -40,7 +40,7 @@ public class MouseAndRaycast : MonoBehaviour
 		}
 
 		// Raycast to max depth, every frame as things can move under mouse
-		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+		Ray ray = myCamera.ScreenPointToRay(Input.mousePosition);
 		RaycastHit[] raycastHits = Physics.RaycastAll (ray, maxRaycastDepth);
 
         RaycastHit? priorityHit = FindTopPriorityHit(raycastHits);

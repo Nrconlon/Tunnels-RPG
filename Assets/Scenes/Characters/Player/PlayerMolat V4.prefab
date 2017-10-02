@@ -148,7 +148,6 @@ GameObject:
   - component: {fileID: 82059001750273422}
   - component: {fileID: 114104139579613420}
   - component: {fileID: 114212589038044172}
-  - component: {fileID: 114666672549204782}
   - component: {fileID: 114262421683770780}
   - component: {fileID: 114893731729514676}
   - component: {fileID: 208104707609313724}
@@ -1763,8 +1762,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1178897808295450}
-  m_LocalRotation: {x: -0, y: 0.9999774, z: -0, w: -0.0067249546}
-  m_LocalPosition: {x: 22.366516, y: 0, z: -13.440247}
+  m_LocalRotation: {x: -0, y: 0.12847823, z: -0, w: -0.99171233}
+  m_LocalPosition: {x: 22.36777, y: 0, z: -13.440081}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4076770732274498}
@@ -1773,7 +1772,7 @@ Transform:
   - {fileID: 4199268651306554}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180.771, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 345.237, z: 0}
 --- !u!4 &4830374203689096
 Transform:
   m_ObjectHideFlags: 1
@@ -2432,7 +2431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acb0746b17e2bf248982d4fe2e002270, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 82059001750273422}
   chasing: {fileID: 8300000, guid: c4ca31b5ddf43d14f85ecda45c57e51b, type: 3}
   powerSwing: {fileID: 8300000, guid: 068fc62a002dc6c469a65aaaba39bc39, type: 3}
   shieldImpacts:
@@ -2448,6 +2446,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4debf191f6d7c2b42805b83d91d9b3fb, type: 3}
   - {fileID: 8300000, guid: e36caf66e44b87247b7f86cd5161daea, type: 3}
   - {fileID: 8300000, guid: ad038189f44798143be88b6123607523, type: 3}
+  pickUpItem: {fileID: 8300000, guid: bc2c423d701e45f46af5acf418547469, type: 3}
+  amazing: {fileID: 8300000, guid: 0769b57b6de0c944ca4b792d7c80dc9a, type: 3}
 --- !u!114 &114262421683770780
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2499,29 +2499,6 @@ MonoBehaviour:
   yMinLimit: -70
   yMaxLimit: 80
   direction: {x: 0, y: 0, z: 0}
---- !u!114 &114666672549204782
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1178897808295450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc99bba037f3052419d7e5b43c516041, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  impactPrefab: {fileID: 400000, guid: 1527ff41453632b44a4b04882b7378f3, type: 2}
-  mask:
-    serializedVersion: 2
-    m_Bits: 0
-  damage: 25
-  force: 250
-  range: 3
-  shortrange: 0.85
-  shortradius: 1
-  shortdamage: 10
-  radius: 1.5
-  raystartpos: {fileID: 4479277435225122}
 --- !u!114 &114690861640285768
 MonoBehaviour:
   m_ObjectHideFlags: 1

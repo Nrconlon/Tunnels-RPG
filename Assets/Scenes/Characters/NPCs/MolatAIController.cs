@@ -190,7 +190,6 @@ public class MolatAIController : MonoBehaviour {
 	//Called from collision Capsule
 	public void StartRenderingGameObject(GameObject newObject)
 	{
-		//TODO check if item, add it items list
 		if(!_RenderedObjectsDictionary.ContainsKey(newObject) && !IsObjectDead(newObject))
 		{
 			EnemyPriority newPriority = new EnemyPriority

@@ -24,6 +24,7 @@ public abstract class Weapon : Item
 		currentDurability = durability;
 		currentForce = force;
 		currentDamage = baseDamage;
+		//this is the trigger collider
 		myCollider = GetComponent<Collider>();
 		myCollider.enabled = false;
 	}

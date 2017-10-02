@@ -16,12 +16,18 @@ public class AIVisionCollider : MonoBehaviour {
 
 	void OnTriggerEnter(Collider collider)
 	{
-		m_MolatAIController.StartRenderingGameObject(collider.transform.root.gameObject);
+		if(collider.gameObject.GetComponent<Molat>())
+		{
+			m_MolatAIController.StartRenderingGameObject(collider.transform.root.gameObject);
+		}
 	}
 
 	void OnTriggerExit(Collider collider)
 	{
-		m_MolatAIController.StopRenderingGameObject(collider.transform.root.gameObject);
+		if (collider.gameObject.GetComponent<Molat>())
+		{
+			m_MolatAIController.StopRenderingGameObject(collider.transform.root.gameObject);
+		}
 	}
 }
 

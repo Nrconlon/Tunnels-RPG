@@ -24,16 +24,6 @@ public class Shield : Item {
 		durability = 100f;
 	}
 
-	public void SignMeUpForLookAtDirection(Molat myMolat)
-	{
-		myMolat.LookAtDirectionDel += SetLookAtDirection;
-	}
-
-	public void UnSignMeUpForLookAtDirection(Molat myMolat)
-	{
-		myMolat.LookAtDirectionDel -= SetLookAtDirection;
-	}
-
 	public void SetLookAtDirection(Vector3 lookAtDirection)
 	{
 		this.lookAtDirection = lookAtDirection;
@@ -42,5 +32,15 @@ public class Shield : Item {
 	protected override void PlayBreakSound()
 	{
 		molatSounds.ShieldBreakSoundEffect();
+	}
+
+	public override void StartUsing(Molat myMolat)
+	{
+		myMolat.LookAtDirectionDel += SetLookAtDirection;
+	}
+
+	public override void StopUsing(Molat myMolat)
+	{
+		myMolat.LookAtDirectionDel -= SetLookAtDirection;
 	}
 }

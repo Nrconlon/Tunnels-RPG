@@ -13,6 +13,8 @@ public class MolatSounds : MonoBehaviour {
 	[SerializeField] AudioClip maceBreak;
 	[SerializeField] AudioClip[] gotHit;
 	[SerializeField] AudioClip[] died;
+	[SerializeField] AudioClip pickUpItem;
+	[SerializeField] AudioClip amazing;
 
 	private void Start()
 	{
@@ -50,6 +52,16 @@ public class MolatSounds : MonoBehaviour {
 	public void DiedSoundEffect()
 	{
 		PlayClip(died, mouthSource);
+	}
+
+	public void PickUpItemSoundEffect()
+	{
+		PlayClip(pickUpItem, itemSource);
+	}
+
+	public void AmazingSoundEffect()
+	{
+		PlayClip(amazing, mouthSource);
 	}
 
 
