@@ -100,7 +100,7 @@ MonoBehaviour:
   isActivated: 0
   instigator: {fileID: 0}
   molatSounds: {fileID: 0}
-  baseDamage: 50
+  baseDamage: 45
   staminaCost: 20
   durabilityLossPerHit: 1
   force: 40

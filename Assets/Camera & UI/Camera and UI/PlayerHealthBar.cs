@@ -13,8 +13,12 @@ public class PlayerHealthBar : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Molat>();
-        healthBarRawImage = GetComponent<RawImage>();
+		GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+		if (playerObject)
+		{
+			player = playerObject.GetComponent<Molat>();
+		}
+		healthBarRawImage = GetComponent<RawImage>();
     }
 
     // Update is called once per frame

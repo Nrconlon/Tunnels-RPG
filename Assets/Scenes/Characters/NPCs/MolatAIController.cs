@@ -50,6 +50,11 @@ public class MolatAIController : MonoBehaviour {
 	{
 		m_Molat.ActionExpressedDel -= AMolatExpressedAction;
 		m_Molat.IGotHitDel -= AMolatGotHit;
+		foreach (Molat molat in mList_EnemyMolats)
+		{
+			molat.ActionExpressedDel -= AMolatExpressedAction;
+			molat.DestroyedDel -= AMolatDestroyed;
+		}
 	}
 
 	// Use this for initialization
@@ -134,17 +139,20 @@ public class MolatAIController : MonoBehaviour {
 	//for enemies and self (and maybe allies)
 	void AMolatExpressedAction(Action action, GameObject instigator)
 	{
-		//if its me
-		if(instigator == gameObject)
+		if(instigator != null)
 		{
+			//if its me
+			if (instigator == gameObject)
+			{
+				if (action == Action.Die)
+				{
+					Died(m_Molat.mostRecentAttacker);
+				}
+			}
 			if (action == Action.Die)
 			{
-				Died(m_Molat.mostRecentAttacker);
+				StopRenderingGameObject(instigator);
 			}
-		}
-		if (action == Action.Die)
-		{
-			StopRenderingGameObject(instigator);
 		}
 	}
 	//for allies and self
@@ -232,7 +240,7 @@ public class MolatAIController : MonoBehaviour {
 				for (float i = 0; i < 1.5f; i = i + 0.5f)
 				{
 					Physics.Raycast(lookFrom.position, direction + new Vector3(0, i, 0), out Hit, 10000f);
-					if (Hit.transform.root.gameObject == entry.Key)
+					if (Hit.transform && Hit.transform.root.gameObject == entry.Key)
 					{
 						gotAHit = true;
 						if(currentPriority.Vision == 0)
@@ -293,7 +301,14 @@ public class MolatAIController : MonoBehaviour {
 	{
 		mList_EnemyMolats.Add(newMolat);
 		newMolat.ActionExpressedDel += AMolatExpressedAction;
+		newMolat.DestroyedDel += AMolatDestroyed;
 	}
+
+	private void AMolatDestroyed(Molat destroyedMolat)
+	{
+		removeMolat(destroyedMolat);
+	}
+
 	void removeMolat(Molat newMolat)
 	{
 		if (mList_EnemyMolats != null)
@@ -301,6 +316,7 @@ public class MolatAIController : MonoBehaviour {
 			mList_EnemyMolats.Remove(newMolat);
 		}
 		newMolat.ActionExpressedDel -= AMolatExpressedAction;
+		newMolat.DestroyedDel -= AMolatDestroyed;
 	}
 
 	void addSpider(Spider newSpider)

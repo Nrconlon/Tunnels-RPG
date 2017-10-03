@@ -6,20 +6,19 @@ public class Molat : MonoBehaviour, IDamageable
 {
 
 	[Header("Stats")]
-	[SerializeField] float maxHealth = 100f;
-	[SerializeField] float power = 0.2f;
-	[SerializeField] int level = 1;
+	public float maxHealth = 100f;
+	public float power = 0.2f;
 
 
 	[Header("Movement")]
-	[SerializeField] float speed = 6f;
+	public float speed = 6f;
 	[SerializeField] float straifSpeed = 5f;
 	[SerializeField] float sprintSpeed = 8f;
 	[Range(0f, 180f)] [SerializeField] float fullSpeedMaxDegrees = 80f;
 	[SerializeField] float maxVelocityChange = 10.0f;
 
 	[Header("Stamina")]
-	[SerializeField] float maxStamina = 50f;
+	public float maxStamina = 50f;
 	[SerializeField] float stamRechargePS = 10f;
 	[SerializeField] float tailJumpCost = -10f;
 	[SerializeField] float sprintCostPS = -5f;
@@ -27,10 +26,10 @@ public class Molat : MonoBehaviour, IDamageable
 
 
 	[Header("Abilities")]
-	[SerializeField] bool canJump = true;
-	[SerializeField] bool canAttack = true;
-	[SerializeField] bool canSprint = true;
-	[SerializeField] bool canBlock = true;
+	public bool canJump = true;
+	public bool canAttack = true;
+	public bool canSprint = true;
+	public bool canBlock = true;
 
 	[Header("Jumping")]
 	
@@ -49,23 +48,21 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float animDampTime = 2;
 	[SerializeField] float clawAttackLength = 0.6f;
 	[SerializeField] float maceAttackLength = 1f;
-	[SerializeField] float maxPickupDistance = 1f;
+	[SerializeField] float maxPickupDistance = 1.2f;
 
 	[SerializeField] float damageWithMaceThrow = 9.0f;
 	[SerializeField] private GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
+	public bool dontGoBelowZero = true;
 
-	[SerializeField] GameObject weaponObject;
+	public GameObject weaponObject;
 	private Weapon myWeapon;
 
-	[SerializeField] GameObject clawObject;
+	public GameObject clawObject;
 	private Claw myClaw;
 
-	[SerializeField] GameObject shieldObject;
+	public GameObject shieldObject;
 	private Shield myShield;
-
-	[SerializeField] GameObject armorObject;
-	private Armor myArmor;
 
 	private float currentSpeed;
 	private bool isJumping;
@@ -87,6 +84,7 @@ public class Molat : MonoBehaviour, IDamageable
 	private bool weaponEquiped = false;
 	private bool changingWeapon = false;
 	private MolatSounds molatSounds;
+	private float belowGroundY = -2f;
 
 
 	[Header("Body")]
@@ -114,7 +112,7 @@ public class Molat : MonoBehaviour, IDamageable
 	public event ActionExpressedDelegate ActionExpressedDel;
 	public delegate void IGotHitDelegate(float damage, float percentOfHealth, GameObject attacker, GameObject victim);
 	public event IGotHitDelegate IGotHitDel;
-	public delegate void DestroyedDelegate(GameObject destroyedObject);
+	public delegate void DestroyedDelegate(Molat destroyedMolat);
 	public event DestroyedDelegate DestroyedDel;
 	public delegate void LookAtDirectionDelegate(Vector3 lookAtDirection);
 	public event LookAtDirectionDelegate LookAtDirectionDel;
@@ -148,7 +146,7 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(DestroyedDel != null)
 		{
-			DestroyedDel(gameObject);
+			DestroyedDel(this);
 		}
 	}
 
@@ -246,6 +244,7 @@ public class Molat : MonoBehaviour, IDamageable
 			HandleStamina();
 			lookAtDirection.Normalize();
 			HandleIsBlockingCheck();
+			HandleFallThroughFloor();
 
 			//Anounce look at direction
 			if (LookAtDirectionDel != null)
@@ -272,6 +271,17 @@ public class Molat : MonoBehaviour, IDamageable
 				lookrotation2.x = 0;
 				lookrotation2.z = 0;
 				transform.rotation = lookrotation2;
+			}
+		}
+	}
+
+	private void HandleFallThroughFloor()
+	{
+		if(dontGoBelowZero)
+		{
+			if (transform.position.y <= belowGroundY)
+			{
+				transform.position = new Vector3(transform.position.x, 1, transform.position.x);
 			}
 		}
 	}
@@ -338,6 +348,8 @@ public class Molat : MonoBehaviour, IDamageable
 			ExpressAction(Action.Die);
 			m_Animator.SetBool("isDead", true);
 			DropAllItems();
+			DeactivateWeapon();
+			DeactivateShield();
 		}
 		return isDead;
 	}
@@ -346,7 +358,6 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		myWeapon = (Weapon) DropItem(myWeapon);
 		myShield = (Shield) DropItem(myShield);
-		//myArmor = (Armor)_DropItem(ref armorClone);
 	}
 
 	public bool IsDead { get { return isDead; } }
@@ -366,12 +377,11 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-	private void SpawnAllItems()
+	public void SpawnAllItems()
 	{
 		SpawnWeapon();
 		SpawnClaw();
 		SpawnShield();
-		SpawnArmor();
 
 	}
 	private void SpawnWeapon()
@@ -395,10 +405,6 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			myShield = (Shield)SpawnItem(shieldObject, shield, myShield);
 		}
-	}
-	private void SpawnArmor()
-	{
-		//myArmor = (Armor)SpawnItem(armorObject, ref armorClone, armor);
 	}
 
 
@@ -473,10 +479,6 @@ public class Molat : MonoBehaviour, IDamageable
 				myShield = (Shield)PickUpItem(newItem, shield);
 				return;
 			}
-			else if (newItem is Armor)
-			{
-				//nothing yet
-			}
 		}
 	}
 
@@ -489,8 +491,10 @@ public class Molat : MonoBehaviour, IDamageable
 		newItem.transform.SetParent(socketTransform);
 		newItem.ItemPickedUp();
 		SetUpItemToggle(newItem, true);
-		print("here2");
-		PickUpOrDropDel(newItem, true);
+		if (PickUpOrDropDel != null)
+		{
+			PickUpOrDropDel(newItem, true);
+		}
 		return (newItem);
 	}
 
@@ -501,7 +505,11 @@ public class Molat : MonoBehaviour, IDamageable
 			item.gameObject.transform.parent = null;
 			item.ItemDestroyDel -= ItemBroke;
 			item.ItemDropped();
-			PickUpOrDropDel(item, false);
+			if (PickUpOrDropDel != null)
+			{
+				PickUpOrDropDel(item, false);
+			}
+
 		}
 		return null;
 	}
@@ -858,7 +866,6 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(!IsDead)
 		{
-			m_Animator.SetTrigger("gotHit");
 			if (IGotHitDel != null)
 			{
 				IGotHitDel(damage, maxHealth / damage, instigator, gameObject);
@@ -873,8 +880,9 @@ public class Molat : MonoBehaviour, IDamageable
 			{
 				molatSounds.DiedSoundEffect();
 			}
-			else
+			else if(force > forceThreshold)
 			{
+				m_Animator.SetTrigger("gotHit");
 				molatSounds.GotHitSoundEffect();
 			}
 		}

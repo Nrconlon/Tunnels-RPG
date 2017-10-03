@@ -25,7 +25,7 @@ public class FlyCam : MonoBehaviour {
 		m_RigidBody = GetComponent<Rigidbody>();
 	}
 
-	void Update()
+	private void FixedUpdate()
 	{
 		currentSpeed = mainSpeed;
 
@@ -42,7 +42,7 @@ public class FlyCam : MonoBehaviour {
 		{
 			currentSpeed = currentSpeed + shiftAdd;
 		}
-		currentSpeed = currentSpeed * Time.deltaTime;
+		currentSpeed = currentSpeed * 0.02f;
 
 		Vector3 direction = transform.rotation * Vector3.forward;
 		float hor = Input.GetAxisRaw("Horizontal");
@@ -60,6 +60,11 @@ public class FlyCam : MonoBehaviour {
 		velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
 		velocityChange.y = 0;
 		m_RigidBody.AddForce(velocityChange, ForceMode.VelocityChange);
+	}
+
+	void Update()
+	{
+		
 
 	}
 

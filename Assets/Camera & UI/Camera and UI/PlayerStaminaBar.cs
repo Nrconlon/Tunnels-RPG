@@ -13,7 +13,12 @@ public class PlayerStaminaBar : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Molat>();
+		GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+		if(playerObject)
+		{
+			player = playerObject.GetComponent<Molat>();
+		}
+
 		staminaBarRawImage = GetComponent<RawImage>();
 	}
 

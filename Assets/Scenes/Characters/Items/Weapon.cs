@@ -100,6 +100,9 @@ public abstract class Weapon : Item
 	}
 	protected override void PlayBreakSound()
 	{
-		molatSounds.MaceBreakSoundEffect();
+		if(molatSounds)
+		{
+			molatSounds.MaceBreakSoundEffect();
+		}
 	}
 }

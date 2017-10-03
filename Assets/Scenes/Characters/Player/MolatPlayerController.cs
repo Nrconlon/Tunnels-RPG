@@ -65,10 +65,7 @@ public class MolatPlayerController : MonoBehaviour {
 		{
 			etoggle = false;
 		} 
-		if (Input.GetKeyDown("escape"))
-			Cursor.lockState = CursorLockMode.None;
-		if (Input.GetMouseButtonDown(0))
-			Cursor.lockState = CursorLockMode.Locked;
+			
 
 
 
