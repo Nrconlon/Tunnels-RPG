@@ -813,6 +813,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1795816228588946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4543742295632594}
+  - component: {fileID: 33329808698802054}
+  - component: {fileID: 135045542945679894}
+  - component: {fileID: 114699782352433552}
+  m_Layer: 8
+  m_Name: PlayerItemFinder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1801909932090516
 GameObject:
   m_ObjectHideFlags: 1
@@ -1565,6 +1583,19 @@ Transform:
   m_Father: {fileID: 4298862733102950}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 18.339222, y: 12.484913, z: 0}
+--- !u!4 &4543742295632594
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1795816228588946}
+  m_LocalRotation: {x: -0, y: -0.9999774, z: -0, w: -0.0067249546}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4825616838375226}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4586099173949512
 Transform:
   m_ObjectHideFlags: 1
@@ -1770,6 +1801,7 @@ Transform:
   - {fileID: 4354729773468998}
   - {fileID: 4193710934037464}
   - {fileID: 4199268651306554}
+  - {fileID: 4543742295632594}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 345.237, z: 0}
@@ -2022,6 +2054,13 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
+--- !u!33 &33329808698802054
+MeshFilter:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1795816228588946}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!54 &54846415688057828
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -2515,6 +2554,17 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d529ae01cc8761c4892887a1d138ec05, type: 3}
   - {fileID: 8300000, guid: 51f8f8481e8252e40a32a25cb6e3278c, type: 3}
   footsource: {fileID: 82844468910756328}
+--- !u!114 &114699782352433552
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1795816228588946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79914dd12e07c74592da921c78672c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114893731729514676
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2528,7 +2578,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   power: 1
-  level: 1
   speed: 6
   straifSpeed: 5
   sprintSpeed: 9
@@ -2557,16 +2606,17 @@ MonoBehaviour:
   animDampTime: 2
   clawAttackLength: 0.6
   maceAttackLength: 1
+  maxPickupDistance: 1.2
   damageWithMaceThrow: 9
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
     type: 2}
   projectileSocket: {fileID: 1709799075669932}
+  dontGoBelowZero: 1
   weaponObject: {fileID: 1464216861386448, guid: e17ebe850bfe30e4981f6e65e91506a3,
     type: 2}
   clawObject: {fileID: 1740099511092644, guid: 2fa3ff423474cfb428f5ab415e399747, type: 2}
   shieldObject: {fileID: 1505726830462586, guid: e497b6bacee23ee40b98dcb497a2f122,
     type: 2}
-  armorObject: {fileID: 0}
   myaudiosource: {fileID: 82059001750273422}
   chest: {fileID: 4874891477736168}
   shield: {fileID: 4267369674306658}
@@ -2598,6 +2648,18 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1208678052327462}
   m_Enabled: 1
+--- !u!135 &135045542945679894
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1795816228588946}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 25
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!135 &135273550400586026
 SphereCollider:
   m_ObjectHideFlags: 1

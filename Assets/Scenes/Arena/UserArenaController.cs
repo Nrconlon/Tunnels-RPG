@@ -166,13 +166,13 @@ public class UserArenaController : MonoBehaviour {
 
 	public void SpawnShield(Vector3 spawnPoint)
 	{
-		GameObject PrefabCopy = Instantiate(shieldClone, spawnPoint, Quaternion.LookRotation(Vector3.right, Vector3.right));
+		GameObject PrefabCopy = Instantiate(shieldClone, spawnPoint, UnityEngine.Random.rotation);
 		PrefabCopy.GetComponent<Item>().ItemDropped();
 	}
 
 	public void SpawnMace(Vector3 spawnPoint)
 	{
-		GameObject PrefabCopy =Instantiate(weaponClone, spawnPoint, Quaternion.LookRotation(Vector3.right, Vector3.right));
+		GameObject PrefabCopy = Instantiate(weaponClone, spawnPoint, UnityEngine.Random.rotation);
 		PrefabCopy.GetComponent<Item>().ItemDropped();
 	}
 
