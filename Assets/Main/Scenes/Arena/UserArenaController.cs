@@ -33,6 +33,8 @@ public class UserArenaController : MonoBehaviour {
 	private Weapon myWeapon;
 	private Weapon myShield;
 
+	HealingStationController healingStationController;
+
 	private GameObject meSpawnedIn;
 
 	//if you change here, ahve to change in ui canvas.  (Should have conntected them and justt get values in code.  oops)
@@ -61,6 +63,8 @@ public class UserArenaController : MonoBehaviour {
 		InGameUI.SetActive(false);
 		mouseAndRaycast = GetComponent<MouseAndRaycast>();
 		mouseAndRaycast.ClickedOnMapDel += ClickedOnMap;
+
+		healingStationController = GetComponent<HealingStationController>();
 
 		clawClone = Instantiate(_ClawPrefab, clonePrefabSpawn);
 		myClaw = clawClone.GetComponent<Weapon>();
@@ -128,6 +132,9 @@ public class UserArenaController : MonoBehaviour {
 			case UIButtonSelection.SpawnShield:
 				SpawnShield(raycastHit.Value.point + Vector3.up);
 				break;
+			case UIButtonSelection.SpawnHealing:
+				SpawnHealingStation(raycastHit.Value.point);
+				break;
 		}
 		
 	}
@@ -136,7 +143,6 @@ public class UserArenaController : MonoBehaviour {
 	{
 		if (molat)
 		{
-			//myClaw.baseDamage = 
 			molat.clawObject = clawClone;
 			molat.weaponObject = weaponClone;
 			molat.shieldObject = shieldClone;
@@ -150,12 +156,17 @@ public class UserArenaController : MonoBehaviour {
 			molat.canBlock = canBlock;
 			molat.canSprint = canSprint;
 			molat.canJump = canJump;
-}
+	}
 
 		if (molatAIController)
 		{
-
+			molatAIController.healingStationController = healingStationController;
 		}
+	}
+
+	public void SpawnHealingStation(Vector3 spawnPoint)
+	{
+		healingStationController.SpawnHealingStation(spawnPoint);
 	}
 
 	public void SpawnAICharacter(Vector3 spawnPoint)
@@ -256,6 +267,12 @@ public class UserArenaController : MonoBehaviour {
 		mouseAndRaycast.lookingForItem = false;
 		OnOptionClick(UIButtonSelection.SpawnShield);
 	}
+	public void SpawnHealingPressed()
+	{
+		mouseAndRaycast.lookingForCharacter = false;
+		mouseAndRaycast.lookingForItem = false;
+		OnOptionClick(UIButtonSelection.SpawnHealing);
+	}
 	public void SpawnSelfPressed()
 	{
 		mouseAndRaycast.lookingForCharacter = false;
@@ -339,4 +356,4 @@ public class UserArenaController : MonoBehaviour {
 	//END INPUT FIELD SETTERS
 }
 
-public enum UIButtonSelection {Spawn, SpawnMace, SpawnShield, SpawnMe, Destroy, None}
+public enum UIButtonSelection {Spawn, SpawnMace, SpawnShield, SpawnHealing, SpawnMe, Destroy, None}

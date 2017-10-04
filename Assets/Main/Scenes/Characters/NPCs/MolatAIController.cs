@@ -45,6 +45,8 @@ public class MolatAIController : MonoBehaviour {
 	[SerializeField] int maxEnemiesBeforeFlee = 300;
 	[SerializeField] float healthThreshholdPercent = 0.2f;
 
+	[HideInInspector] public HealingStationController healingStationController = null;
+
 
 	private void OnDestroy()
 	{
@@ -443,8 +445,6 @@ public class MolatAIController : MonoBehaviour {
 				return gameObject.AddComponent<AIStateFighting>();
 			case (StateEnum.Fleeing):
 				return gameObject.AddComponent<AIStateFleeing>();
-			case (StateEnum.Patrolling):
-				return gameObject.AddComponent<AIStatePatrolling>();
 		}
 		return gameObject.AddComponent<AIStateIdle>();
 	}
@@ -471,7 +471,6 @@ public enum StateEnum
 	Fighting,
 	Fleeing,
 	Dead,
-	Patrolling
 }
 
 public enum Team

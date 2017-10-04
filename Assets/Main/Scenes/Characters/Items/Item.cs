@@ -10,8 +10,9 @@ public abstract class Item : MonoBehaviour {
 	[HideInInspector] public bool isActivated = false;
 	[HideInInspector] public GameObject instigator;
 	[HideInInspector] public MolatSounds molatSounds;
+	bool canBePickedUp = false;
 
-
+	public bool CanBePickedUp { get { return canBePickedUp; } }
 	// Use this for initialization
 	void Start () {
 	}
@@ -21,12 +22,14 @@ public abstract class Item : MonoBehaviour {
 		Rigidbody myRigidBody = gameObject.AddComponent<Rigidbody>();
 		myRigidBody.drag = 0.1f;
 		physicsCollider.enabled = true;
+		canBePickedUp = true;
 	}
 
 	public void ItemPickedUp()
 	{
 		Destroy(GetComponent<Rigidbody>());
 		physicsCollider.enabled = false;
+		canBePickedUp = false;
 	}
 
 	private void OnDestroy()

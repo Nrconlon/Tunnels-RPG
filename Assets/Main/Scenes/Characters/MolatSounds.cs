@@ -6,7 +6,7 @@ public class MolatSounds : MonoBehaviour {
 	AudioSource mouthSource;
 	AudioSource itemSource;
 
-	[SerializeField] AudioClip chasing;
+	[SerializeField] AudioClip fleeing;
 	[SerializeField] AudioClip powerSwing;
 	[SerializeField] AudioClip[] shieldImpacts;
 	[SerializeField] AudioClip shieldBreak;
@@ -25,9 +25,9 @@ public class MolatSounds : MonoBehaviour {
 
 		itemSource.loop = false;
 	}
-	public void ChasingSoundEffect()
+	public void FleeingSoundEffect()
 	{
-		PlayClip(chasing, mouthSource);
+		PlayClip(fleeing, mouthSource);
 	}
 	public void PowerSwingSoundEffect()
 	{

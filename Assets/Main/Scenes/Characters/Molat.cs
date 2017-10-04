@@ -125,7 +125,7 @@ public class Molat : MonoBehaviour, IDamageable
 	Animator m_Animator;
 	Rigidbody m_RigidBody;
 	CapsuleCollider m_Capsule;
-	PlayerItemFinder playerItemFinder;
+	[HideInInspector] public PlayerItemFinder playerItemFinder;
 
 	private bool previouslyGrounded;
 	private Vector3 groundContactNormal;
@@ -135,11 +135,13 @@ public class Molat : MonoBehaviour, IDamageable
 	bool animatorShouldBlock = false;
 	private float swingTimer = 0f;
 	private bool weaponActive = false;
+	[HideInInspector] public bool isHealing = false;
 
 	//Getters
 	public Item MyWeapon { get { return myWeapon; } }
 	public Item MyClaw { get { return myClaw; } }
 	public Item MyShield { get { return myShield; } }
+	public float MaxPickupDistance { get { return maxPickupDistance; } }
 
 
 	void OnDestroy()
@@ -377,6 +379,21 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
+	public bool Heal(float healAmout)
+	{
+		if(currentHealth >= maxHealth)
+		{
+			return false;
+		}
+		else
+		{
+			currentHealth = Mathf.Clamp(currentHealth + healAmout, 0, maxHealth);
+			return true;
+		}
+
+
+	}
+
 	public void SpawnAllItems()
 	{
 		SpawnWeapon();
@@ -448,6 +465,7 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 
 	}
+
 	public void GrabNearestItem()
 	{
 		Item nearestItem = playerItemFinder.GetClosestItem(maxPickupDistance);
@@ -459,7 +477,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	public void TryToPickUpItem(Item newItem)
 	{
-		if (newItem)
+		if (newItem && newItem.CanBePickedUp)
 		{
 			if (newItem is Weapon)
 			{

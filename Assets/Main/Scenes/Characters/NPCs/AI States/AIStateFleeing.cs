@@ -27,41 +27,37 @@ public class AIStateFleeing : AIState
 
 	public override Vector3 ChooseWalkingDestination()
 	{
-		Vector3 newDestination;
 		var waypoints = m_molatAIController.Waypoints;
 		if (waypoints.Count > waypointCount)
 		{
-			newDestination = waypoints[waypointCount].position;
 			if(Vector3.Distance(transform.position, waypoints[waypointCount].position) < 2f)
 			{
 				waypointCount++;
 			}
+			return waypoints[waypointCount].position;
 		}
-		else
+		else if (m_Molat.HealthAsPercentage < 1f)
 		{
-			//Dynamic fleeing
-			GameObject target = m_molatAIController.CurrentTarget;
-			if(target)
+			HealingStation closestStation = m_molatAIController.healingStationController.GetClosestStation(transform.position);
+			if (closestStation)
 			{
-				Vector3 directionAwayFromTarget = (transform.position - target.transform.position);
-				Vector3 sourcePosition = directionAwayFromTarget + transform.position;
-				NavMeshHit navHit;
-				if (NavMesh.SamplePosition(sourcePosition, out navHit, fleeDistance, NavMesh.AllAreas))
-				{
-					newDestination = navHit.position;
-				}
-				else
-				{
-					newDestination = Vector3.zero; // transform.position;
-				}
+				return closestStation.transform.position;
 			}
-			else
-			{
-				newDestination = Vector3.zero; // transform.position;
-			}
-
 		}
-		return newDestination;
+
+		//Dynamic fleeing
+		GameObject target = m_molatAIController.CurrentTarget;
+		if(target)
+		{
+			Vector3 directionAwayFromTarget = (transform.position - target.transform.position);
+			Vector3 sourcePosition = directionAwayFromTarget + transform.position;
+			NavMeshHit navHit;
+			if (NavMesh.SamplePosition(sourcePosition, out navHit, fleeDistance, NavMesh.AllAreas))
+			{
+				return navHit.position;
+			}
+		}
+		return base.ChooseWalkingDestination();
 	}
 	public override void GotHit(GameObject instigator)
 	{
