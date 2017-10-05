@@ -8,7 +8,7 @@ public class PlayerHealthBar : MonoBehaviour
 {
 
     RawImage healthBarRawImage;
-    Molat player;
+    public Molat player;
 
     // Use this for initialization
     void Start()

@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RawImage))]
-public class PlayerStaminaBar : MonoBehaviour
+public class PlayerCDBar : MonoBehaviour
 {
 
-	RawImage staminaBarRawImage;
-	Molat player;
+	public Molat player;
+	RectTransform rectTransform;
 
 	// Use this for initialization
 	void Start()
 	{
 		GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-		if(playerObject)
+		if (playerObject)
 		{
 			player = playerObject.GetComponent<Molat>();
 		}
-
-		staminaBarRawImage = GetComponent<RawImage>();
+		rectTransform = GetComponent<RectTransform>();
 	}
 
 	// Update is called once per frame
@@ -27,9 +25,12 @@ public class PlayerStaminaBar : MonoBehaviour
 	{
 		if (player)
 		{
-			float xValue = -(player.CurrentCooldown / 2f) - 0.5f;
-			staminaBarRawImage.uvRect = new Rect(xValue, 0f, 0.5f, 1f);
+			rectTransform.localScale = new Vector3(player.CurrentCooldown, 1, 1);
 
+		}
+		else
+		{
+			rectTransform.localScale = Vector3.zero;
 		}
 
 	}

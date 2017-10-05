@@ -41,7 +41,6 @@ public class UserArenaController : MonoBehaviour {
 	private float health = 100f;
 	private float power = 1;
 	private float speed = 6;
-	private float stamina = 50;
 
 	private bool canAttack = true;
 	private bool canJump = true;
@@ -101,11 +100,13 @@ public class UserArenaController : MonoBehaviour {
 		inGame = swapToInGame;
 		if(swapToInGame)
 		{
+			this.tag = "Untagged";
 			lastCamPosition = transform.position;
 			lastCamRotation = transform.rotation;
 		}
 		else
 		{
+			this.tag = "MainCamera";
 			transform.position = lastCamPosition;
 			transform.rotation = lastCamRotation;
 			Destroy(meSpawnedIn);
@@ -150,7 +151,6 @@ public class UserArenaController : MonoBehaviour {
 			molat.maxHealth = health;
 			molat.power = power;
 			molat.speed = speed;
-			molat.maxStamina = stamina;
 
 			molat.canAttack = canAttack;
 			molat.canBlock = canBlock;
@@ -195,8 +195,12 @@ public class UserArenaController : MonoBehaviour {
 	public void SpawnMyselfIn(Vector3 spawnPoint)
 	{
 		meSpawnedIn = Instantiate(_PlayerPrefab, spawnPoint, Quaternion.LookRotation(Vector3.right, Vector3.up));
-		InitiateAllParameters(meSpawnedIn.GetComponent<Molat>(), null);
+		meSpawnedIn.tag = "Player";
+		Molat playerMolat = meSpawnedIn.GetComponent<Molat>();
+		InitiateAllParameters(playerMolat, null);
 		SwapPlayerMode(true);
+		InGameUI.GetComponentInChildren<PlayerHealthBar>().player = playerMolat;
+		InGameUI.GetComponentInChildren<PlayerCDBar>().player = playerMolat;
 	}
 
 	public void TakeControlOfUnit(GameObject molatTarget)
@@ -302,10 +306,6 @@ public class UserArenaController : MonoBehaviour {
 	public void SetSpeed(string speed)
 	{
 		this.speed = float.Parse(speed);
-	}
-	public void SetStamina(string stamina)
-	{
-		this.stamina = float.Parse(stamina);
 	}
 
 	public void SetCanAttack(bool canAttack)

@@ -8,6 +8,10 @@ public class AIStateFleeing : AIState
 	private float fleeDistance = 1.0f;
 	private float fleeLockTimer = 0f;
 	int waypointCount = 0;
+	private void Start()
+	{
+		m_Molat.MolatSounds.FleeingSoundEffect();
+	}
 
 	public override void ChooseAction()
 	{

@@ -6,7 +6,6 @@ using UnityEngine;
 public abstract class Weapon : Item
 {
 	public float baseDamage;
-	public float staminaCost;
 	public float durabilityLossPerHit;
 	public float force;
 
@@ -51,6 +50,7 @@ public abstract class Weapon : Item
 							float angleBetweenUs = Vector3.Angle(shield.lookAtDirection, pointerFromYouToMe);
 							if (angleBetweenUs < shield.maxAngleBlock)
 							{
+								instigator.GetComponent<Molat>().GotBlocked();
 								shield.BlockAHit(force);
 								blocked = true;
 								HitRegistered(hitObject);

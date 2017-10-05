@@ -19,6 +19,7 @@ public class EnemyUI : MonoBehaviour {
     // Update is called once per frame 
     void LateUpdate()
     {
-        transform.LookAt(cameraToLookAt.transform);
+		cameraToLookAt = Camera.main;
+		transform.LookAt(cameraToLookAt.transform);
     }
 }
