@@ -42,10 +42,13 @@ public class AIStateFleeing : AIState
 		}
 		else if (m_Molat.HealthAsPercentage < 1f)
 		{
-			HealingStation closestStation = m_molatAIController.healingStationController.GetClosestStation(transform.position);
-			if (closestStation)
+			if(m_molatAIController.healingStationController)
 			{
-				return closestStation.transform.position;
+				HealingStation closestStation = m_molatAIController.healingStationController.GetClosestStation(transform.position);
+				if (closestStation)
+				{
+					return closestStation.transform.position;
+				}
 			}
 		}
 

@@ -2505,7 +2505,7 @@ ModelImporter:
     - serializedVersion: 16
       name: monster1WeaponAttack2
       takeName: C4D Animation Take
-      firstFrame: 404
+      firstFrame: 413
       lastFrame: 436
       wrapMode: 0
       orientationOffsetY: 0
@@ -2526,34 +2526,10 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.26037735
+      - time: 0.10580322
         functionName: attacksound
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: a52b96fa86a792b4790d169dd20d6209,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.5142345
-        functionName: attacksound
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: a52b96fa86a792b4790d169dd20d6209,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.35231322
-        functionName: rayfire
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: bc99bba037f3052419d7e5b43c516041,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.58185023
-        functionName: rayfire
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: bc99bba037f3052419d7e5b43c516041,
           type: 3}
         floatParameter: 0
         intParameter: 0

@@ -49,6 +49,11 @@ public class MolatPlayerController : MonoBehaviour {
 			m_molat.Block(false);
 		}
 
+		if (Input.GetKey("q"))
+		{
+			m_molat.ThrowWeapon();
+		}
+
 		if (Input.GetKey("f"))
 		{
 			m_molat.ToggleEquipWeapon();

@@ -55,8 +55,8 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float clawAttackLength = 0.6f;
 	[SerializeField] float maceAttackLength = 1f;
 	[SerializeField] float maxPickupDistance = 1.2f;
+	[SerializeField] float weaponThrowSpeed = 17f;
 
-	[SerializeField] float damageWithMaceThrow = 9.0f;
 	[SerializeField] private GameObject throwingWeapon;
 	[SerializeField] GameObject projectileSocket;
 	public bool dontGoBelowZero = true;
@@ -870,18 +870,20 @@ public class Molat : MonoBehaviour, IDamageable
 		slideTimer = 1f;
 		isSliding = true;
 	}
-	[SerializeField] float weaponThrowSpeed = 10f;
 
 	//TODO change to throw weapon, and make it toss whatever weapon type im holding
-	public void ThrowMace()
+	public void ThrowWeapon()
 	{
 		if(!isDead && weaponEquiped && myWeapon)
 		{
 			Weapon throwingWeapon = myWeapon;
-			DropItem(myWeapon);
-			throwingWeapon.GetComponent<Rigidbody>().velocity = lookAtDirection * weaponThrowSpeed;
+			myWeapon = (Weapon) DropItem(myWeapon);
+			throwingWeapon.GetComponent<Rigidbody>().velocity = new Vector3(lookAtDirection.x, lookAtDirection.y + 0.2f, lookAtDirection.z) * weaponThrowSpeed;
+			throwingWeapon.BeingThrown(throwingWeapon.throwingDamage * power);
+			m_Animator.SetBool("usingClaw", false);
+			m_Animator.SetFloat("attackType", 1);
+			m_Animator.SetTrigger("attack");
 		}
-
 	}
 
 

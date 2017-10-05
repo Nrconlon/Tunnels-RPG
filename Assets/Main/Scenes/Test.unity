@@ -510,6 +510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e94587b07b71f154f861d927f993fe9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
 --- !u!114 &1598647063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -700,6 +701,11 @@ Prefab:
         type: 2}
       propertyPath: m_Radius
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 114624686089221668, guid: 6297e2499e16eb442966f5aa6617fcd1,
+        type: 2}
+      propertyPath: canAttack
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6297e2499e16eb442966f5aa6617fcd1, type: 2}

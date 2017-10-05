@@ -8,8 +8,10 @@ public abstract class Weapon : Item
 	public float baseDamage;
 	public float durabilityLossPerHit;
 	public float force;
+	public float throwingDamage;
 
 	[HideInInspector] public float currentForce;
+	private bool beingThrown = false;
 	[HideInInspector] public float currentDamage;
 
 	Collider myCollider;
@@ -17,7 +19,21 @@ public abstract class Weapon : Item
 	private List<GameObject> targetsHit = new List<GameObject>();
 
 	bool blocked = false;
-
+	private void Update()
+	{
+		if(beingThrown)
+		{
+			Rigidbody myRigidbody = GetComponent<Rigidbody>();
+			if (myRigidbody)
+			{
+				float speed = myRigidbody.velocity.magnitude;
+				if (speed < 5.0f)
+				{
+					StopBeingThrown();
+				}
+			}
+		}
+	}
 	private void Start()
 	{
 		currentDurability = durability;
@@ -71,6 +87,11 @@ public abstract class Weapon : Item
 	{
 		targetsHit.Add(hitObject);
 		HandleDurabilityLoss(durabilityLossPerHit);
+		if(beingThrown)
+		{
+			beingThrown = false;
+			Deactivate();
+		}
 	}
 
 
@@ -104,5 +125,18 @@ public abstract class Weapon : Item
 		{
 			molatSounds.MaceBreakSoundEffect();
 		}
+	}
+
+	public void BeingThrown(float damage)
+	{
+		beingThrown = true;
+		currentDamage = throwingDamage;
+		Activate();
+	}
+
+	void StopBeingThrown()
+	{
+		beingThrown = false;
+		Deactivate();
 	}
 }

@@ -2,9 +2,10 @@
 
 	public void Reset()
 	{
-		baseDamage = 50f;
-		durability = 10f;
+		baseDamage = 45f;
+		durability = 3f;
 		durabilityLossPerHit = 1f;
 		force = 40;
+		throwingDamage = 30f;
 	}
 }
