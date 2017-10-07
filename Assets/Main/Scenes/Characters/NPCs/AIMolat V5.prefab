@@ -2466,10 +2466,11 @@ MonoBehaviour:
   mList_EnemySpiders: []
   destination: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
-  attackRadius: 3
+  skill: 5
+  fightRadius: 3
   prefTrgDistWep: 0.8
-  prefTrgDistUnrm: 0.4
-  prefTrgDistCurr: 0
+  prefTrgDistUnrm: 0.5
+  grabItemWhileFightingDist: 3
   maxEnemiesBeforeFlee: 100
   healthThreshholdPercent: 0.2
   healingStationController: {fileID: 0}
@@ -2502,11 +2503,13 @@ MonoBehaviour:
   sprintSpeed: 9
   fullSpeedMaxDegrees: 80
   maxVelocityChange: 10
-  maxStamina: 50
   stamRechargePS: 10
-  tailJumpCost: -5
-  sprintCostPS: -5
-  jumpCost: -10
+  tailJumpCD: 1
+  gotBlockedCD: 1
+  attackCDWep: 1
+  attackCDClaw: 0.5
+  PowerSwingCD: 2
+  gotHitHardCD: 0.5
   canJump: 1
   canAttack: 1
   canSprint: 1
@@ -2526,7 +2529,7 @@ MonoBehaviour:
   clawAttackLength: 0.6
   maceAttackLength: 1
   maxPickupDistance: 1
-  damageWithMaceThrow: 9
+  weaponThrowSpeed: 10
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
     type: 2}
   projectileSocket: {fileID: 1785787784215784}
@@ -2555,6 +2558,8 @@ MonoBehaviour:
   mostRecentAttacker: {fileID: 0}
   playerItemFinder: {fileID: 0}
   isHealing: 0
+  powerSwingDamageMultiplier: 1.5
+  powerSwingForceMultiplier: 5
 --- !u!114 &114698331581679358
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -68,9 +69,16 @@ public abstract class AIState : MonoBehaviour {
 
 	protected void ChangeState(StateEnum newState)
 	{
+		ResetAIStateInfo();
 		m_molatAIController.currentStateEnum = newState;
 		m_molatAIController.SetState(m_molatAIController.CreateState(newState), this);
 	}
+
+	private void ResetAIStateInfo()
+	{
+		m_Molat.TailSprint(false, Vector3.zero);
+	}
+
 	protected StateEnum DecideNextState()
 	{
 		////I'm done with my last state  search?  or chill, fight?.

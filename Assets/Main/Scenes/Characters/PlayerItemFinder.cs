@@ -108,6 +108,10 @@ public class PlayerItemFinder : MonoBehaviour
 		float closestDistance = float.PositiveInfinity;
 		foreach (Item item in itemList)
 		{
+			if(!item.CanBePickedUp)
+			{
+				continue;
+			}
 			if (item is T)
 			{
 				float currentDistance = Vector3.Distance(transform.position, item.transform.position);

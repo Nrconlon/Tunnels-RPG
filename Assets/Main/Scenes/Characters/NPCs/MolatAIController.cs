@@ -32,16 +32,16 @@ public class MolatAIController : MonoBehaviour {
 	[HideInInspector] public Vector3 destination;
 	[HideInInspector] public  Vector3 lookAtDirection;
 	bool isAttacking = false;
-	bool isSprinting = false;
 	bool isJumping = false;
 	bool isDead = false;
 	private AIState _AIState;
-
 	[Header("Combat")]
-	[SerializeField] float attackRadius = 2.5f;
+	[Range(1, 10)][SerializeField] float skill = 5f;
+	[SerializeField] float fightRadius = 3f;
 	[SerializeField] float prefTrgDistWep = 0.8f;
-	[SerializeField] float prefTrgDistUnrm = 0.4f;
-	[SerializeField] float prefTrgDistCurr = 0;
+	[SerializeField] float prefTrgDistUnrm = 0.5f;
+	[SerializeField] float grabItemWhileFightingDist = 3f;
+	float prefTrgDistCurr = 0;
 	[SerializeField] int maxEnemiesBeforeFlee = 300;
 	[SerializeField] float healthThreshholdPercent = 0.2f;
 
@@ -131,11 +131,15 @@ public class MolatAIController : MonoBehaviour {
 	public float FleeDuration { get { return fleeDuration; } }
 	public List<Transform> Waypoints { get { return waypoints; } }
 	public StateEnum PreferedState { get { return preferedState; } }
-	public float AttackRadius { get { return attackRadius; } }
+	public float FightRadius { get { return fightRadius; } }
 	public float PrefDistFromTarget { get { return prefTrgDistCurr; } }
 	public int MaxEnemiesBeforeFlee { get { return maxEnemiesBeforeFlee; } }
 	public float HealthThreshholdPercent { get { return healthThreshholdPercent; } }
 	public GameObject CurrentTarget { get { return currentTarget; } }
+	public float GrabItemWhileFightingDist { get { return grabItemWhileFightingDist; } }
+	public float Skill { get { return skill; } }
+	
+
 
 	//Delegate sign ups
 	//for enemies and self (and maybe allies)
@@ -454,7 +458,7 @@ public class MolatAIController : MonoBehaviour {
 	{
 		//Draw attack speher
 		Gizmos.color = new Color(255f, 0f, 0, .5f);
-		Gizmos.DrawWireSphere(transform.position, attackRadius);
+		Gizmos.DrawWireSphere(transform.position, fightRadius);
 
 		//Draw chase speher
 		Gizmos.color = new Color(0f, 0f, 255f, .5f);

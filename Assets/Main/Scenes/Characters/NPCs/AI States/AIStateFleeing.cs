@@ -17,6 +17,7 @@ public class AIStateFleeing : AIState
 	{
 		if (fleeLockTimer <Time.time)
 		{
+			m_Molat.TailSprint(true, m_Molat.targetDirection);
 			fleeLockTimer = Time.time + m_molatAIController.FleeDuration;
 			if (!IShouldFleeCheck())
 			{

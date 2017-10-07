@@ -101,9 +101,9 @@ MonoBehaviour:
   instigator: {fileID: 0}
   molatSounds: {fileID: 0}
   baseDamage: 45
-  staminaCost: 20
   durabilityLossPerHit: 1
   force: 40
+  throwingDamage: 30
   currentForce: 40
   currentDamage: 50
 --- !u!135 &135416138456362052

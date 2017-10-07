@@ -573,6 +573,11 @@ public class Molat : MonoBehaviour, IDamageable
 		yield return new WaitForSeconds(tailJumpCD);
 		tailJumpCooldown = false;
 	}
+
+	public void StopTailSprint()
+	{
+		TailSprint(false, Vector3.zero);
+	}
 	//Called per frame from controller
 	public bool TailSprint(bool toggle, Vector3 direction)
 	{
