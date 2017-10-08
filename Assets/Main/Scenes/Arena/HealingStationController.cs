@@ -5,6 +5,15 @@ using UnityEngine;
 public class HealingStationController : MonoBehaviour {
 	[SerializeField] GameObject healingStationPrefab;
 	List<HealingStation> healingStations = new List<HealingStation>();
+
+	private void Start()
+	{
+		var stations = FindObjectsOfType<HealingStation>();
+		foreach(HealingStation station in stations)
+		{
+			healingStations.Add(station);
+		}
+	}
 	public void SpawnHealingStation(Vector3 location)
 	{
 		location = new Vector3(location.x, location.y + 0.1f, location.z);

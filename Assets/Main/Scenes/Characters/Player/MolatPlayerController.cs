@@ -13,6 +13,7 @@ public class MolatPlayerController : MonoBehaviour {
 	private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
 	private CameraPlayer myCamera;
 	bool etoggle = false;
+	bool spaceToggle = false;
 
 	// Use this for initialization
 	void Start () {
@@ -35,7 +36,6 @@ public class MolatPlayerController : MonoBehaviour {
 		m_molat.lookAtDirection = m_CamForward;
 
 		m_molat.TailSprint(Input.GetButton("Fire3"), targetDirection);
-		m_molat.Jump(Input.GetButton("Jump"), targetDirection);
 		if(Input.GetMouseButtonDown(0))
 		{
 			m_molat.Attack();
@@ -69,8 +69,22 @@ public class MolatPlayerController : MonoBehaviour {
 		else
 		{
 			etoggle = false;
-		} 
-			
+		}
+
+		if (Input.GetButton("Jump"))
+		{
+			if (!spaceToggle)
+			{
+				spaceToggle = true;
+				m_molat.Jump(true, targetDirection);
+			}
+		}
+		else
+		{
+			spaceToggle = false;
+			m_molat.Jump(false, targetDirection);
+		}
+
 
 
 

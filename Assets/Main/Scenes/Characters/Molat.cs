@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Molat : MonoBehaviour, IDamageable
 {
@@ -90,6 +91,7 @@ public class Molat : MonoBehaviour, IDamageable
 	private bool changingWeapon = false;
 	private MolatSounds molatSounds;
 	private float belowGroundY = -2f;
+	bool JumpRdyForPwrAttack = false;
 
 
 	[Header("Body")]
@@ -113,7 +115,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	private bool grounded;
 
-	public delegate void ActionExpressedDelegate(Action action, GameObject instigator);
+	public delegate void ActionExpressedDelegate(Action action, Molat instigator);
 	public event ActionExpressedDelegate ActionExpressedDel;
 	public delegate void IGotHitDelegate(float damage, float percentOfHealth, GameObject attacker, GameObject victim);
 	public event IGotHitDelegate IGotHitDel;
@@ -189,55 +191,60 @@ public class Molat : MonoBehaviour, IDamageable
 
 	void FixedUpdate()
 	{
-		lookAtDirection.Normalize();
-		targetDirection.Normalize();
-		TestGround(); //set grounded to correct state
-		if (freeToMove())
+		if(!isDead)
 		{
-
-			//if (targetDirection != Vector3.zero)
+			lookAtDirection.Normalize();
+			targetDirection.Normalize();
+			TestGround(); //set grounded to correct state
+			if (freeToMove())
 			{
 
-				if (Mathf.Abs(AngleOfLookDirection()) > fullSpeedMaxDegrees)
+				//if (targetDirection != Vector3.zero)
 				{
-					currentSpeed = straifSpeed;
+
+					if (Mathf.Abs(AngleOfLookDirection()) > fullSpeedMaxDegrees)
+					{
+						currentSpeed = straifSpeed;
+					}
+					else if (isSprinting)
+					{
+						currentSpeed = sprintSpeed;
+					}
+					else
+					{
+						currentSpeed = speed;
+					}
+
+					Vector3 targetVelocity = targetDirection;
+					targetVelocity *= currentSpeed;
+
+					Vector3 velocityChange = (targetVelocity - m_RigidBody.velocity);
+					velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
+					velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+					velocityChange.y = 0;
+					m_RigidBody.AddForce(velocityChange, ForceMode.VelocityChange);
+
+					float z = m_RigidBody.velocity.z;
+					float x = m_RigidBody.velocity.x;
+					Vector3 currentmagnitude = new Vector3(x, 0, z);
+					float velocityanim = Mathf.Clamp01(currentmagnitude.magnitude) * 2; //Take out times 2 when walking is added, as well as edit anim speeds (straife is too fast for walk)+
+
+					m_Animator.SetFloat("speed", velocityanim, animDampTime, 0.2f);
+					m_Animator.SetFloat("movementAngle", AngleOfLookDirection(), animDampTime, 0.2f);
 				}
-				else if (isSprinting)
+				if (targetDirection == Vector3.zero)
 				{
-					currentSpeed = sprintSpeed;
+					m_Animator.SetFloat("speed", 0, animDampTime * 2, 0.2f);
+					m_Animator.SetFloat("movementAngle", 0);
 				}
-				else
-				{
-					currentSpeed = speed;
-				}
-
-				Vector3 targetVelocity = targetDirection;
-				targetVelocity *= currentSpeed;
-
-				Vector3 velocityChange = (targetVelocity - m_RigidBody.velocity);
-				velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
-				velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
-				velocityChange.y = 0;
-				m_RigidBody.AddForce(velocityChange, ForceMode.VelocityChange);
-
-				float z = m_RigidBody.velocity.z;
-				float x = m_RigidBody.velocity.x;
-				Vector3 currentmagnitude = new Vector3(x, 0, z);
-				float velocityanim = Mathf.Clamp01(currentmagnitude.magnitude) * 2; //Take out times 2 when walking is added, as well as edit anim speeds (straife is too fast for walk)+
-
-				m_Animator.SetFloat("speed", velocityanim, animDampTime, 0.2f);
-				m_Animator.SetFloat("movementAngle", AngleOfLookDirection(), animDampTime, 0.2f);
 			}
-			if(targetDirection == Vector3.zero)
-			{
-				m_Animator.SetFloat("speed", 0, animDampTime * 2, 0.2f);
-				m_Animator.SetFloat("movementAngle", 0);
-			}
+			//Gravity
+			m_RigidBody.AddForce(0, -gravity, 0);
 		}
-		//Gravity
-		m_RigidBody.AddForce(0, -gravity, 0);
-
-
+		else
+		{
+			m_RigidBody.velocity = Vector3.zero;
+		}
 	}
 
 
@@ -520,6 +527,7 @@ public class Molat : MonoBehaviour, IDamageable
 	public void GotBlocked()
 	{
 		AddToCooldownForced(gotBlockedCD);
+		ExpressAction(Action.GotBlocked);
 	}
 
 
@@ -534,7 +542,6 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if (!isDead && canAttack && !changingWeapon)
 		{
-			//if in air, power jump attack
 			Weapon currentWeapon = myClaw;
 			bool usingClaw = true;
 			float cooldownUse = attackCDClaw;
@@ -547,8 +554,9 @@ public class Molat : MonoBehaviour, IDamageable
 			if (AddToCooldown(cooldownUse))
 			{
 				//Power attack?
-				if(!grounded)
+				if(JumpRdyForPwrAttack)
 				{
+					ExpressAction(Action.PowerAttack);
 					currentWeapon.currentDamage = currentWeapon.baseDamage * power * powerSwingDamageMultiplier;
 					currentWeapon.currentForce = currentWeapon.force * power * powerSwingForceMultiplier;
 					AddToCooldownForced(PowerSwingCD);
@@ -556,11 +564,11 @@ public class Molat : MonoBehaviour, IDamageable
 				}
 				else
 				{
+					ExpressAction(Action.Attack);
 					currentWeapon.currentDamage = currentWeapon.baseDamage * power;
 					currentWeapon.currentForce = currentWeapon.force * power;
 				}
 				//WaitForAttack
-				ExpressAction(Action.Attack);
 				m_Animator.SetBool("usingClaw", usingClaw);
 				m_Animator.SetFloat("attackType", 0);
 				m_Animator.SetTrigger("attack");
@@ -586,7 +594,7 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			//When out of stamina, update() forces us to stop sprinting.
 			//if we are not sprinting, we need enough for a jump to start again
-			if (!isSprinting && !tailJumpCooldown)
+			if (!isSprinting && !tailJumpCooldown && direction != Vector3.zero)
 			{
 				tailJumpCooldown = true;
 				StartCoroutine(TailJumpCooldown());
@@ -619,6 +627,8 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 		return isSprinting;
 	}
+
+
 
 	void HandleIsBlockingCheck()
 	{
@@ -676,7 +686,8 @@ public class Molat : MonoBehaviour, IDamageable
 	//called per frame from controller when pressed
 	public bool Jump(bool toggle, Vector3 direction)
 	{
-		if(toggle)
+		JumpRdyForPwrAttack = toggle;
+		if (toggle)
 		{
 			if (!isDead && canJump && (grounded) && !isJumping && !lastJumpToggle)
 			{
@@ -881,6 +892,7 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(!isDead && weaponEquiped && myWeapon)
 		{
+			ExpressAction(Action.ThrowWeapon);
 			Weapon throwingWeapon = myWeapon;
 			myWeapon = (Weapon) DropItem(myWeapon);
 			throwingWeapon.GetComponent<Rigidbody>().velocity = new Vector3(lookAtDirection.x, lookAtDirection.y + 0.2f, lookAtDirection.z) * weaponThrowSpeed;
@@ -953,9 +965,9 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(ActionExpressedDel != null)
 		{
-			ActionExpressedDel(action, gameObject);
+			ActionExpressedDel(action, this);
 		}
 	}
 }
 
-public enum Action {Attack,Die,Jump,tailJump,Parry,ThrowWeapon,EquipWeapon,UnequipWeapon};
+public enum Action {Attack,Die,Jump,tailJump,Parry,ThrowWeapon,EquipWeapon,UnequipWeapon, GotBlocked,PowerAttack};

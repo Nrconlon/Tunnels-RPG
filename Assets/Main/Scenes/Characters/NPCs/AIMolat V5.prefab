@@ -2467,12 +2467,12 @@ MonoBehaviour:
   destination: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
   skill: 5
+  courage: 4
   fightRadius: 3
   prefTrgDistWep: 0.8
   prefTrgDistUnrm: 0.5
   grabItemWhileFightingDist: 3
   maxEnemiesBeforeFlee: 100
-  healthThreshholdPercent: 0.2
   healingStationController: {fileID: 0}
 --- !u!114 &114463970443277396
 MonoBehaviour:

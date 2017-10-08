@@ -9,13 +9,13 @@ public abstract class AIState : MonoBehaviour {
 	protected MolatAIController m_molatAIController;
 	protected Molat m_Molat;
 
-	public void Initialize(AIState previousState)
+	public virtual void Initialize(AIState previousState)
 	{
 		this.m_molatAIController = previousState.m_molatAIController;
 		this.m_Molat = previousState.m_Molat;
 	}
 
-	public void Initialize(MolatAIController molatAIController)
+	public virtual void Initialize(MolatAIController molatAIController)
 	{
 		this.m_molatAIController = molatAIController;
 		this.m_Molat = molatAIController.m_Molat;
@@ -74,7 +74,7 @@ public abstract class AIState : MonoBehaviour {
 		m_molatAIController.SetState(m_molatAIController.CreateState(newState), this);
 	}
 
-	private void ResetAIStateInfo()
+	public virtual void ResetAIStateInfo()
 	{
 		m_Molat.TailSprint(false, Vector3.zero);
 	}
@@ -94,15 +94,11 @@ public abstract class AIState : MonoBehaviour {
 		{
 			return true;
 		}
-		else if (m_Molat.HealthAsPercentage < m_molatAIController.HealthThreshholdPercent)
+		else if (m_Molat.HealthAsPercentage < 1.01f - (m_molatAIController.Courage * 0.2f))
 		{
 			return true;
 		}
-		else if (m_molatAIController.PreferedState == StateEnum.Fleeing && m_molatAIController.mList_EnemyMolats.Count > 0)
-		{
-			return true;
-		}
-		else if (m_molatAIController.mList_EnemyMolats.Count > m_molatAIController.MaxEnemiesBeforeFlee)
+		else if (m_molatAIController.Courage == 1 && m_molatAIController.mList_EnemyMolats.Count > 0)
 		{
 			return true;
 		}

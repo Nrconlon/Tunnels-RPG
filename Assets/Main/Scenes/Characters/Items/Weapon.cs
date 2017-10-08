@@ -67,7 +67,7 @@ public abstract class Weapon : Item
 							if (angleBetweenUs < shield.maxAngleBlock)
 							{
 								instigator.GetComponent<Molat>().GotBlocked();
-								shield.BlockAHit(force);
+								shield.BlockAHit(currentForce);
 								blocked = true;
 								HitRegistered(hitObject);
 							}

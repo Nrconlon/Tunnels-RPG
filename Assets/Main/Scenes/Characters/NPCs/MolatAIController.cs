@@ -37,13 +37,15 @@ public class MolatAIController : MonoBehaviour {
 	private AIState _AIState;
 	[Header("Combat")]
 	[Range(1, 10)][SerializeField] float skill = 5f;
+	[Range(1, 5)] [SerializeField] float courage = 1;
 	[SerializeField] float fightRadius = 3f;
 	[SerializeField] float prefTrgDistWep = 0.8f;
 	[SerializeField] float prefTrgDistUnrm = 0.5f;
 	[SerializeField] float grabItemWhileFightingDist = 3f;
 	float prefTrgDistCurr = 0;
 	[SerializeField] int maxEnemiesBeforeFlee = 300;
-	[SerializeField] float healthThreshholdPercent = 0.2f;
+	
+
 
 	[HideInInspector] public HealingStationController healingStationController = null;
 
@@ -81,6 +83,10 @@ public class MolatAIController : MonoBehaviour {
 	{
 		if (!isDead)
 		{
+			if(m_Molat.IsDead)
+			{
+				Died(this.gameObject);
+			}
 			HandleRayCastVision(); //gather info around me
 			HandleFindTarget();
 			HandlePreferedDistance();
@@ -89,15 +95,18 @@ public class MolatAIController : MonoBehaviour {
 				IShouldFlee();
 			}
 			destination = ChooseWalkingDestination();
-			if (destination == Vector3.zero)
+			if(agent && agent.isActiveAndEnabled)
 			{
-				m_Molat.targetDirection = Vector3.zero;
-				agent.SetDestination(transform.position);
-			}
-			else
-			{
-				agent.SetDestination(destination);
-				m_Molat.targetDirection = agent.desiredVelocity.normalized;
+				if (destination == Vector3.zero)
+				{
+					m_Molat.targetDirection = Vector3.zero;
+					agent.SetDestination(transform.position);
+				}
+				else
+				{
+					agent.SetDestination(destination);
+					m_Molat.targetDirection = agent.desiredVelocity.normalized;
+				}
 			}
 			lookAtDirection = ChooseLookAtDirection();
 			
@@ -115,15 +124,18 @@ public class MolatAIController : MonoBehaviour {
 
 	private void HandlePreferedDistance()
 	{
-		if(m_Molat.IsWeaponEquiped && m_Molat.MyWeapon)
+		if (agent && agent.isActiveAndEnabled)
 		{
-			prefTrgDistCurr = prefTrgDistWep;
-			agent.stoppingDistance = prefTrgDistWep;
-		}
-		else
-		{
-			prefTrgDistCurr = prefTrgDistUnrm;
-			agent.stoppingDistance = prefTrgDistUnrm;
+			if (m_Molat.IsWeaponEquiped && m_Molat.MyWeapon)
+			{
+				prefTrgDistCurr = prefTrgDistWep;
+				agent.stoppingDistance = prefTrgDistWep;
+			}
+			else
+			{
+				prefTrgDistCurr = prefTrgDistUnrm;
+				agent.stoppingDistance = prefTrgDistUnrm;
+			}
 		}
 	}
 
@@ -134,7 +146,7 @@ public class MolatAIController : MonoBehaviour {
 	public float FightRadius { get { return fightRadius; } }
 	public float PrefDistFromTarget { get { return prefTrgDistCurr; } }
 	public int MaxEnemiesBeforeFlee { get { return maxEnemiesBeforeFlee; } }
-	public float HealthThreshholdPercent { get { return healthThreshholdPercent; } }
+	public float Courage { get { return courage; } }
 	public GameObject CurrentTarget { get { return currentTarget; } }
 	public float GrabItemWhileFightingDist { get { return grabItemWhileFightingDist; } }
 	public float Skill { get { return skill; } }
@@ -143,7 +155,7 @@ public class MolatAIController : MonoBehaviour {
 
 	//Delegate sign ups
 	//for enemies and self (and maybe allies)
-	void AMolatExpressedAction(Action action, GameObject instigator)
+	void AMolatExpressedAction(Action action, Molat instigator)
 	{
 		if(instigator != null)
 		{
@@ -157,7 +169,7 @@ public class MolatAIController : MonoBehaviour {
 			}
 			if (action == Action.Die)
 			{
-				StopRenderingGameObject(instigator);
+				StopRenderingGameObject(instigator.gameObject);
 			}
 		}
 	}
@@ -362,18 +374,21 @@ public class MolatAIController : MonoBehaviour {
 		}
 		else
 		{
-			GameObject oldTarget = CurrentTarget;
-			SetTarget(highestPriorityTarget);
-			//set target before notifying the states jsut in case
-			if (oldTarget == null)
+			//Make sure target is different
+			if(highestPriorityTarget != currentTarget)
 			{
-				FirstTargetAquired(CurrentTarget);
-			}
-			else
-			{
-				NewTargetAquired(CurrentTarget);
-			}
-			
+				GameObject oldTarget = CurrentTarget;
+				SetTarget(highestPriorityTarget);
+				//set target before notifying the states jsut in case
+				if (oldTarget == null)
+				{
+					FirstTargetAquired(CurrentTarget);
+				}
+				else
+				{
+					NewTargetAquired(CurrentTarget);
+				}
+			}			
 		}
 	}
 
