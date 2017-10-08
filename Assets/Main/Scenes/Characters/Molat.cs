@@ -19,7 +19,6 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float maxVelocityChange = 10.0f;
 
 	[Header("Cooldown")]
-	[SerializeField] float stamRechargePS = 1;
 	[SerializeField] float tailJumpCD = 1f;
 	[SerializeField] float gotBlockedCD = 1f;
 	[SerializeField] float attackCDWep = 1f;
@@ -40,11 +39,10 @@ public class Molat : MonoBehaviour, IDamageable
 
 	[Header("Jumping")]
 	
-	[SerializeField] float tailJumpHeight = 3.0f;
-	[SerializeField] float tailJumpPower = 1000.0f;
+	[SerializeField] float tailJumpPower = 40f;
 	[SerializeField] float tailJumpDuration = 0.4f;
 
-	[SerializeField] float jumpHeight = 13.0f;
+	[SerializeField] float jumpHeight = 2.0f;
 	[SerializeField] float jumpPower = 2.0f;
 	[SerializeField] LayerMask mask;
 	[SerializeField] float downCastRange = 1.2f;
@@ -53,8 +51,6 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float gravity = 18;
 	[SerializeField] float forceThreshold = 30;
 	[SerializeField] float animDampTime = 2;
-	[SerializeField] float clawAttackLength = 0.6f;
-	[SerializeField] float maceAttackLength = 1f;
 	[SerializeField] float maxPickupDistance = 1.2f;
 	[SerializeField] float weaponThrowSpeed = 17f;
 
@@ -84,7 +80,6 @@ public class Molat : MonoBehaviour, IDamageable
 	private float slideSpeed;
 	private float slideDuration;
 
-	private bool healing = false;
 	private bool isDead = false;
 
 	private bool weaponEquiped = false;
@@ -92,7 +87,7 @@ public class Molat : MonoBehaviour, IDamageable
 	private MolatSounds molatSounds;
 	private float belowGroundY = -2f;
 	bool JumpRdyForPwrAttack = false;
-
+	//
 
 	[Header("Body")]
 	[SerializeField] AudioSource myaudiosource;
@@ -131,16 +126,13 @@ public class Molat : MonoBehaviour, IDamageable
 
 	Animator m_Animator;
 	Rigidbody m_RigidBody;
-	CapsuleCollider m_Capsule;
 	[HideInInspector] public PlayerItemFinder playerItemFinder;
 
 	private bool previouslyGrounded;
-	private Vector3 groundContactNormal;
 	float turnAmount;
 	float torwardAmount;
 	private bool isBlocking;
 	bool animatorShouldBlock = false;
-	private float swingTimer = 0f;
 	[HideInInspector] public bool isHealing = false;
 
 	//Getters
@@ -164,7 +156,6 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		m_Animator = GetComponent<Animator>();
 		m_RigidBody = GetComponent<Rigidbody>();
-		m_Capsule = GetComponent<CapsuleCollider>();
 		molatSounds = GetComponent<MolatSounds>();
 		playerItemFinder = GetComponentInChildren<PlayerItemFinder>();
 
@@ -199,7 +190,19 @@ public class Molat : MonoBehaviour, IDamageable
 			if (freeToMove())
 			{
 
-				//if (targetDirection != Vector3.zero)
+				if (isSliding)
+				{
+					if (slideTimer > 0)
+					{
+						m_RigidBody.velocity = Vector3.Lerp(Vector3.zero, slideSpeed * slideDirection, slideTimer);
+						slideTimer -= 0.02f / slideDuration;
+					}
+					else
+					{
+						isSliding = false;
+					}
+				}
+				else
 				{
 
 					if (Mathf.Abs(AngleOfLookDirection()) > fullSpeedMaxDegrees)
@@ -263,20 +266,6 @@ public class Molat : MonoBehaviour, IDamageable
 			if (LookAtDirectionDel != null)
 			{
 				LookAtDirectionDel(lookAtDirection);
-			}
-
-			if (isSliding)
-			{
-				if (slideTimer > 0)
-				{
-					m_RigidBody.velocity = Vector3.Lerp(Vector3.zero, slideSpeed * slideDirection, slideTimer);
-					slideTimer -= Time.deltaTime / slideDuration;
-				}
-				else
-				{
-					isSliding = false;
-				}
-
 			}
 			if (lookAtDirection != Vector3.zero)
 			{
@@ -589,7 +578,8 @@ public class Molat : MonoBehaviour, IDamageable
 	//Called per frame from controller
 	public bool TailSprint(bool toggle, Vector3 direction)
 	{
-		
+		//TODO Remove
+		direction = direction.normalized;
 		if (toggle && canSprint && freeToMove())
 		{
 			//When out of stamina, update() forces us to stop sprinting.
@@ -722,7 +712,7 @@ public class Molat : MonoBehaviour, IDamageable
 
 	bool freeToMove()
 	{
-		if(!isDead && grounded && !isJumping)
+		if(!isDead && grounded)
 		{
 			return true;
 		}
@@ -753,14 +743,12 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			grounded = true;
 			m_RigidBody.drag = drag;
-			groundContactNormal = hit.normal;
 
 		}
 		else
 		{
 			grounded = false;
 			m_RigidBody.drag = 0;
-			groundContactNormal = Vector3.up;
 		}
 
 		if(!previouslyGrounded && grounded)

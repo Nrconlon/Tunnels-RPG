@@ -1236,7 +1236,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1208678052327462}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.004, y: 1.019, z: 0.312}
+  m_LocalPosition: {x: -0.034, y: 1.142, z: 0.198}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4825616838375226}
@@ -1794,7 +1794,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1178897808295450}
   m_LocalRotation: {x: -0, y: 0.12847823, z: -0, w: -0.99171233}
-  m_LocalPosition: {x: 22.36777, y: 0, z: -13.440081}
+  m_LocalPosition: {x: 14.554718, y: 0, z: -9.1210785}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4076770732274498}
@@ -2000,13 +2000,13 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 73.6
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966271
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2583,20 +2583,21 @@ MonoBehaviour:
   sprintSpeed: 9
   fullSpeedMaxDegrees: 80
   maxVelocityChange: 10
-  maxStamina: 50
   stamRechargePS: 10
-  tailJumpCost: -10
-  sprintCostPS: -5
-  jumpCost: -10
+  tailJumpCD: 1
+  gotBlockedCD: 1
+  attackCDWep: 1
+  attackCDClaw: 0.5
+  PowerSwingCD: 2
+  gotHitHardCD: 0.5
   canJump: 1
   canAttack: 1
   canSprint: 1
   canBlock: 1
-  tailJumpHeight: 2
   tailJumpPower: 40
   tailJumpDuration: 0.2
-  jumpHeight: 10
-  jumpPower: 2
+  jumpHeight: 7
+  jumpPower: 6
   mask:
     serializedVersion: 2
     m_Bits: 1
@@ -2607,7 +2608,7 @@ MonoBehaviour:
   clawAttackLength: 0.6
   maceAttackLength: 1
   maxPickupDistance: 1.2
-  damageWithMaceThrow: 9
+  weaponThrowSpeed: 10
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
     type: 2}
   projectileSocket: {fileID: 1709799075669932}
@@ -2634,6 +2635,10 @@ MonoBehaviour:
   targetDirection: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
   mostRecentAttacker: {fileID: 0}
+  playerItemFinder: {fileID: 0}
+  isHealing: 0
+  powerSwingDamageMultiplier: 1.5
+  powerSwingForceMultiplier: 5
 --- !u!124 &124248512132167096
 Behaviour:
   m_ObjectHideFlags: 1

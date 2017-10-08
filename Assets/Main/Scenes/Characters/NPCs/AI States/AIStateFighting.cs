@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class AIStateFighting : AIState
 {
-	private bool targetInRange = false;
-	private bool targetInRangePrevious = false;
 	Item targetItem = null;
 	bool inAction = false;
 	bool enemyFleeing = false;
@@ -143,7 +141,7 @@ public class AIStateFighting : AIState
 			GameObject currentTarget = m_molatAIController.CurrentTarget;
 			float distanceFromTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
 			//ITEM CHECK
-			targetItem = ItemCheck(distanceFromTarget * 1.5f);  //Check for an item closer than the target
+			targetItem = ItemCheck(distanceFromTarget + m_molatAIController.GrabItemWhileFightingDist);  //Check for an item closer than the target times 1.5f
 			if (targetItem)
 			{
 				//Start going for Item.  
@@ -174,7 +172,7 @@ public class AIStateFighting : AIState
 				//ITEM CHECK
 				if (distanceFromTarget > m_molatAIController.FightRadius)
 				{
-					targetItem = ItemCheck(distanceFromTarget);  //Check for an item closer than the target
+					targetItem = ItemCheck(distanceFromTarget + m_molatAIController.GrabItemWhileFightingDist);  //Check for an item closer than the target times 1.5f
 					if (targetItem)
 					{
 						//Start going for Item.  
@@ -217,17 +215,17 @@ public class AIStateFighting : AIState
 					{
 						StartingAction();
 						//First encounter.  1/4 power strike, 1/4 block, 1/4 normal attack, 1/4 defensive/reactive
-						if (RandomChance(0.25f))
+						if (RandomChance(0.25f) && m_Molat.MyShield)
+						{
+							StartCoroutine(NormalBlock(RandomDelay(0.2f)));
+						}
+						else if (RandomChance(0.35f))
+						{
+							StartCoroutine(NormalAttack(RandomDelay(0.1f)));
+						}
+						else if (RandomChance(0.25f))
 						{
 							PowerStrike();
-						}
-						else if (RandomChance(0.25f))
-						{
-							StartCoroutine(NormalAttack(RandomDelay(0.5f)));
-						}
-						else if (RandomChance(0.25f))
-						{
-							StartCoroutine(NormalBlock(RandomDelay(0.5f)));
 						}
 						else
 						{
@@ -237,7 +235,7 @@ public class AIStateFighting : AIState
 					else
 					{
 						StartingAction();
-						if (RandomChance(0.5f))
+						if (RandomChance(0.7f))
 						{
 							if (RandomChance(0.25f))
 							{
@@ -245,12 +243,12 @@ public class AIStateFighting : AIState
 							}
 							else
 							{
-								StartCoroutine(NormalAttack(RandomDelay(0.5f)));
+								StartCoroutine(NormalAttack(RandomDelay(0.1f)));
 							}
 						}
-						else if (RandomChance(0.25f))
+						else if (RandomChance(0.25f) && m_Molat.MyShield)
 						{
-							StartCoroutine(NormalBlock(RandomDelay(0.5f)));
+							StartCoroutine(NormalBlock(RandomDelay(0.2f)));
 						}
 						else
 						{
@@ -274,24 +272,24 @@ public class AIStateFighting : AIState
 			{
 				switch(action)
 				{
-					case Action.Jump:
-						if(RandomChance(0.5f))
+					case Action.PowerAttack:
+						if(RandomChance(0.7f))
 						{
-							StartCoroutine(TailJumpBack(attackAfterJumpTime + RandomDelay(0.5f)));
+							StartCoroutine(TailJumpBack(RandomDelay(0.2f)));
 						}
 						break;
 					case Action.ThrowWeapon:
 						if (RandomChance(0.7f))
 						{
-							StartCoroutine(TailJumpSide(RandomDelay(0.5f)));
+							StartCoroutine(TailJumpSide(RandomDelay(0.2f)));
 						}
 						break;
 					case Action.Attack:
-						if (RandomChance(0.2f))
+						if (RandomChance(0.8f))
 						{
 							StartCoroutine(TailJumpSide(RandomDelay(0.5f)));
 						}
-						else if(RandomChance(0.2f))
+						else if(RandomChance(0.2f) && m_Molat.MyShield)
 						{
 							StartCoroutine(NormalBlock(RandomDelay(0.5f)));
 						}
@@ -387,7 +385,20 @@ public class AIStateFighting : AIState
 
 	float RandomDelay(float max)
 	{
-		return UnityEngine.Random.Range(0.1f,max);
+		float extraDelay;
+		if(m_molatAIController.Skill == 1)
+		{
+			extraDelay = 0.2f;
+		}
+		else if (m_molatAIController.Skill == 2)
+		{
+			extraDelay = 0;
+		}
+		else
+		{
+			extraDelay = -0.1f;
+		}
+		return UnityEngine.Random.Range(0.1f + extraDelay, max + extraDelay);
 	}
 	bool RandomChance(float chance)
 	{

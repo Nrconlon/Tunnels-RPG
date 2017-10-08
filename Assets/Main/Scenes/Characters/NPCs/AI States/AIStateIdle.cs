@@ -5,7 +5,6 @@ using UnityEngine;
 public class AIStateIdle : AIState
 {
 	bool lookTooLong = false;
-	bool lookTooLongToggle = false;
 	float lookTooLongWalkDistance = 1f;
 	float lookTooLongTime = 3f;
 	Vector3 lookTooLongDestination = default(Vector3);

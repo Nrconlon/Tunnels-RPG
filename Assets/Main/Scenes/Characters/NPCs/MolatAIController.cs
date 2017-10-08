@@ -13,7 +13,6 @@ public class MolatAIController : MonoBehaviour {
 	[SerializeField] float visionRadius = 10f;
 	[SerializeField] float maxVisionAngle = 90f;
 	[SerializeField] Transform lookFrom;
-	[SerializeField] float newDestDistance =2f;
 	[SerializeField] float fleeDuration = 5f;
 
 	[SerializeField] List<Transform> waypoints = new List<Transform>();
@@ -31,17 +30,15 @@ public class MolatAIController : MonoBehaviour {
 	Dictionary<GameObject, EnemyPriority> _RenderedObjectsDictionary = new Dictionary<GameObject, EnemyPriority>();
 	[HideInInspector] public Vector3 destination;
 	[HideInInspector] public  Vector3 lookAtDirection;
-	bool isAttacking = false;
-	bool isJumping = false;
 	bool isDead = false;
 	private AIState _AIState;
 	[Header("Combat")]
-	[Range(1, 10)][SerializeField] float skill = 5f;
-	[Range(1, 5)] [SerializeField] float courage = 1;
+	[Range(1, 3)][SerializeField] public float skill = 2f;
+	[Range(1, 5)] [SerializeField] public float courage = 1;
 	[SerializeField] float fightRadius = 3f;
 	[SerializeField] float prefTrgDistWep = 0.8f;
 	[SerializeField] float prefTrgDistUnrm = 0.5f;
-	[SerializeField] float grabItemWhileFightingDist = 3f;
+	[SerializeField] float grabItemWhileFightingDist = 5f;
 	float prefTrgDistCurr = 0;
 	[SerializeField] int maxEnemiesBeforeFlee = 300;
 	

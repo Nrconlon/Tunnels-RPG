@@ -2469,9 +2469,9 @@ MonoBehaviour:
   skill: 5
   courage: 4
   fightRadius: 3
-  prefTrgDistWep: 0.8
-  prefTrgDistUnrm: 0.5
-  grabItemWhileFightingDist: 3
+  prefTrgDistWep: 1
+  prefTrgDistUnrm: 0.6
+  grabItemWhileFightingDist: 5
   maxEnemiesBeforeFlee: 100
   healingStationController: {fileID: 0}
 --- !u!114 &114463970443277396
@@ -2514,7 +2514,6 @@ MonoBehaviour:
   canAttack: 1
   canSprint: 1
   canBlock: 1
-  tailJumpHeight: 2
   tailJumpPower: 40
   tailJumpDuration: 0.2
   jumpHeight: 10

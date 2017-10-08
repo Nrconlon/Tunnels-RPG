@@ -23,7 +23,6 @@ public class MouseAndRaycast : MonoBehaviour
 	float maxRaycastDepth = 100f; // Hard coded value
 	int topPriorityLayerLastFrame = -1; // So get ? from start with Default layer terrain
 
-	private UserArenaController userArenaController;
 	private Camera myCamera;
 	private RaycastHit? priorityHit = null;
 	public bool inGame = false;
@@ -34,7 +33,6 @@ public class MouseAndRaycast : MonoBehaviour
 
 	private void Start()
 	{
-		userArenaController = GetComponent<UserArenaController>();
 		myCamera = GetComponent<Camera>();
 	}
 

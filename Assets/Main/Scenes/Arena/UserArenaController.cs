@@ -41,10 +41,10 @@ public class UserArenaController : MonoBehaviour {
 	private float health = 100f;
 	private float power = 1;
 	private float speed = 6;
+	private float courage = 4;
+	private float skill = 2;
 
 	private bool canAttack = true;
-	private bool canJump = true;
-	private bool canSprint = true;
 	private bool canBlock = true;
 
 	private Vector3 lastCamPosition;
@@ -154,13 +154,13 @@ public class UserArenaController : MonoBehaviour {
 
 			molat.canAttack = canAttack;
 			molat.canBlock = canBlock;
-			molat.canSprint = canSprint;
-			molat.canJump = canJump;
 	}
 
 		if (molatAIController)
 		{
 			molatAIController.healingStationController = healingStationController;
+			molatAIController.courage = courage;
+			molatAIController.skill = skill;
 		}
 	}
 
@@ -307,19 +307,19 @@ public class UserArenaController : MonoBehaviour {
 	{
 		this.speed = float.Parse(speed);
 	}
+	public void SetCourage(float courage)
+	{
+		this.courage = courage;
+	}
+	public void SetSkill(float skill)
+	{
+		this.skill = skill;
+	}
 
 	public void SetCanAttack(bool canAttack)
 	{
 		print(canAttack);
 		this.canAttack = canAttack;
-	}
-	public void SetCanJump(bool canJump)
-	{
-		this.canJump = canJump;
-	}
-	public void SetCanSprint(bool canSprint)
-	{
-		this.canSprint = canSprint;
 	}
 	public void SetCanBlock(bool canBlock)
 	{

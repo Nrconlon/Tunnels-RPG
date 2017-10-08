@@ -14,8 +14,7 @@ public class HealingStation : MonoBehaviour {
 	{
 		Molat molat = other.gameObject.GetComponent<Molat>();
 		if(molat && !molat.IsDead)
-		{
-			print("adding");
+		{ 
 			myMolats.Add(molat);
 		}
 	}
