@@ -53,9 +53,10 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] float animDampTime = 2;
 	[SerializeField] float maxPickupDistance = 1.2f;
 	[SerializeField] float weaponThrowSpeed = 17f;
+	[SerializeField] float powerSwingDamageMultiplier = 1.5f;
+	[SerializeField] float powerSwingForceMultiplier = 3f;
 
 	[SerializeField] private GameObject throwingWeapon;
-	[SerializeField] GameObject projectileSocket;
 	public bool dontGoBelowZero = true;
 
 	public GameObject weaponObject;
@@ -283,7 +284,7 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			if (transform.position.y <= belowGroundY)
 			{
-				transform.position = new Vector3(transform.position.x, 1, transform.position.x);
+				transform.position = new Vector3(transform.position.x, 1, transform.position.z);
 			}
 		}
 	}
@@ -524,8 +525,7 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		brokenitem.StopUsing(this);
 	}
-	[SerializeField] float powerSwingDamageMultiplier = 1.5f;
-	[SerializeField] float powerSwingForceMultiplier = 5f;
+	
 
 	public void Attack()
 	{
@@ -622,6 +622,13 @@ public class Molat : MonoBehaviour, IDamageable
 
 	void HandleIsBlockingCheck()
 	{
+		if(!myShield)
+		{
+			Block(false);
+
+			animatorShouldBlock = false;
+			DeactivateShield();
+		}
 		if(animatorShouldBlock)
 		{
 			if (!m_Animator.GetCurrentAnimatorStateInfo(2).IsTag("blocking"))

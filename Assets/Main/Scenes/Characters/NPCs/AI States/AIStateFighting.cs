@@ -427,6 +427,10 @@ public class AIStateFighting : AIState
 
 	public override void ResetAIStateInfo()
 	{
+		if (targetMolat)
+		{
+			targetMolat.ActionExpressedDel -= AMolatExpressedAction;
+		}
 		StopAllCoroutines();
 		base.ResetAIStateInfo();
 	}

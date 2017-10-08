@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9019a34d9b57ef243aa8056724754c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durability: 200
+  durability: 150
   physicsCollider: {fileID: 65373428307489994}
   currentDurability: 0
   isActivated: 0

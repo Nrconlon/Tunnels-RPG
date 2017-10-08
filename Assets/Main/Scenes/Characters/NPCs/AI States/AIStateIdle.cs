@@ -41,7 +41,7 @@ public class AIStateIdle : AIState
 		{
 			return targetItem.transform.position;
 		}
-		else if(m_Molat.HealthAsPercentage < 1f)
+		else if(m_Molat.HealthAsPercentage < 1f && m_molatAIController.healingStationController)
 		{
 			HealingStation closestStation = m_molatAIController.healingStationController.GetClosestStation(transform.position);
 			if(closestStation)

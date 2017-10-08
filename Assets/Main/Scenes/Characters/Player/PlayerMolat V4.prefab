@@ -2583,7 +2583,6 @@ MonoBehaviour:
   sprintSpeed: 9
   fullSpeedMaxDegrees: 80
   maxVelocityChange: 10
-  stamRechargePS: 10
   tailJumpCD: 1
   gotBlockedCD: 1
   attackCDWep: 1
@@ -2605,13 +2604,12 @@ MonoBehaviour:
   gravity: 18
   forceThreshold: 30
   animDampTime: 2
-  clawAttackLength: 0.6
-  maceAttackLength: 1
   maxPickupDistance: 1.2
   weaponThrowSpeed: 10
+  powerSwingDamageMultiplier: 1.5
+  powerSwingForceMultiplier: 3
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,
     type: 2}
-  projectileSocket: {fileID: 1709799075669932}
   dontGoBelowZero: 1
   weaponObject: {fileID: 1464216861386448, guid: e17ebe850bfe30e4981f6e65e91506a3,
     type: 2}
@@ -2637,8 +2635,6 @@ MonoBehaviour:
   mostRecentAttacker: {fileID: 0}
   playerItemFinder: {fileID: 0}
   isHealing: 0
-  powerSwingDamageMultiplier: 1.5
-  powerSwingForceMultiplier: 5
 --- !u!124 &124248512132167096
 Behaviour:
   m_ObjectHideFlags: 1

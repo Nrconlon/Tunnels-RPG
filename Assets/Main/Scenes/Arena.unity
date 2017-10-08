@@ -7853,7 +7853,7 @@ MonoBehaviour:
   mouseSensitivity: 300
   mouseScrollHeight: 15
   minCameraHeight: 1
-  maxCameraHeight: 16
+  maxCameraHeight: 22
 --- !u!54 &1295236267
 Rigidbody:
   m_ObjectHideFlags: 0

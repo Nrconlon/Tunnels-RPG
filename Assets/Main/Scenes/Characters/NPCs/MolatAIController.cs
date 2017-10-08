@@ -255,7 +255,7 @@ public class MolatAIController : MonoBehaviour {
 				for (float i = 0; i < 1.5f; i = i + 0.5f)
 				{
 					Physics.Raycast(lookFrom.position, direction + new Vector3(0, i, 0), out Hit, 10000f);
-					if (Hit.transform && Hit.transform.root.gameObject == entry.Key)
+					if (Hit.transform && Hit.transform.gameObject == entry.Key)
 					{
 						gotAHit = true;
 						if(currentPriority.Vision == 0)
