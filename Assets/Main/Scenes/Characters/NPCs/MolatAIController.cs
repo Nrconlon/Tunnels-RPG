@@ -41,7 +41,8 @@ public class MolatAIController : MonoBehaviour {
 	[SerializeField] float grabItemWhileFightingDist = 5f;
 	float prefTrgDistCurr = 0;
 	[SerializeField] int maxEnemiesBeforeFlee = 300;
-	
+
+
 
 
 	[HideInInspector] public HealingStationController healingStationController = null;
@@ -64,6 +65,9 @@ public class MolatAIController : MonoBehaviour {
 		m_Molat = GetComponent<Molat>();
 		agent.updateRotation = false;
 		agent.updatePosition = true;
+		agent.baseOffset = -0.1f;
+
+
 		_AIState = CreateState(StateEnum.Idle);
 		currentStateEnum = StateEnum.Idle;
 		destination = transform.position;
@@ -126,12 +130,12 @@ public class MolatAIController : MonoBehaviour {
 			if (m_Molat.IsWeaponEquiped && m_Molat.MyWeapon)
 			{
 				prefTrgDistCurr = prefTrgDistWep;
-				agent.stoppingDistance = prefTrgDistWep;
+				//agent.stoppingDistance = prefTrgDistWep;
 			}
 			else
 			{
 				prefTrgDistCurr = prefTrgDistUnrm;
-				agent.stoppingDistance = prefTrgDistUnrm;
+				//agent.stoppingDistance = prefTrgDistUnrm;
 			}
 		}
 	}

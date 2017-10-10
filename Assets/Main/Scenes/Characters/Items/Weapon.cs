@@ -16,7 +16,7 @@ public abstract class Weapon : Item
 
 	Collider myCollider;
 
-	private List<GameObject> targetsHit = new List<GameObject>();
+	private List<Molat> targetsHit = new List<Molat>();
 
 	bool blocked = false;
 	private void Update()
@@ -50,13 +50,15 @@ public abstract class Weapon : Item
 		if (instigator && isActivated && !blocked)
 		{
 			GameObject hitObject = collider.gameObject;
-			//if the root is not me, and I havent hit this root
-			if (hitObject != instigator && !targetsHit.Contains(hitObject))
+			Molat targetMolat = hitObject.transform.GetComponent<Molat>();
+			if (!targetMolat)
 			{
-				Molat targetMolat = hitObject.transform.root.GetComponent<Molat>();
-				if(targetMolat && !targetMolat.IsDead)
-				{
-					Component damageableComponent = hitObject.GetComponent(typeof(IDamageable));
+				targetMolat = hitObject.transform.GetComponentInParent<Molat>();
+			}
+			//if not me, and theres a Molat, and its not dead, and I havent hit it, and its not a raycast bubble.
+			if (hitObject != instigator && targetMolat && !targetMolat.IsDead && !targetsHit.Contains(targetMolat) && hitObject.layer != 8)
+			{
+					Component damageableComponent = targetMolat.GetComponent(typeof(IDamageable));
 					Shield shield = hitObject.GetComponentInChildren<Shield>();
 					if (shield)
 					{
@@ -69,24 +71,31 @@ public abstract class Weapon : Item
 								instigator.GetComponent<Molat>().GotBlocked();
 								shield.BlockAHit(currentForce);
 								blocked = true;
-								HitRegistered(hitObject);
+								HitRegistered(targetMolat);
 							}
-
 						}
 					}
+
 					if (damageableComponent && !blocked)
 					{
 						(damageableComponent as IDamageable).TakeDamage(currentDamage, currentForce, instigator.transform.forward, instigator);
-						HitRegistered(hitObject);
+						HitRegistered(targetMolat);
 					}
-				}
 			}
 		}
 	}
-	private void HitRegistered(GameObject hitObject)
+	private void HitRegistered(Molat hitObject)
 	{
 		targetsHit.Add(hitObject);
-		HandleDurabilityLoss(durabilityLossPerHit);
+		if(blocked)
+		{
+			HandleDurabilityLoss(durabilityLossPerHit);
+		}
+		else
+		{
+			HandleDurabilityLoss(durabilityLossPerHit / 2f);
+		}
+
 		if(beingThrown)
 		{
 			beingThrown = false;

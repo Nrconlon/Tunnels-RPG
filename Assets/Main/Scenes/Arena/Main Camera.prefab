@@ -1,0 +1,202 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1458730137607516}
+  m_IsPrefabParent: 1
+--- !u!1 &1458730137607516
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4646622741966542}
+  - component: {fileID: 20347441488824032}
+  - component: {fileID: 92929609609903172}
+  - component: {fileID: 124263864169490080}
+  - component: {fileID: 81454446943251024}
+  - component: {fileID: 114527079499433844}
+  - component: {fileID: 54101250713266786}
+  - component: {fileID: 114723940750969274}
+  - component: {fileID: 114784270273971282}
+  - component: {fileID: 114754932743114302}
+  m_Layer: 0
+  m_Name: Main Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4646622741966542
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_LocalRotation: {x: 0.37941098, y: -0, z: -0, w: 0.9252283}
+  m_LocalPosition: {x: 12.57, y: 16.25, z: -11.75}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 44.594, y: 0, z: 0}
+--- !u!20 &20347441488824032
+Camera:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: -1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+  m_StereoMirrorMode: 0
+--- !u!54 &54101250713266786
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!81 &81454446943251024
+AudioListener:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+--- !u!92 &92929609609903172
+Behaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+--- !u!114 &114527079499433844
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56786654f7c1d8346946e5fb35dc1a34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainSpeed: 2000
+  shiftAdd: 2000
+  maxVelocityChange: 10
+  mouseSensitivity: 300
+  mouseScrollHeight: 15
+  minCameraHeight: 1
+  maxCameraHeight: 22
+--- !u!114 &114723940750969274
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d02853f5d34bd8f429969ac34c466d07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnCursor: {fileID: 2800000, guid: 3cc4d141667a87f42a29a330b413365d, type: 3}
+  maceCursor: {fileID: 2800000, guid: 9f3f3a088016f274aa176e3067144b50, type: 3}
+  shieldCursor: {fileID: 2800000, guid: 8f42b03cf164e754d9de9112eaa2f9eb, type: 3}
+  healCursor: {fileID: 2800000, guid: d4e3afc8990e3734c954afcde5d66fb4, type: 3}
+  circleCursor: {fileID: 2800000, guid: 631420313c86ffa4490730177a57a6c2, type: 3}
+  deleteCursor: {fileID: 2800000, guid: b1755065b1a71d5498a3e9d42b922fb7, type: 3}
+  defaultCursor: {fileID: 0}
+  cursorDefaultSpot: {x: 0, y: 0}
+  cursorNewSpot: {x: 100, y: 100}
+  lookingForCharacter: 0
+  lookingForItem: 0
+  inGame: 0
+--- !u!114 &114754932743114302
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71e751eb365d9444d806c61ec11d04b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healingStationPrefab: {fileID: 1046624446296076, guid: 32ca70c249a5450409c6005c6ed9508d,
+    type: 2}
+--- !u!114 &114784270273971282
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d9b569494efe60479892209bd1bc75a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AIPrefab: {fileID: 1663751865173622, guid: 6297e2499e16eb442966f5aa6617fcd1, type: 2}
+  _PlayerPrefab: {fileID: 1178897808295450, guid: 8809564e9229b28489dd791794795d2d,
+    type: 2}
+  _WeaponPrefab: {fileID: 1464216861386448, guid: e17ebe850bfe30e4981f6e65e91506a3,
+    type: 2}
+  _ClawPrefab: {fileID: 1740099511092644, guid: 2fa3ff423474cfb428f5ab415e399747,
+    type: 2}
+  _ShieldPrefab: {fileID: 1505726830462586, guid: e497b6bacee23ee40b98dcb497a2f122,
+    type: 2}
+  optionsMenuButton: {fileID: 0}
+  returnToControlButton: {fileID: 0}
+  InGameUI: {fileID: 0}
+  ControlUI: {fileID: 0}
+  toolTipText: {fileID: 0}
+  clonePrefabSpawn: {fileID: 0}
+--- !u!124 &124263864169490080
+Behaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1458730137607516}
+  m_Enabled: 1

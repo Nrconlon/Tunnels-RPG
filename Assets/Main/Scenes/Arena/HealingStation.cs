@@ -22,18 +22,17 @@ public class HealingStation : MonoBehaviour {
 	private void OnTriggerExit(Collider other)
 	{
 		Molat molat = other.gameObject.GetComponent<Molat>();
-		if (molat && !molat.IsDead)
+		if (molat)
 		{
-			print("removing");
 			myMolats.Remove(molat);
-
 		}
 	}
 
 	private void Update()
 	{
 		List<Molat> deadMolats = new List<Molat>();
-		foreach (Molat molat in myMolats)
+		HashSet<Molat> currentMolats = myMolats;
+		foreach (Molat molat in currentMolats)
 		{
 			if(molat.IsDead)
 			{
@@ -62,7 +61,9 @@ public class HealingStation : MonoBehaviour {
 	{
 		if(transform.localScale.x <= (deltaTime * amountToShrink))
 		{
+			myMolats.Clear();
 			DestroyMeDel(this);
+
 		}
 		else
 		{

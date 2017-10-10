@@ -16,6 +16,7 @@ public class AIStateFighting : AIState
 	bool pickedDirection = false;
 	bool preferRight;
 	float attackAfterJumpTime = 0.3f;
+	float switchDirectionTimer;
 
 	//on tick
 
@@ -24,33 +25,39 @@ public class AIStateFighting : AIState
 		if (!m_molatAIController.CurrentTarget)
 		{
 			ChangeState(StateEnum.Idle);
-		}
-		if ((reactive || m_Molat.CurrentCooldown > 0))
-		{
-			m_Molat.Block(true);
-			Vector3 correctVectorFromTarget = (transform.position - m_molatAIController.CurrentTarget.transform.position).normalized * m_molatAIController.PrefDistFromTarget;
-			Vector3 vectorFromTargetTurned;
-			if (!pickedDirection)
-			{
-				preferRight = RandomChance(0.5f);
-				pickedDirection = true;
-			}
-
-			if(preferRight)
-			{
-				vectorFromTargetTurned = Quaternion.Euler(0, -90, 0) * correctVectorFromTarget;
-			}
-			else
-			{
-				vectorFromTargetTurned = Quaternion.Euler(0, 90, 0) * correctVectorFromTarget;
-			}
-			return m_molatAIController.CurrentTarget.transform.position + vectorFromTargetTurned;
+			return Vector3.zero;
 		}
 		else
 		{
-			pickedDirection = false;
+			if ((reactive || m_Molat.CurrentCooldown > 0))
+			{
+				m_Molat.Block(true);
+				Vector3 correctVectorFromTarget = (transform.position - m_molatAIController.CurrentTarget.transform.position).normalized * m_molatAIController.PrefDistFromTarget;
+				Vector3 vectorFromTargetTurned;
+				if (!pickedDirection || switchDirectionTimer > Time.time)
+				{
+					switchDirectionTimer = Time.time + 0.5f;
+					preferRight = RandomChance(0.5f);
+					pickedDirection = true;
+				}
+
+				if (preferRight)
+				{
+					vectorFromTargetTurned = Quaternion.Euler(0, -90, 0) * correctVectorFromTarget;
+				}
+				else
+				{
+					vectorFromTargetTurned = Quaternion.Euler(0, 90, 0) * correctVectorFromTarget;
+				}
+				return m_molatAIController.CurrentTarget.transform.position + vectorFromTargetTurned;
+			}
+			else
+			{
+				pickedDirection = false;
+			}
 		}
 		return fightingDestination;
+
 	}
 
 
@@ -158,7 +165,7 @@ public class AIStateFighting : AIState
 				m_Molat.StopTailSprint();
 				enemyFleeing = false;
 			}
-			//no return so that we go to the end
+			fightingDestination = m_molatAIController.CurrentTarget.transform.position;
 		}
 		else if (!inAction)
 		{

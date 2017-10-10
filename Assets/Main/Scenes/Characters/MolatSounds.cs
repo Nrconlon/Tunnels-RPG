@@ -5,6 +5,7 @@ using UnityEngine;
 public class MolatSounds : MonoBehaviour {
 	AudioSource mouthSource;
 	AudioSource itemSource;
+	AudioSource footSource;
 
 	[SerializeField] AudioClip fleeing;
 	[SerializeField] AudioClip powerSwing;
@@ -15,15 +16,32 @@ public class MolatSounds : MonoBehaviour {
 	[SerializeField] AudioClip[] died;
 	[SerializeField] AudioClip pickUpItem;
 	[SerializeField] AudioClip amazing;
+	[SerializeField] AudioClip[] footSounds;
+
+	float footStepsTimer;
 
 	private void Start()
 	{
 		mouthSource = gameObject.AddComponent<AudioSource>();
 		itemSource = gameObject.AddComponent<AudioSource>();
+		footSource = gameObject.AddComponent<AudioSource>();
+
 		mouthSource.loop = false;
 		mouthSource.pitch = 0.9f + 0.2f * Random.value;
 
 		itemSource.loop = false;
+
+		footSource.loop = false;
+		footSource.pitch = 0.9f + 0.2f * Random.value;
+		footSource.volume = 0.2f;
+	}
+	public void FootStepSoundEffect()
+	{
+		if (!footSource.isPlaying && footStepsTimer < Time.time)
+		{
+			footStepsTimer = Time.time + Random.Range(0.3f,0.5f);
+			PlayClip(footSounds, footSource);
+		}
 	}
 	public void FleeingSoundEffect()
 	{

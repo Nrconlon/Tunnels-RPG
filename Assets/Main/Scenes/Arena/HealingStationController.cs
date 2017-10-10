@@ -12,6 +12,7 @@ public class HealingStationController : MonoBehaviour {
 		foreach(HealingStation station in stations)
 		{
 			healingStations.Add(station);
+			station.DestroyMeDel += DeleteStation;
 		}
 	}
 	public void SpawnHealingStation(Vector3 location)
@@ -23,7 +24,7 @@ public class HealingStationController : MonoBehaviour {
 		healingStations.Add(station);
 	}
 
-	private void DeleteStation(HealingStation station)
+	public void DeleteStation(HealingStation station)
 	{
 		healingStations.Remove(station);
 		Destroy(station.gameObject);

@@ -130,8 +130,6 @@ public class Molat : MonoBehaviour, IDamageable
 	[HideInInspector] public PlayerItemFinder playerItemFinder;
 
 	private bool previouslyGrounded;
-	float turnAmount;
-	float torwardAmount;
 	private bool isBlocking;
 	bool animatorShouldBlock = false;
 	[HideInInspector] public bool isHealing = false;
@@ -180,7 +178,6 @@ public class Molat : MonoBehaviour, IDamageable
 		mostRecentAttacker = gameObject;
 	}
 
-
 	void FixedUpdate()
 	{
 		if(!isDead)
@@ -188,6 +185,8 @@ public class Molat : MonoBehaviour, IDamageable
 			lookAtDirection.Normalize();
 			targetDirection.Normalize();
 			TestGround(); //set grounded to correct state
+
+
 			if (freeToMove())
 			{
 
@@ -218,7 +217,7 @@ public class Molat : MonoBehaviour, IDamageable
 					{
 						currentSpeed = speed;
 					}
-
+					print(targetDirection);
 					Vector3 targetVelocity = targetDirection;
 					targetVelocity *= currentSpeed;
 
@@ -235,6 +234,11 @@ public class Molat : MonoBehaviour, IDamageable
 
 					m_Animator.SetFloat("speed", velocityanim, animDampTime, 0.2f);
 					m_Animator.SetFloat("movementAngle", AngleOfLookDirection(), animDampTime, 0.2f);
+
+					if(targetDirection != Vector3.zero)
+					{
+						MolatSounds.FootStepSoundEffect();
+					}
 				}
 				if (targetDirection == Vector3.zero)
 				{
@@ -334,6 +338,7 @@ public class Molat : MonoBehaviour, IDamageable
 			DropAllItems();
 			DeactivateWeapon();
 			DeactivateShield();
+			GetComponent<Collider>().isTrigger = true;
 		}
 		return isDead;
 	}

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 
 
@@ -8,9 +9,7 @@ using UnityStandardAssets.CrossPlatformInput;
 [RequireComponent(typeof(Molat))]
 public class MolatPlayerController : MonoBehaviour {
 
-	private Molat m_molat;  // A reference to the molat on the object
-	private Vector3 m_CamForward;  // The current forward direction of the camera
-	private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
+	private Molat m_molat;  // A reference to the molat on the object 
 	private CameraPlayer myCamera;
 	bool etoggle = false;
 	bool spaceToggle = false;
@@ -25,6 +24,8 @@ public class MolatPlayerController : MonoBehaviour {
 
 	void Update()
 	{
+
+
 		Vector3 m_CamForward = myCamera.direction;
 		float hor = Input.GetAxisRaw("Horizontal");
 		float ver = Input.GetAxisRaw("Vertical");

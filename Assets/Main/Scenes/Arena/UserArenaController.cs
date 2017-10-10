@@ -19,16 +19,15 @@ public class UserArenaController : MonoBehaviour {
 	[SerializeField] GameObject InGameUI;
 	[SerializeField] GameObject ControlUI;
 
+	[SerializeField] Text toolTipText;
+
+
 	[SerializeField] Transform clonePrefabSpawn;
 	bool inGame = false;
 	string mainMenuName = "Main Menu";
-	private GameObject AIClone;
-	private GameObject playerClone;
 	private GameObject weaponClone;
 	private GameObject clawClone;
 	private GameObject shieldClone;
-	private Molat myMolat;
-	private MolatAIController myMolatAIController;
 	private Weapon myClaw;
 	private Weapon myWeapon;
 	private Weapon myShield;
@@ -49,6 +48,9 @@ public class UserArenaController : MonoBehaviour {
 
 	private Vector3 lastCamPosition;
 	private Quaternion lastCamRotation;
+
+	bool hasPressedButton = false;
+	bool hasSpawnedUnit = false;
 
 	private UIButtonSelection currentSelection = UIButtonSelection.None;
 
@@ -89,11 +91,36 @@ public class UserArenaController : MonoBehaviour {
 			Cursor.lockState = CursorLockMode.None;
 			OpenMenu();
 		}
+		if (Input.GetKeyDown("1"))
+		{
+			SpawnAIPressed();
+		}
+		if (Input.GetKeyDown("2"))
+		{
+			SpawnMacePressed();
+		}
+		if (Input.GetKeyDown("3"))
+		{
+			SpawnShieldPressed();
+		}
+		if (Input.GetKeyDown("4"))
+		{
+			SpawnHealingPressed();
+		}
+		if (Input.GetKeyDown("5"))
+		{
+			SpawnSelfPressed();
+		}
+		if (Input.GetKeyDown("6"))
+		{
+			DestroyObjectPressed();
+		}
 	}
 
 	public void SwapPlayerMode(bool swapToInGame)
 	{
 		GetComponent<AudioListener>().enabled = !swapToInGame;
+		mouseAndRaycast.SwapPlayerMode(swapToInGame);
 		mouseAndRaycast.inGame = swapToInGame;
 		InGameUI.SetActive(swapToInGame);
 		ControlUI.SetActive(!swapToInGame);
@@ -116,6 +143,11 @@ public class UserArenaController : MonoBehaviour {
 
 	private void ClickedOnMap(RaycastHit? raycastHit)
 	{
+		if (hasPressedButton && !hasSpawnedUnit)
+		{
+			hasSpawnedUnit = true;
+			toolTipText.enabled = false;
+		}
 		switch (currentSelection)
 		{
 			case UIButtonSelection.Spawn:
@@ -189,7 +221,15 @@ public class UserArenaController : MonoBehaviour {
 
 	public void DestroyObject(GameObject currentObject)
 	{
-		Destroy(currentObject);
+		HealingStation station = currentObject.GetComponent<HealingStation>();
+		if (station)
+		{
+			healingStationController.DeleteStation(station);
+		}
+		else if (currentObject.GetComponent<Molat>() || currentObject.GetComponent<Item>())
+		{
+			Destroy(currentObject);
+		}
 	}
 
 	public void SpawnMyselfIn(Vector3 spawnPoint)
@@ -254,44 +294,50 @@ public class UserArenaController : MonoBehaviour {
 	//CONTROL BUTTONS
 	public void SpawnAIPressed()
 	{
-		mouseAndRaycast.lookingForCharacter = false;
+		mouseAndRaycast.lookingForObject = false;
 		mouseAndRaycast.lookingForItem = false;
 
 		OnOptionClick(UIButtonSelection.Spawn);
 	}
 	public void SpawnMacePressed()
 	{
-		mouseAndRaycast.lookingForCharacter = false;
+		mouseAndRaycast.lookingForObject = false;
 		mouseAndRaycast.lookingForItem = false;
 		OnOptionClick(UIButtonSelection.SpawnMace);
 	}
 	public void SpawnShieldPressed()
 	{
-		mouseAndRaycast.lookingForCharacter = false;
+		mouseAndRaycast.lookingForObject = false;
 		mouseAndRaycast.lookingForItem = false;
 		OnOptionClick(UIButtonSelection.SpawnShield);
 	}
 	public void SpawnHealingPressed()
 	{
-		mouseAndRaycast.lookingForCharacter = false;
+		mouseAndRaycast.lookingForObject = false;
 		mouseAndRaycast.lookingForItem = false;
 		OnOptionClick(UIButtonSelection.SpawnHealing);
 	}
 	public void SpawnSelfPressed()
 	{
-		mouseAndRaycast.lookingForCharacter = false;
+		mouseAndRaycast.lookingForObject = false;
 		mouseAndRaycast.lookingForItem = false;
 		OnOptionClick(UIButtonSelection.SpawnMe);
 	}
 	public void DestroyObjectPressed()
 	{
-		mouseAndRaycast.lookingForCharacter = true;
+		mouseAndRaycast.lookingForObject = true;
 		mouseAndRaycast.lookingForItem = true;
 		OnOptionClick(UIButtonSelection.Destroy);
 	}
 
 	public void OnOptionClick(UIButtonSelection buttonSelection)
 	{
+		mouseAndRaycast.SelectedButton(buttonSelection);
+		if (!hasPressedButton)
+		{
+			hasPressedButton = true;
+			toolTipText.text = "Now click the terrain to spawn";
+		}
 		currentSelection = buttonSelection;
 	}
 	//INPUT FIELD SETTERS
