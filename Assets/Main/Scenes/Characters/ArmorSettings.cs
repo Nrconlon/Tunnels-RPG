@@ -21,6 +21,6 @@ public class ArmorSettings : MonoBehaviour {
 	public void SetColor(int index)
 	{
 		int realIndex = index % colors.Count;
-		armorMaterial.material.SetTexture(1, colors[realIndex]);
+		armorMaterial.material.SetTexture(Shader.PropertyToID("_diffusemap"), colors[realIndex]);
 	}
 }
