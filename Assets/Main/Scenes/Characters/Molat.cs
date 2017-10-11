@@ -128,7 +128,7 @@ public class Molat : MonoBehaviour, IDamageable
 	Animator m_Animator;
 	Rigidbody m_RigidBody;
 	[HideInInspector] public PlayerItemFinder playerItemFinder;
-
+	ArmorSettings armorSettings;
 	private bool previouslyGrounded;
 	private bool isBlocking;
 	bool animatorShouldBlock = false;
@@ -150,13 +150,19 @@ public class Molat : MonoBehaviour, IDamageable
 		}
 	}
 
-
-	void Start()
+	void Awake()
 	{
 		m_Animator = GetComponent<Animator>();
 		m_RigidBody = GetComponent<Rigidbody>();
 		molatSounds = GetComponent<MolatSounds>();
 		playerItemFinder = GetComponentInChildren<PlayerItemFinder>();
+		armorSettings = GetComponentInChildren<ArmorSettings>();
+	}
+
+
+	void Start()
+	{
+		
 
 
 		m_RigidBody.freezeRotation = true;
@@ -180,12 +186,11 @@ public class Molat : MonoBehaviour, IDamageable
 
 	void FixedUpdate()
 	{
-		if(!isDead)
+		if (!isDead)
 		{
 			lookAtDirection.Normalize();
 			targetDirection.Normalize();
 			TestGround(); //set grounded to correct state
-
 
 			if (freeToMove())
 			{
@@ -217,7 +222,6 @@ public class Molat : MonoBehaviour, IDamageable
 					{
 						currentSpeed = speed;
 					}
-					print(targetDirection);
 					Vector3 targetVelocity = targetDirection;
 					targetVelocity *= currentSpeed;
 
@@ -437,14 +441,13 @@ public class Molat : MonoBehaviour, IDamageable
 	{
 		if(setUp)
 		{
-			itemToSetUp.instigator = gameObject;
+			itemToSetUp.instigator = this;
 			itemToSetUp.ItemDestroyDel += ItemBroke;
 			itemToSetUp.molatSounds = molatSounds;
 			itemToSetUp.StartUsing(this);
 		}
 		else
 		{
-			itemToSetUp.instigator = null;
 			itemToSetUp.ItemDestroyDel -= ItemBroke;
 			itemToSetUp.molatSounds = null;
 			itemToSetUp.Deactivate();
@@ -887,7 +890,6 @@ public class Molat : MonoBehaviour, IDamageable
 		isSliding = true;
 	}
 
-	//TODO change to throw weapon, and make it toss whatever weapon type im holding
 	public void ThrowWeapon()
 	{
 		if(!isDead && weaponEquiped && myWeapon)
@@ -897,6 +899,7 @@ public class Molat : MonoBehaviour, IDamageable
 			myWeapon = (Weapon) DropItem(myWeapon);
 			throwingWeapon.GetComponent<Rigidbody>().velocity = new Vector3(lookAtDirection.x, lookAtDirection.y + 0.2f, lookAtDirection.z) * weaponThrowSpeed;
 			throwingWeapon.BeingThrown(throwingWeapon.throwingDamage * power);
+			throwingWeapon.instigator = this;
 			m_Animator.SetBool("usingClaw", false);
 			m_Animator.SetFloat("attackType", 1);
 			m_Animator.SetTrigger("attack");
@@ -967,6 +970,11 @@ public class Molat : MonoBehaviour, IDamageable
 		{
 			ActionExpressedDel(action, this);
 		}
+	}
+
+	public void SetColor(int index)
+	{
+		armorSettings.SetColor(index);
 	}
 }
 

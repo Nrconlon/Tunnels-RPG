@@ -55,6 +55,9 @@ public class UserArenaController : MonoBehaviour {
 	private UIButtonSelection currentSelection = UIButtonSelection.None;
 
 	MouseAndRaycast mouseAndRaycast;
+	private bool hasWeapon = true;
+	private bool hasShield = true;
+	int colorCount;
 
 	// Use this for initialization
 	void Start ()
@@ -81,6 +84,8 @@ public class UserArenaController : MonoBehaviour {
 			shieldClone = Instantiate(_ShieldPrefab, clonePrefabSpawn);
 			myShield = shieldClone.GetComponent<Weapon>();
 		}
+
+		colorCount = UnityEngine.Random.Range(0, 100);
 	}
 
 	// Update is called once per frame
@@ -177,8 +182,24 @@ public class UserArenaController : MonoBehaviour {
 		if (molat)
 		{
 			molat.clawObject = clawClone;
-			molat.weaponObject = weaponClone;
-			molat.shieldObject = shieldClone;
+			if (hasWeapon)
+			{
+				molat.weaponObject = weaponClone;
+			}
+			else
+			{
+				molat.weaponObject = null;
+			}
+
+			if (hasShield)
+			{
+				molat.shieldObject = shieldClone;
+			}
+			else
+			{
+				molat.shieldObject = null;
+			}
+			
 
 			molat.maxHealth = health;
 			molat.power = power;
@@ -186,10 +207,15 @@ public class UserArenaController : MonoBehaviour {
 
 			molat.canAttack = canAttack;
 			molat.canBlock = canBlock;
+
 	}
 
 		if (molatAIController)
 		{
+			//only set colors on AI
+			molat.SetColor(colorCount);
+			colorCount++;
+
 			molatAIController.healingStationController = healingStationController;
 			molatAIController.courage = courage;
 			molatAIController.skill = skill;
@@ -198,7 +224,7 @@ public class UserArenaController : MonoBehaviour {
 
 	public void SpawnHealingStation(Vector3 spawnPoint)
 	{
-		healingStationController.SpawnHealingStation(spawnPoint);
+		healingStationController.SpawnHealingStation(new Vector3(spawnPoint.x,0.03f,spawnPoint.z));
 	}
 
 	public void SpawnAICharacter(Vector3 spawnPoint)
@@ -372,22 +398,17 @@ public class UserArenaController : MonoBehaviour {
 		this.canBlock = canBlock;
 	}
 
-	public void SetClawDamage(string clawDamage)
+	public void HasWeapon(bool hasWeapon)
 	{
-		myClaw.baseDamage = float.Parse(clawDamage);
+		this.hasWeapon = hasWeapon;
 	}
-	public void SetClawForce(string clawForce)
+	public void HasShield(bool hasShield)
 	{
-		myClaw.force = float.Parse(clawForce);
+		this.hasShield = hasShield;
 	}
-
 	public void SetWeaponDamage(string weaponDamage)
 	{
 		myWeapon.baseDamage = float.Parse(weaponDamage);
-	}
-	public void SetWeaponForce(string weaponForce)
-	{
-		myWeapon.force = float.Parse(weaponForce);
 	}
 	public void SetWeaponHitsBeforeBreak(string weaponHitsBeforeBreak)
 	{

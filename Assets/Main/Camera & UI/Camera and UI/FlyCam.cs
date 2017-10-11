@@ -48,9 +48,7 @@ public class FlyCam : MonoBehaviour {
 		float hor = Input.GetAxisRaw("Horizontal");
 		float ver = Input.GetAxisRaw("Vertical");
 		Vector3 right = new Vector3(direction.z, 0, -direction.x);
-
-		Vector3 targetDirection = (hor * right) + (ver * direction);
-		targetDirection = targetDirection.normalized;
+		Vector3 targetDirection = (hor * right) + (ver * new Vector3(direction.x, 0, direction.z)).normalized;
 
 		Vector3 targetVelocity = targetDirection;
 		targetVelocity *= currentSpeed;

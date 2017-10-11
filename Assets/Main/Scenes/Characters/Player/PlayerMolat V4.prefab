@@ -167,6 +167,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4591527159982790}
   - component: {fileID: 137557304657163306}
+  - component: {fileID: 114781667984692856}
   m_Layer: 10
   m_Name: armor
   m_TagString: Untagged
@@ -1788,7 +1789,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1178897808295450}
   m_LocalRotation: {x: -0, y: 0.12847823, z: -0, w: -0.99171233}
-  m_LocalPosition: {x: 9.505524, y: 0, z: 6.017456}
+  m_LocalPosition: {x: 131.0231, y: 0.3433075, z: 197.85632}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4076770732274498}
@@ -2374,6 +2375,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79914dd12e07c74592da921c78672c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114781667984692856
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1189908575852102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cf31b1e1dae4924db53a6ef1cf6b63b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colors:
+  - {fileID: 2800000, guid: 7edd6dd9a70498b488a3383cee15f9bb, type: 3}
+  - {fileID: 2800000, guid: 32a88dc349364ab4f8d8baefc2e47349, type: 3}
+  - {fileID: 2800000, guid: e61dbe2f6698ce84c950e1b46b49ed53, type: 3}
+  - {fileID: 2800000, guid: 6409ce7d694d5fb4da4bde6618eb4912, type: 3}
+  - {fileID: 2800000, guid: 569079736e5d040439578e21a1d9fc8f, type: 3}
+  - {fileID: 2800000, guid: 1fe87c5b7c8cb7342bf854c5bd7fd0de, type: 3}
+  - {fileID: 2800000, guid: 3151cd7082c1fa04c8e461b36ea2c40b, type: 3}
+  - {fileID: 2800000, guid: cdd15978982c3b241a7ff95d04672ece, type: 3}
+  - {fileID: 2800000, guid: 24b5bc1d06726304aba4e3939f5022b8, type: 3}
+  - {fileID: 2800000, guid: c58800ae276e62148903022638783140, type: 3}
+  - {fileID: 2800000, guid: c12a7d55e2abbcf42b24fb2bc37d8898, type: 3}
+  - {fileID: 2800000, guid: bb29ddcaa6cbba64788787cc841ebcf9, type: 3}
 --- !u!114 &114893731729514676
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2414,7 +2439,7 @@ MonoBehaviour:
   forceThreshold: 30
   animDampTime: 2
   maxPickupDistance: 1.2
-  weaponThrowSpeed: 10
+  weaponThrowSpeed: 15
   powerSwingDamageMultiplier: 1.5
   powerSwingForceMultiplier: 3
   throwingWeapon: {fileID: 1351853314152328, guid: 596e14602591c574997941920d399618,

@@ -31,8 +31,7 @@ public class MolatPlayerController : MonoBehaviour {
 		float ver = Input.GetAxisRaw("Vertical");
 		Vector3 right = new Vector3(m_CamForward.z, 0, -m_CamForward.x);
 
-		Vector3 targetDirection = (hor * right) + (ver * m_CamForward);
-		targetDirection = targetDirection.normalized;
+		Vector3 targetDirection = (hor * right) + (ver * new Vector3(m_CamForward.x,0, m_CamForward.z)).normalized;
 		m_molat.targetDirection = targetDirection;
 		m_molat.lookAtDirection = m_CamForward;
 

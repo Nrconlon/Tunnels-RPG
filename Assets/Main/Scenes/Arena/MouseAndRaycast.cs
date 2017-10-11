@@ -161,7 +161,10 @@ public class MouseAndRaycast : MonoBehaviour
 	internal void SelectedButton(UIButtonSelection buttonSelection)
 	{
 		selectedButton = buttonSelection;
-		SetCursor(buttonSelection);
+		if(priorityHit != null && !inGame)
+		{
+			SetCursor(buttonSelection);
+		}
 
 	}
 

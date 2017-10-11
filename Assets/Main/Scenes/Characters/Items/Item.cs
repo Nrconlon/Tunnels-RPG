@@ -8,7 +8,7 @@ public abstract class Item : MonoBehaviour {
 	[SerializeField] Collider physicsCollider;
 	[HideInInspector] public float currentDurability;
 	[HideInInspector] public bool isActivated = false;
-	[HideInInspector] public GameObject instigator;
+	[HideInInspector] public Molat instigator;
 	[HideInInspector] public MolatSounds molatSounds;
 	bool canBePickedUp = false;
 

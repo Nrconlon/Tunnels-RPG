@@ -56,7 +56,7 @@ public abstract class Weapon : Item
 				targetMolat = hitObject.transform.GetComponentInParent<Molat>();
 			}
 			//if not me, and theres a Molat, and its not dead, and I havent hit it, and its not a raycast bubble.
-			if (hitObject != instigator && targetMolat && !targetMolat.IsDead && !targetsHit.Contains(targetMolat) && hitObject.layer != 8)
+			if (targetMolat != instigator && targetMolat && !targetMolat.IsDead && !targetsHit.Contains(targetMolat) && hitObject.layer != 8)
 			{
 					Component damageableComponent = targetMolat.GetComponent(typeof(IDamageable));
 					Shield shield = hitObject.GetComponentInChildren<Shield>();
@@ -78,7 +78,7 @@ public abstract class Weapon : Item
 
 					if (damageableComponent && !blocked)
 					{
-						(damageableComponent as IDamageable).TakeDamage(currentDamage, currentForce, instigator.transform.forward, instigator);
+						(damageableComponent as IDamageable).TakeDamage(currentDamage, currentForce, instigator.transform.forward, instigator.gameObject);
 						HitRegistered(targetMolat);
 					}
 			}
