@@ -1,6 +1,10 @@
 Tunnels RPG
 
 
+Executable can be downloaded at
+https://www.dropbox.com/s/at5rz371nrxi3ho/TunnelsRPG%20Executable.zip?dl=0
+(if prompted to sign up, click “No thanks, continue to view”)
+
 So far, the game is only an experimental tech demo to mess around with dynamic AI behaviors and reactions.
 The AI use a state deisgn pattern, as well has goal action planning to decide on their targets. 
 Features:
