@@ -1,7 +1,7 @@
 Tunnels RPG
 
-
-Executable can be downloaded at
+Project can be checked out in my portfolio https://nrconlon.carbonmade.com/projects/6594119
+To play the game, download the executable at
 https://www.dropbox.com/s/at5rz371nrxi3ho/TunnelsRPG%20Executable.zip?dl=0
 (if prompted to sign up, click “No thanks, continue to view”)
 
