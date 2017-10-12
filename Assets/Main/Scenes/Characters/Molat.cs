@@ -105,6 +105,7 @@ public class Molat : MonoBehaviour, IDamageable
 	[SerializeField] AudioClip equip2sound;
 	[SerializeField] AudioClip holster1sound;
 	[SerializeField] AudioClip holster2sound;
+	public int teamNumber = 0;
 
 	[HideInInspector] public Vector3 targetDirection;
 	[HideInInspector] public Vector3 lookAtDirection;
@@ -975,6 +976,22 @@ public class Molat : MonoBehaviour, IDamageable
 	public void SetColor(int index)
 	{
 		armorSettings.SetColor(index);
+	}
+	public bool CheckIfTeamate(int teamNumber)
+	{
+		if (this.teamNumber != 0 && teamNumber != 0 && this.teamNumber == teamNumber)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public void SetTeamNumber(int teamNum)
+	{
+		SetColor(teamNum);
+		teamNumber = teamNum;
 	}
 }
 

@@ -57,7 +57,7 @@ public class UserArenaController : MonoBehaviour {
 	MouseAndRaycast mouseAndRaycast;
 	private bool hasWeapon = true;
 	private bool hasShield = true;
-	int colorCount;
+	private int teamNum = 0;
 
 	// Use this for initialization
 	void Start ()
@@ -85,7 +85,6 @@ public class UserArenaController : MonoBehaviour {
 			myShield = shieldClone.GetComponent<Weapon>();
 		}
 
-		colorCount = UnityEngine.Random.Range(0, 100);
 	}
 
 	// Update is called once per frame
@@ -208,14 +207,13 @@ public class UserArenaController : MonoBehaviour {
 			molat.canAttack = canAttack;
 			molat.canBlock = canBlock;
 
-	}
+			//only set colors on AI
+			molat.SetTeamNumber(teamNum);
+
+		}
 
 		if (molatAIController)
 		{
-			//only set colors on AI
-			molat.SetColor(colorCount);
-			colorCount++;
-
 			molatAIController.healingStationController = healingStationController;
 			molatAIController.courage = courage;
 			molatAIController.skill = skill;
@@ -367,6 +365,10 @@ public class UserArenaController : MonoBehaviour {
 		currentSelection = buttonSelection;
 	}
 	//INPUT FIELD SETTERS
+	public void SetTeam(Int32 teamNum)
+	{
+		this.teamNum = teamNum;
+	}
 	public void SetHealth(string health)
 	{
 		this.health = float.Parse(health);

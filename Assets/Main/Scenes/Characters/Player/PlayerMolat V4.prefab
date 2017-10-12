@@ -2388,16 +2388,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colors:
   - {fileID: 2800000, guid: 7edd6dd9a70498b488a3383cee15f9bb, type: 3}
+  - {fileID: 2800000, guid: c12a7d55e2abbcf42b24fb2bc37d8898, type: 3}
   - {fileID: 2800000, guid: 32a88dc349364ab4f8d8baefc2e47349, type: 3}
-  - {fileID: 2800000, guid: e61dbe2f6698ce84c950e1b46b49ed53, type: 3}
-  - {fileID: 2800000, guid: 6409ce7d694d5fb4da4bde6618eb4912, type: 3}
   - {fileID: 2800000, guid: 569079736e5d040439578e21a1d9fc8f, type: 3}
-  - {fileID: 2800000, guid: 1fe87c5b7c8cb7342bf854c5bd7fd0de, type: 3}
   - {fileID: 2800000, guid: 3151cd7082c1fa04c8e461b36ea2c40b, type: 3}
   - {fileID: 2800000, guid: cdd15978982c3b241a7ff95d04672ece, type: 3}
   - {fileID: 2800000, guid: 24b5bc1d06726304aba4e3939f5022b8, type: 3}
-  - {fileID: 2800000, guid: c58800ae276e62148903022638783140, type: 3}
-  - {fileID: 2800000, guid: c12a7d55e2abbcf42b24fb2bc37d8898, type: 3}
+  - {fileID: 2800000, guid: 6409ce7d694d5fb4da4bde6618eb4912, type: 3}
   - {fileID: 2800000, guid: bb29ddcaa6cbba64788787cc841ebcf9, type: 3}
 --- !u!114 &114893731729514676
 MonoBehaviour:
@@ -2464,6 +2461,7 @@ MonoBehaviour:
   equip2sound: {fileID: 8300000, guid: 968dac97cad74df4394d62522017fda6, type: 3}
   holster1sound: {fileID: 8300000, guid: 5286367a706955f42949cfb6db9fcefe, type: 3}
   holster2sound: {fileID: 8300000, guid: 863bd0075c66f264fa8f3557cb7ed179, type: 3}
+  teamNumber: 0
   targetDirection: {x: 0, y: 0, z: 0}
   lookAtDirection: {x: 0, y: 0, z: 0}
   mostRecentAttacker: {fileID: 0}

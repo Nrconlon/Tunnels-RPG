@@ -217,7 +217,12 @@ public class MolatAIController : MonoBehaviour {
 	//Called from collision Capsule
 	public void StartRenderingGameObject(GameObject newObject)
 	{
-		if(!_RenderedObjectsDictionary.ContainsKey(newObject) && !IsObjectDead(newObject))
+		Molat renderingMolat = newObject.GetComponent<Molat>();
+		if(renderingMolat && renderingMolat.CheckIfTeamate(m_Molat.teamNumber))
+		{
+			return;
+		}
+		if (!_RenderedObjectsDictionary.ContainsKey(newObject) && !IsObjectDead(newObject))
 		{
 			EnemyPriority newPriority = new EnemyPriority
 			{
